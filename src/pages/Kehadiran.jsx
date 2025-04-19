@@ -76,7 +76,7 @@ function Kehadiran() {
     if (error) return <div className="container mx-auto px-4 py-8 text-center text-red-500">{error}</div>;
 
     return (
-        <div className="container mx-auto px-4 py-8 pt-[70px] bg-white">
+        <div className="container h-screen mx-auto px-4 py-8 pt-[70px] bg-white">
             <BottomNavbar />
             <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Rekap Kehadiran Kajian</h1>
 
