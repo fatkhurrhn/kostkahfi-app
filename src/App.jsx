@@ -11,7 +11,7 @@ import RecapKehadiran from './pages/admin/recapKehadiran';
 
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
-  return currentUser ? children : <Navigate to="/login" />;
+  return currentUser ? children : <Navigate to="/" />;
 }
 
 function AdminLayout({ children }) {
