@@ -25,13 +25,13 @@ const BottomNavbar = () => {
       label: 'Setoran'
     },
     { 
-      path: '/videos', 
+      path: '#', 
       icon: 'ri-play-circle-line', 
       activeIcon: 'ri-play-circle-fill', 
-      label: 'Mentahan'
+      label: 'DOkumentasi'
     },
     { 
-      path: '/more', 
+      path: '#', 
       icon: 'ri-apps-line', 
       activeIcon: 'ri-apps-fill', 
       label: 'More',
