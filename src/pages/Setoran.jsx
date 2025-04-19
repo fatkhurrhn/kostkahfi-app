@@ -1,155 +1,195 @@
-import { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from './firebase';
+import { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 
-const Setoran = () => {
+function Setoran() {
   const [setoranList, setSetoranList] = useState([]);
   const [filter, setFilter] = useState({
-    pekan: 1,
-    bulan: new Date().toLocaleString('id-ID', { month: 'long' }),
-    tahun: new Date().getFullYear()
+    jenis: '',
+    pekan: '',
+    bulan: '',
+    tahun: ''
   });
   const [loading, setLoading] = useState(true);
+
+  const bulanList = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+  
+  const tahunList = [2023, 2024, 2025];
+  const pekanList = [1, 2, 3, 4];
+  const jenisList = ['setoran', 'murojaah'];
 
   useEffect(() => {
     const fetchSetoran = async () => {
       try {
-        setLoading(true);
-        const q = query(
-          collection("setoran"),
-          where("pekan", "==", filter.pekan),
-          where("bulan", "==", filter.bulan),
-          where("tahun", "==", filter.tahun)
-        );
-        
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(collection(db, 'setoran'));
         const data = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        
         setSetoranList(data);
-        setLoading(false);
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("Error fetching setoran:", error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchSetoran();
-  }, [filter]);
+  }, []);
+
+  const filteredData = setoranList.filter(item => {
+    return (
+      (filter.jenis === '' || item.jenis === filter.jenis) &&
+      (filter.pekan === '' || item.pekan === parseInt(filter.pekan)) &&
+      (filter.bulan === '' || item.bulan === filter.bulan) &&
+      (filter.tahun === '' || item.tahun === parseInt(filter.tahun))
+    );
+  });
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-8 text-gray-600">Memuat data setoran...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Data Setoran</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center text-white">Daftar Setoran & Murojaah</h1>
       
       {/* Filter Section */}
-      <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Pekan</label>
-            <select 
-              value={filter.pekan}
-              onChange={(e) => setFilter({...filter, pekan: parseInt(e.target.value)})}
-              className="w-full p-2 border rounded"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Jenis</label>
+            <select
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              value={filter.jenis}
+              onChange={(e) => setFilter({...filter, jenis: e.target.value})}
             >
-              {[1, 2, 3, 4].map(num => (
-                <option key={num} value={num}>Pekan {num}</option>
+              <option value="">Semua Jenis</option>
+              {jenisList.map(jenis => (
+                <option key={jenis} value={jenis}>
+                  {jenis.charAt(0).toUpperCase() + jenis.slice(1)}
+                </option>
               ))}
             </select>
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-1">Bulan</label>
-            <select 
-              value={filter.bulan}
-              onChange={(e) => setFilter({...filter, bulan: e.target.value})}
-              className="w-full p-2 border rounded"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Pekan</label>
+            <select
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              value={filter.pekan}
+              onChange={(e) => setFilter({...filter, pekan: e.target.value})}
             >
-              {["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
-                "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
-                .map(bulan => (
-                  <option key={bulan} value={bulan}>{bulan}</option>
-                ))}
+              <option value="">Semua Pekan</option>
+              {pekanList.map(pekan => (
+                <option key={pekan} value={pekan}>Pekan {pekan}</option>
+              ))}
             </select>
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-1">Tahun</label>
-            <select 
-              value={filter.tahun}
-              onChange={(e) => setFilter({...filter, tahun: parseInt(e.target.value)})}
-              className="w-full p-2 border rounded"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
+            <select
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              value={filter.bulan}
+              onChange={(e) => setFilter({...filter, bulan: e.target.value})}
             >
-              {[2023, 2024, 2025].map(tahun => (
+              <option value="">Semua Bulan</option>
+              {bulanList.map(bulan => (
+                <option key={bulan} value={bulan}>{bulan}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+            <select
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              value={filter.tahun}
+              onChange={(e) => setFilter({...filter, tahun: e.target.value})}
+            >
+              <option value="">Semua Tahun</option>
+              {tahunList.map(tahun => (
                 <option key={tahun} value={tahun}>{tahun}</option>
               ))}
             </select>
           </div>
-          
-          <div className="flex items-end">
-            <button 
-              onClick={() => setFilter({
-                pekan: 1,
-                bulan: new Date().toLocaleString('id-ID', { month: 'long' }),
-                tahun: new Date().getFullYear()
-              })}
-              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
-            >
-              <i class="ri-refresh-line mr-1"></i> Reset
-            </button>
-          </div>
         </div>
       </div>
-      
+
       {/* Tabel Setoran */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 text-left">No</th>
-              <th className="p-3 text-left">Nama</th>
-              <th className="p-3 text-left">Ayat</th>
-              <th className="p-3 text-left">Halaman/Juz</th>
-              <th className="p-3 text-left">Metode</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="5" className="p-4 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-                </td>
-              </tr>
-            ) : setoranList.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="p-4 text-center text-gray-500">
-                  Tidak ada data setoran
-                </td>
-              </tr>
-            ) : (
-              setoranList.map((setoran, index) => (
-                <tr key={setoran.id} className="border-t hover:bg-gray-50">
-                  <td className="p-3">{index + 1}</td>
-                  <td className="p-3">{setoran.nama}</td>
-                  <td className="p-3">{setoran.ayatMulai} - {setoran.ayatSelesai}</td>
-                  <td className="p-3">{setoran.halaman}</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      setoran.metode === 'online' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {setoran.metode}
-                    </span>
-                  </td>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+        {filteredData.length === 0 ? (
+          <div className="p-6 text-center text-gray-500">
+            Tidak ada data yang ditemukan
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ayat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Halaman/Juz</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {[...filteredData].reverse().map((setoran) => (
+                  <tr key={setoran.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        setoran.jenis === 'setoran' 
+                          ? 'bg-purple-100 text-purple-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {setoran.jenis || 'setoran'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{setoran.nama}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-700">
+                        {setoran.ayatMulai} - {setoran.ayatSelesai}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-700">{setoran.halaman}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        setoran.metode === 'online' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {setoran.metode}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-700">
+                        Pekan {setoran.pekan}<br />
+                        {setoran.bulan} {setoran.tahun}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
-};
+}
 
 export default Setoran;
