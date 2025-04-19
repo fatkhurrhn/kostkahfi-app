@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import BottomNavbar from '../components/BottomNavbar';
 
 function Kehadiran() {
     const [kehadiranList, setKehadiranList] = useState([]);
@@ -20,8 +21,8 @@ function Kehadiran() {
         /**
          * Fetch kehadiran data from Firestore
          * @returns {Promise<void>}
-         */
-/*******  b8fec70d-d89a-4a85-839d-797b6180c2b6  *******/            try {
+/*******  b8fec70d-d89a-4a85-839d-797b6180c2b6  *******/            
+            try {
                 setLoading(true);
                 setError(null);
                 const querySnapshot = await getDocs(collection(db, 'kehadiran_kajian'));
@@ -32,7 +33,7 @@ function Kehadiran() {
                         ...docData,
                         waktu: docData.waktu?.toDate() || null
                     };
-                });
+                }).reverse(); // Tambahkan .reverse() di sini
                 setKehadiranList(data);
             } catch (err) {
                 console.error("Gagal memuat data:", err);
@@ -75,11 +76,12 @@ function Kehadiran() {
     if (error) return <div className="container mx-auto px-4 py-8 text-center text-red-500">{error}</div>;
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 pt-[70px] bg-white">
+            <BottomNavbar />
             <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Rekap Kehadiran Kajian</h1>
 
             {/* Filter Section */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6">
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-300 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Asatidz</label>
@@ -129,7 +131,7 @@ function Kehadiran() {
             </div>
 
             {/* Data Table */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
                 {filteredData.length === 0 ? (
                     <div className="p-6 text-center text-gray-500">
                         Tidak ada data kehadiran yang ditemukan

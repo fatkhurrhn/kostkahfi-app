@@ -58,11 +58,11 @@ function Setoran() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6 text-center text-white">Daftar Setoran & Murojaah</h1>
+    <div className="container mx-auto px-4 py-8 bg-white">
+      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Daftar Setoran & Murojaah</h1>
       
       {/* Filter Section */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-300 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Jenis</label>
@@ -125,7 +125,7 @@ function Setoran() {
       </div>
 
       {/* Tabel Setoran */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
         {filteredData.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
             Tidak ada data yang ditemukan
@@ -158,7 +158,7 @@ function Setoran() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{setoran.nama}</div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-700">
                         {setoran.ayatMulai} - {setoran.ayatSelesai}
                       </div>

@@ -38,7 +38,7 @@ function RecapKehadiran() {
         ...doc.data(),
         // Convert Firestore timestamp to Date object
         waktu: doc.data().waktu?.toDate() || null
-      }));
+      })).reverse(); // Tambahkan .reverse() di sini
       setKehadiranList(data);
     } catch (error) {
       console.error("Error fetching data:", error);
