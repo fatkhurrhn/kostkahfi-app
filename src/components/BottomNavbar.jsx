@@ -42,23 +42,25 @@ const BottomNavbar = () => {
   return (
     <>
       {/* Compact Fixed Top Header */}
-<div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-100 py-3">
-  <div className="flex justify-between items-center px-6">
-  <img src={Logo} alt="AnakProgram Logo" className="h-8" />
-    <button className="text-sm font-medium text-gray-500"><i class="ri-login-box-line text-[20px]"></i></button>
-  </div>
-</div>
+      <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-100 py-3">
+        <div className="max-w-[435px] w-full mx-auto px-6 flex justify-between items-center">
+          <img src={Logo} alt="AnakProgram Logo" className="h-8" />
+          <button className="text-sm font-medium text-gray-500">
+            <i className="ri-login-box-line text-[20px]"></i>
+          </button>
+        </div>
+      </div>
 
       {/* Bottom Navigation */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50">
-        <div className="flex justify-around items-stretch py-1">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50">
+        <div className="max-w-[420px] w-full mx-auto flex justify-around items-stretch py-1">
           {navItems.map((item) => {
             let isActive = false;
 
             if (item.exact) {
               isActive = location.pathname === item.path;
-            } else if (item.activePaths && item.activePaths.length > 0) {
-              isActive = item.activePaths.some((path) => location.pathname.startsWith(path));
+            } else if (item.activePaths) {
+              isActive = item.activePaths.includes(location.pathname);
             } else {
               isActive = location.pathname.startsWith(item.path);
             }
@@ -67,12 +69,12 @@ const BottomNavbar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex-1 flex flex-col items-center justify-center p-1 transition-colors ${
-                  isActive ? 'text-black' : 'text-gray-500 hover:text-gray-700'
+                className={`flex flex-col items-center justify-center text-xs font-medium text-gray-500 px-2 py-1 ${
+                  isActive ? 'text-emerald-600' : ''
                 }`}
               >
-                <i className={`text-lg ${isActive ? item.activeIcon : item.icon}`}></i>
-                <span className="text-[10px] leading-tight mt-0.5">{item.label}</span>
+                <i className={`${isActive ? item.activeIcon : item.icon} text-xl`}></i>
+                {item.label}
               </Link>
             );
           })}
