@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
-import BottomNavbar from '../components/BottomNavbar';
+import { db } from '../../firebase';
+import BottomNavbar from '../../components/BottomNavbar';
 
 function Setoran() {
   const [setoranList, setSetoranList] = useState([]);

@@ -2,12 +2,17 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './components/AuthContext';
 import { useAuth } from './components/AuthContext';
 import HomePage from './pages/HomePage';
-import Login from './pages/Login';
-import Setoran from './pages/Setoran';
+import Tes from './pages/Tes';
+import Program from './pages/Program';
+
+import Login from './pages/admin/Login';
+
 import AdminHome from './pages/admin/Home';
-import AdminSetoran from './pages/admin/Setoran';
-import Kehadiran from './pages/Kehadiran';
 import RecapKehadiran from './pages/admin/recapKehadiran';
+import AdminSetoran from './pages/admin/Setoran';
+
+import Kehadiran from './pages/mahasantri/Kehadiran';
+import Setoran from './pages/mahasantri/Setoran';
 
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
@@ -30,10 +35,15 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/tes" element={<Tes />} />
+          <Route path="/program" element={<Program />} />
+
+          {/* mahasantri */}
+          <Route path="/mahasantri/setoran" element={<Setoran />} />
+          <Route path="/mahasantri/kehadiran" element={<Kehadiran />} />
+
           <Route path="/login" element={<Login />} />
-          <Route path="/setoran" element={<Setoran />} />
-          <Route path="/kehadiran" element={<Kehadiran />} />
-          
+
           {/* Admin Routes */}
           <Route path="/admin" element={
             <PrivateRoute>
@@ -51,7 +61,6 @@ function App() {
             </PrivateRoute>
           } />
 
-          {/* Admin Route */}
           <Route path="/admin/kehadiran" element={
             <PrivateRoute>
               <AdminLayout>

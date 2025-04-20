@@ -13,25 +13,25 @@ const BottomNavbar = () => {
       exact: true
     },
     { 
-      path: '/kehadiran', 
-      icon: 'ri-book-2-line', 
-      activeIcon: 'ri-book-2-fill', 
-      label: 'Kajian'
+      path: '/gallery', 
+      icon: 'ri-image-ai-line', 
+      activeIcon: 'ri-image-ai-fill', 
+      label: 'Gallery'
     },
     { 
-      path: '/setoran', 
-      icon: 'ri-speak-ai-line', 
-      activeIcon: 'ri-speak-ai-fill', 
-      label: 'Setoran'
+      path: '/program', 
+      icon: 'ri-calendar-event-line', 
+      activeIcon: 'ri-group-fill', 
+      label: 'Program'
     },
     { 
-      path: '#', 
-      icon: 'ri-play-circle-line', 
-      activeIcon: 'ri-play-circle-fill', 
-      label: 'DOkumentasi'
+      path: '/cavelatte', 
+      icon: 'ri-cup-line', 
+      activeIcon: 'ri-cup-fill', 
+      label: 'Caveltte'
     },
     { 
-      path: '#', 
+      path: '/more', 
       icon: 'ri-apps-line', 
       activeIcon: 'ri-apps-fill', 
       label: 'More',
@@ -44,7 +44,7 @@ const BottomNavbar = () => {
       {/* Compact Fixed Top Header */}
 <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-100 py-3">
   <div className="flex justify-between items-center px-6">
-  <img src={Logo} alt="AnakProgram Logo" className="h-7" />
+  <img src={Logo} alt="AnakProgram Logo" className="h-8" />
     <button className="text-sm font-medium text-gray-500"><i class="ri-login-box-line text-[20px]"></i></button>
   </div>
 </div>
