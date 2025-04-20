@@ -1,7 +1,9 @@
 import BottomNavbar from '../components/BottomNavbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Program() {
+    const navigate = useNavigate();
+
     const sponsors = [
         { name: "Yayasan Al-Barakah", logo: "ri-community-line" },
         { name: "PT. Amanah Sejahtera", logo: "ri-building-4-line" },
@@ -10,11 +12,22 @@ function Program() {
         { name: "Tokopedia Wakaf", logo: "ri-shopping-bag-line" },
     ];
 
+
+
     return (
         <div className="h-screen flex flex-col bg-white">
             <div className="flex-1 overflow-y-auto">
                 {/* Container with max-w-4xl for desktop */}
                 <div className="container mx-auto px-4 pt-[70px] pb-20">
+                    {/* back */}
+                    <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3">
+                        <div className="max-w-[540px] w-full mx-auto px-6 flex justify-between items-center">
+                            <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+                                <i className="ri-arrow-left-line text-lg"></i> Program
+                            </h3>
+                        </div>
+                    </div>
+
                     <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Program Unggulan Kost Al-Kahfi</h1>
 
                     {/* Program Navigation Buttons */}
