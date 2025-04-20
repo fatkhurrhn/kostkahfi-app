@@ -14,7 +14,7 @@ function Program() {
         <div className="h-screen flex flex-col bg-white">
             <div className="flex-1 overflow-y-auto">
                 {/* Container with max-w-4xl for desktop */}
-                <div className="container mx-auto px-4 pt-[70px] pb-20 max-w-[425px]">
+                <div className="container mx-auto px-4 pt-[70px] pb-20">
                     <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Program Unggulan Kost Al-Kahfi</h1>
 
                     {/* Program Navigation Buttons */}
@@ -98,19 +98,19 @@ function Program() {
                                         <th className="p-3 text-left text-sky-700 border-b font-semibold">BIMAN</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className='text-gray-700'>
                                     <tr className="border-b hover:bg-gray-50">
-                                        <td className="p-3 font-medium text-gray-700">Target Peserta</td>
+                                        <td className="p-3 font-medium">Target Peserta</td>
                                         <td className="p-3">Lulusan pesantren/mahasiswa agama</td>
                                         <td className="p-3">Mahasiswa/pekerja umum</td>
                                     </tr>
                                     <tr className="border-b hover:bg-gray-50">
-                                        <td className="p-3 font-medium text-gray-700">Intensitas</td>
+                                        <td className="p-3 font-medium">Intensitas</td>
                                         <td className="p-3">Full-time (setiap hari)</td>
                                         <td className="p-3">Part-time (3x seminggu)</td>
                                     </tr>
                                     <tr className="border-b hover:bg-gray-50">
-                                        <td className="p-3 font-medium text-gray-700">Fokus Pembelajaran</td>
+                                        <td className="p-3 font-medium">Fokus Pembelajaran</td>
                                         <td className="p-3">Tahfidz Quran & ilmu alat</td>
                                         <td className="p-3">Tahsin & aplikasi Islam sehari-hari</td>
                                     </tr>
