@@ -87,7 +87,7 @@ function Kehadiran() {
     const totalKajian = kehadiranList.length;
     const totalOnline = kehadiranList.filter(item => item.jenis === 'online').length;
     const totalOffline = kehadiranList.filter(item => item.jenis === 'offline').length;
-    
+
     // Count unique asatidz
     const uniqueAsatidz = new Set(kehadiranList.map(item => item.asatidz)).size;
 
@@ -111,7 +111,7 @@ function Kehadiran() {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Terjadi Kesalahan</h3>
                     <p className="text-gray-600">{error}</p>
-                    <button 
+                    <button
                         className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg"
                         onClick={() => window.location.reload()}
                     >
@@ -189,31 +189,31 @@ function Kehadiran() {
                         <p className="text-xs text-purple-600 mt-1">Jumlah pengajar</p>
                     </div>
                     <div className="bg-white p-4 rounded-xl shadow-sm">
-    <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-gray-600">Pekan Ini</span>
-        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-            <i className="ri-calendar-line text-blue-600"></i>
-        </div>
-    </div>
-    <p className="text-2xl font-bold text-gray-800">
-        {kehadiranList.filter(item => {
-            if (!item.waktu) return false;
-            const now = new Date();
-            const day = now.getDay(); // 0 (Sunday) to 6 (Saturday)
-            const diffToMonday = (day === 0 ? -6 : 1) - day; // Senin sebagai awal pekan
-            const monday = new Date(now);
-            monday.setDate(now.getDate() + diffToMonday);
-            monday.setHours(0, 0, 0, 0);
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-600">Pekan Ini</span>
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i className="ri-calendar-line text-blue-600"></i>
+                            </div>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-800">
+                            {kehadiranList.filter(item => {
+                                if (!item.waktu) return false;
+                                const now = new Date();
+                                const day = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+                                const diffToMonday = (day === 0 ? -6 : 1) - day; // Senin sebagai awal pekan
+                                const monday = new Date(now);
+                                monday.setDate(now.getDate() + diffToMonday);
+                                monday.setHours(0, 0, 0, 0);
 
-            const nextMonday = new Date(monday);
-            nextMonday.setDate(monday.getDate() + 7);
+                                const nextMonday = new Date(monday);
+                                nextMonday.setDate(monday.getDate() + 7);
 
-            const waktu = new Date(item.waktu);
-            return waktu >= monday && waktu < nextMonday;
-        }).length}
-    </p>
-    <p className="text-xs text-blue-600 mt-1">Kajian pekan ini</p>
-</div>
+                                const waktu = new Date(item.waktu);
+                                return waktu >= monday && waktu < nextMonday;
+                            }).length}
+                        </p>
+                        <p className="text-xs text-blue-600 mt-1">Kajian pekan ini</p>
+                    </div>
 
                 </div>
 
@@ -243,7 +243,7 @@ function Kehadiran() {
                 <div className="bg-white p-4 rounded-xl shadow-sm mb-5">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-medium text-gray-800">Filter Data</h3>
-                        <button 
+                        <button
                             className="text-xs text-blue-600 font-medium flex items-center"
                             onClick={() => setFilter({ asatidz: '', jenis: '', month: '' })}
                         >
@@ -300,12 +300,10 @@ function Kehadiran() {
                             <div key={data.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
                                 <div className="p-4">
                                     <div className="flex items-start">
-                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 ${
-                                            data.jenis === 'online' ? 'bg-blue-100' : 'bg-green-100'
-                                        }`}>
-                                            <i className={`${
-                                                data.jenis === 'online' ? 'ri-computer-line text-blue-600' : 'ri-user-voice-line text-green-600'
-                                            } text-xl`}></i>
+                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 ${data.jenis === 'online' ? 'bg-blue-100' : 'bg-green-100'
+                                            }`}>
+                                            <i className={`${data.jenis === 'online' ? 'ri-computer-line text-blue-600' : 'ri-user-voice-line text-green-600'
+                                                } text-xl`}></i>
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
@@ -313,9 +311,8 @@ function Kehadiran() {
                                                     <h4 className="font-medium text-gray-800">{data.tema}</h4>
                                                     <p className="text-sm text-gray-600 mt-1">{data.asatidz}</p>
                                                 </div>
-                                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                                    data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                                                }`}>
+                                                <span className={`px-2 py-1 rounded-full text-xs ${data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                                                    }`}>
                                                     {data.jenis}
                                                 </span>
                                             </div>
@@ -325,23 +322,32 @@ function Kehadiran() {
                                                     <i className="ri-calendar-line mr-1"></i>
                                                     <span>{formatDate(data.waktu)}</span>
                                                 </div>
-                                                <div className="flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-800">
+                                                <div className="flex items-center px-2 py-1 rounded-full ">
+                                    <button
+                                        onClick={() => handleShowAttendance(data)}
+                                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center"
+                                    >
+                                        <i className="ri-eye-line mr-1"></i> Kehadiran
+                                    </button>
+                                </div>
+
+                                                {/* <div className="flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-800">
                                                     <i className="ri-group-line mr-1"></i>
                                                     <span>{data.peserta?.filter(p => p.hadir).length || 0} dari {data.peserta?.length || 0} hadir</span>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end">
+                                {/* <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end">
                                     <button
                                         onClick={() => handleShowAttendance(data)}
                                         className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center"
                                     >
                                         <i className="ri-group-line mr-1"></i> Lihat Detail Kehadiran
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
                         ))
                     )}
@@ -357,7 +363,7 @@ function Kehadiran() {
                                     <h3 className="text-lg font-semibold text-white">
                                         Detail Kehadiran
                                     </h3>
-                                    <button 
+                                    <button
                                         onClick={() => setShowModal(false)}
                                         className="text-white hover:text-blue-200"
                                     >
@@ -393,27 +399,24 @@ function Kehadiran() {
                                         {selectedAttendance.peserta?.filter(p => p.hadir).length || 0}/{selectedAttendance.peserta?.length || 0} Hadir
                                     </span>
                                 </div>
-                                
+
                                 <div className="bg-gray-50 rounded-lg">
                                     <ul className="divide-y divide-gray-200">
                                         {selectedAttendance.peserta?.map((peserta, index) => (
                                             <li key={index} className="flex justify-between items-center p-3">
                                                 <div className="flex items-center">
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
-                                                        peserta.hadir ? 'bg-green-100' : 'bg-red-100'
-                                                    }`}>
-                                                        <i className={`${
-                                                            peserta.hadir ? 'ri-check-line text-green-600' : 'ri-close-line text-red-600'
-                                                        }`}></i>
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${peserta.hadir ? 'bg-green-100' : 'bg-red-100'
+                                                        }`}>
+                                                        <i className={`${peserta.hadir ? 'ri-check-line text-green-600' : 'ri-close-line text-red-600'
+                                                            }`}></i>
                                                     </div>
                                                     <span className="text-sm font-medium">{peserta.nama}</span>
                                                 </div>
                                                 <span
-                                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                        peserta.hadir
+                                                    className={`px-2 py-1 rounded-full text-xs font-medium ${peserta.hadir
                                                             ? 'bg-green-100 text-green-700'
                                                             : 'bg-red-100 text-red-700'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {peserta.hadir ? 'Hadir' : 'Tidak Hadir'}
                                                 </span>
