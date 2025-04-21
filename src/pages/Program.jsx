@@ -35,20 +35,20 @@ function Program() {
                     </h1>
 
                     {/* Program Navigation Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <div className="flex flex-row flex-wrap gap-4 justify-center mb-10">
                         <Link
                             to="/program/mahasantri"
-                            className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-medium"
+                            className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow flex items-center justify-center transition-colors font-medium"
                         >
-                            <i className="ri-user-3-line text-xl"></i>
-                            <span>Mahasantri</span>
+                            <i className="ri-user-3-line mr-2 text-lg"></i>
+                            Mahasantri
                         </Link>
                         <Link
                             to="/program/biman"
-                            className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-sky-600 to-sky-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-medium"
+                            className="px-8 py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg shadow flex items-center justify-center transition-colors font-medium"
                         >
-                            <i className="ri-team-line text-xl"></i>
-                            <span>BIMAN</span>
+                            <i className="ri-team-line mr-2 text-lg"></i>
+                            BIMAN
                         </Link>
                     </div>
 
