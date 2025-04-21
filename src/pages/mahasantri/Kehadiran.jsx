@@ -322,32 +322,23 @@ function Kehadiran() {
                                                     <i className="ri-calendar-line mr-1"></i>
                                                     <span>{formatDate(data.waktu)}</span>
                                                 </div>
-                                                <div className="flex items-center px-2 py-1 rounded-full ">
-                                    <button
-                                        onClick={() => handleShowAttendance(data)}
-                                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center"
-                                    >
-                                        <i className="ri-eye-line mr-1"></i> Kehadiran
-                                    </button>
-                                </div>
-
-                                                {/* <div className="flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-800">
+                                                <div className="flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-800">
                                                     <i className="ri-group-line mr-1"></i>
                                                     <span>{data.peserta?.filter(p => p.hadir).length || 0} dari {data.peserta?.length || 0} hadir</span>
-                                                </div> */}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end">
+                                <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end">
                                     <button
                                         onClick={() => handleShowAttendance(data)}
                                         className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center"
                                     >
                                         <i className="ri-group-line mr-1"></i> Lihat Detail Kehadiran
                                     </button>
-                                </div> */}
+                                </div>
                             </div>
                         ))
                     )}
