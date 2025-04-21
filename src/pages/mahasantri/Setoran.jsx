@@ -184,12 +184,12 @@ function Setoran() {
           </div>
           <div className="bg-white p-4 rounded-xl shadow-sm">
             <p className="text-1xl text-center font-bold text-gray-800 font-amiri">{randomAyah.arabicText}</p>
-            <p className="text-xs text-center text-purple-600 mt-1">"{randomAyah.translation}"</p>
+            <p className="text-sm text-center text-black mt-1">"{randomAyah.translation}"</p>
             <div 
-              className="text-[10px] text-center text-gray-600 mt-1 cursor-pointer hover:text-blue-600"
+              className="text-[11px] text-center text-gray-600 mt-1 cursor-pointer hover:text-blue-600"
               onClick={() => setShowTafsir(true)}
             >
-              {randomAyah.surahName} : {randomAyah.ayahNumber} | Tafsir
+              [ {randomAyah.surahName} : {randomAyah.ayahNumber} | Tafsir ]
             </div>
           </div>
         </div>
