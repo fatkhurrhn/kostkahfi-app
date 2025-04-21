@@ -141,7 +141,7 @@ function Setoran() {
       <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3">
         <div className="w-full mx-auto px-6 flex justify-between items-center">
           <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
-            <i className="ri-arrow-left-line text-lg"></i> Mahasantri
+            <i className="ri-arrow-left-line text-lg"></i> Data Setoran
           </h3>
           <div className="flex items-center space-x-4">
             <i className="ri-notification-3-line text-lg text-gray-700"></i>

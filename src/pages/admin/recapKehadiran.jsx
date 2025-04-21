@@ -6,7 +6,7 @@ import MobileSidebar from '../../components/MobileSidebar';
 import DesktopNavbar from '../../components/DesktopNavbar';
 
 const MAHASANTRI_LIST = [
-  'Fathur', 'Faiz', 'Budiman', 'Khair', 
+  'Fathur', 'Faiz', 'Budiman', 'Khair',
   'Romi', 'Ikhsan', 'Yazid', 'Sayyid', 'Sigma', 'Fano'
 ];
 
@@ -127,18 +127,18 @@ function RecapKehadiran() {
   const handleEdit = (data) => {
     try {
       // Format waktu untuk input datetime-local
-      const waktuFormatted = data.waktu 
-        ? new Date(data.waktu).toISOString().slice(0, 16) 
+      const waktuFormatted = data.waktu
+        ? new Date(data.waktu).toISOString().slice(0, 16)
         : '';
-      
+
       setFormData({
         ...data,
         waktu: waktuFormatted,
         // Pastikan peserta selalu ada
-        peserta: data.peserta || MAHASANTRI_LIST.map(nama => ({ 
-          nama, 
-          hadir: true, 
-          catatan: '' 
+        peserta: data.peserta || MAHASANTRI_LIST.map(nama => ({
+          nama,
+          hadir: true,
+          catatan: ''
         }))
       });
       setEditingId(data.id);
@@ -185,7 +185,7 @@ function RecapKehadiran() {
         <h2 className="text-lg font-semibold mb-4 text-gray-800">
           {editingId ? 'Edit Data Kehadiran' : 'Tambah Data Kehadiran Baru'}
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -199,7 +199,7 @@ function RecapKehadiran() {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Asatidz*</label>
               <select
@@ -213,7 +213,7 @@ function RecapKehadiran() {
                 <option value="Ustadz Haidir">Ustadz Haidir</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kajian*</label>
               <select
@@ -295,7 +295,7 @@ function RecapKehadiran() {
         <div className="p-4 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800">Rekap Kehadiran Kajian</h2>
         </div>
-        
+
         {loading ? (
           <div className="p-4 text-center text-gray-500">Memuat data...</div>
         ) : kehadiranList.length === 0 ? (
@@ -323,9 +323,8 @@ function RecapKehadiran() {
                       <div className="text-sm text-gray-700">{data.asatidz}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs ${data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                        }`}>
                         {data.jenis}
                       </span>
                     </td>
