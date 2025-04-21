@@ -33,14 +33,14 @@ function Program() {
                     {/* Program Navigation Buttons */}
                     <div className="flex flex-row flex-wrap gap-4 justify-center mb-10">
                         <Link
-                            to="/mahasantri/home"
+                            to="/program/mahasantri"
                             className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow flex items-center justify-center transition-colors font-medium"
                         >
                             <i className="ri-user-3-line mr-2 text-lg"></i>
                             Mahasantri
                         </Link>
                         <Link
-                            to="/biman/home"
+                            to="/program/biman"
                             className="px-8 py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg shadow flex items-center justify-center transition-colors font-medium"
                         >
                             <i className="ri-team-line mr-2 text-lg"></i>

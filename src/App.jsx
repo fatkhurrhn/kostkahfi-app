@@ -11,6 +11,7 @@ import AdminHome from './pages/admin/Home';
 import RecapKehadiran from './pages/admin/recapKehadiran';
 import AdminSetoran from './pages/admin/Setoran';
 
+import HomeMahasantri from './pages/mahasantri/Home';
 import Kehadiran from './pages/mahasantri/Kehadiran';
 import Setoran from './pages/mahasantri/Setoran';
 
@@ -39,8 +40,9 @@ function App() {
           <Route path="/program" element={<Program />} />
 
           {/* mahasantri */}
-          <Route path="/mahasantri/setoran" element={<Setoran />} />
-          <Route path="/mahasantri/kehadiran" element={<Kehadiran />} />
+          <Route path="/program/mahasantri" element={<HomeMahasantri />} />
+          <Route path="/program/mahasantri/setoran" element={<Setoran />} />
+          <Route path="/program/mahasantri/kehadiran" element={<Kehadiran />} />
 
           <Route path="/login" element={<Login />} />
 
