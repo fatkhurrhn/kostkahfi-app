@@ -23,7 +23,7 @@ const BottomNavbar = () => {
       activeIcon: 'ri-calendar-event-fill', 
       label: 'Program',
       activePaths: ['/program',
-                    '/program/mahasantri', '/program/mahasantri/setoran', '/mahasantri/kehadiran',
+                    '/program/mahasantri', '/program/mahasantri/setoran', '/program/mahasantri/kehadiran',
                     '/program/biman', '/program/biman/kehadiran', '/program/biman/setoran']
 
     },
