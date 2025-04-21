@@ -126,7 +126,7 @@ function Setoran() {
       <div className="h-screen flex flex-col bg-white">
         <div className="flex-1 overflow-y-auto container mx-auto px-4 pt-[70px] pb-20 flex items-center justify-center">
           <div className="flex flex-col items-center">
-            <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             <p className="mt-4 text-gray-600 font-medium">Memuat data...</p>
           </div>
         </div>
@@ -152,7 +152,7 @@ function Setoran() {
 
       <div className="flex-1 overflow-y-auto container mx-auto px-4 pt-[70px] pb-20">
         {/* Page Title with Gradient Background */}
-        <div className="bg-gradient-to-r from-green-500 to-green-700 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-md">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-md">
           <div className="absolute top-0 right-0 opacity-20">
             <i className="ri-book-open-line text-9xl text-white"></i>
           </div>
@@ -200,7 +200,7 @@ function Setoran() {
             <button
               key={tab}
               className={`flex-1 py-2 text-sm font-medium rounded-lg capitalize ${
-                activeTab === tab ? 'bg-green-500 text-white' : 'text-gray-600'
+                activeTab === tab ? 'bg-blue-500 text-white' : 'text-gray-600'
               }`}
               onClick={() => handleTabChange(tab)}
             >
@@ -214,7 +214,7 @@ function Setoran() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-gray-800">Filter Data</h3>
             <button 
-              className="text-xs text-green-600 font-medium flex items-center"
+              className="text-xs text-blue-600 font-medium flex items-center"
               onClick={() => setFilter({ jenis: '', pekan: '', bulan: '', tahun: '' })}
             >
               <i className="ri-refresh-line mr-1"></i> Reset
@@ -287,7 +287,7 @@ function Setoran() {
                     
                     <div className="flex flex-wrap gap-y-2 gap-x-3 mt-3 text-xs">
                       <div className={`flex items-center px-2 py-1 rounded-full ${
-                        setoran.metode === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                        setoran.metode === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800'
                       }`}>
                         <i className={`${
                           setoran.metode === 'online' ? 'ri-global-line' : 'ri-user-voice-line'
