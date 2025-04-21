@@ -41,7 +41,7 @@ function Admin() {
       const data = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
+      })).reverse(); // Tambahkan .reverse() di sini
       setSetoranList(data);
     } catch (error) {
       console.error("Error fetching setoran:", error);

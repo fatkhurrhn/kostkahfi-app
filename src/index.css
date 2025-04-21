@@ -15,3 +15,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-amiri {
+  font-family: "Amiri Quran", serif;
+  font-size: 17px;
+}
