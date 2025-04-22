@@ -4,6 +4,7 @@ import { useAuth } from './components/AuthContext';
 import HomePage from './pages/HomePage';
 import Tes from './pages/Tes';
 import Program from './pages/Program';
+import GalleryKahfi from './pages/Gallery';
 
 import Login from './pages/adminMahasantri/Login';
 
@@ -40,6 +41,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/tes" element={<Tes />} />
           <Route path="/program" element={<Program />} />
+          <Route path="/gallery" element={<GalleryKahfi />} />
 
           {/* mahasantri */}
           <Route path="/program/mahasantri" element={<HomeMahasantri />} />

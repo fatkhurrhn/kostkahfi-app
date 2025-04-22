@@ -134,7 +134,7 @@ function Gallery() {
         ) : (
             <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 gap-2 pt-2">
             {sortedItems.map((item) => (
-              <div key={item.id} className="mb-4 break-inside-avoid">
+              <div key={item.id} className="mb-2 break-inside-avoid">
                 <div className="relative group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                   {/* Image with original aspect ratio */}
                   <img
