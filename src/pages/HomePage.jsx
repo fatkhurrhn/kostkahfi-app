@@ -114,6 +114,25 @@ function Home() {
           </div>
         </section>
 
+        {/* <div className="relative w-full h-64">
+                <img 
+                    src="https://nibble-images.b-cdn.net/nibble/original_images/cafe-di-menteng-00.jpg" 
+                    alt="Cavelatte" 
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white">
+                    <h1 className="text-2xl font-bold">Cavelatte</h1>
+                    <p className="text-sm opacity-90">Tempat nongkrong nyaman di Kost Kahfi</p>
+                    <div className="flex items-center mt-2">
+                        <i className="ri-map-pin-line mr-1 text-blue-300"></i>
+                        <span className="text-sm">Area Kost Kahfi</span>
+                        <div className="mx-2 h-1 w-1 bg-blue-300 rounded-full"></div>
+                        <i className="ri-time-line mr-1 text-blue-300"></i>
+                        <span className="text-sm">Buka 24 Jam</span>
+                    </div>
+                </div>
+            </div> */}
+
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3 mb-6">
           <a href="#facilities" className="bg-white rounded-lg p-2 text-center shadow-sm">

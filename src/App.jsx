@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import Tes from './pages/Tes';
 import Program from './pages/Program';
 import GalleryKahfi from './pages/Gallery';
+import Cavelatte from './pages/Cavelatte';
 
 import Login from './pages/adminMahasantri/Login';
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/tes" element={<Tes />} />
           <Route path="/program" element={<Program />} />
           <Route path="/gallery" element={<GalleryKahfi />} />
+          <Route path="/cavelatte" element={<Cavelatte />} />
 
           {/* mahasantri */}
           <Route path="/program/mahasantri" element={<HomeMahasantri />} />
