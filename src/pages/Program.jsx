@@ -108,7 +108,7 @@ function Program() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-blue-50 max-w-3xl mx-auto">
+        <div className="min-h-screen flex flex-col bg-blue-50 max-w-3xl mx-auto scrollbar-hide">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white shadow-md py-3 px-4">
                 <div className="max-w-3xl mx-auto flex items-center justify-between">

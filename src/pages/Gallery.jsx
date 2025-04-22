@@ -55,24 +55,20 @@ function Gallery() {
   });
 
   return (
-    <div className="h-screen flex flex-col bg-blue-50 max-w-3xl mx-auto">
-      <div className="flex-1 overflow-y-auto container px-4 pt-[70px] pb-20 scrollbar-hide">
-        {/* Header */}
-        <div className="fixed top-0 left-0 right-0 text-white z-50 max-w-3xl mx-auto shadow-md py-3">
-          <div className="w-full mx-auto px-4 flex justify-between items-center">
-            <button 
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => navigate(-1)}
-            >
-              <i className="ri-arrow-left-line text-lg text-gray-800"></i>
-              <span className="font-medium text-gray-800">Gallery</span>
-            </button>
-            <div className="flex items-center space-x-4 text-gray-800">
-              <i className="ri-notification-3-line text-lg"></i>
-              <i className="ri-user-line text-lg"></i>
-            </div>
-          </div>
-        </div>
+    <div className="h-screen flex flex-col bg-slate-50 max-w-3xl mx-auto">
+            <div className="flex-1 overflow-y-auto container px-4 pt-[70px] pb-20 scrollbar-hide">
+                {/* back */}
+                <div className="fixed top-0 left-0 right-0 bg-white z-50 max-w-3xl mx-auto border-b border-gray-300 py-3">
+                    <div className=" w-full mx-auto px-6 flex justify-between items-center">
+                        <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+                            <i className="ri-arrow-left-line text-lg"></i>Gallery
+                        </h3>
+                        <div className="flex items-center space-x-4">
+                            <i className="ri-notification-3-line text-lg text-gray-700"></i>
+                            <i className="ri-user-line text-lg text-gray-700"></i>
+                        </div>
+                    </div>
+                </div>
 
         {/* Search and Filter Row */}
         <div className="mt-0 mb-4 flex gap-2">
