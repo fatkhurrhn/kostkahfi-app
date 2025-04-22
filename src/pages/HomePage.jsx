@@ -331,7 +331,7 @@ function Home() {
           </div>
           <div className="space-y-4">
             {testimonials.map((testi, index) => (
-              <div key={index} className="bg-blue-50 rounded-xl p-4">
+              <div key={index} className="bg-blue-50 rounded-xl p-4 text-gray-800">
                 <div className="flex items-center mb-2">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                     <i className="ri-user-line text-blue-600"></i>
@@ -404,33 +404,32 @@ function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-6 text-center text-white shadow-lg">
-            <h3 className="text-xl font-bold mb-2">Tertarik Kost di Al-Kahfi?</h3>
-            <p className="text-blue-100 mb-4">Hubungi kami sekarang untuk info lebih lanjut atau kunjungan</p>
-            <div className="grid grid-cols-2 gap-3">
-              <a 
-                href="tel:08159080785" 
-                className="bg-white text-blue-600 py-2 rounded-lg text-sm font-bold flex items-center justify-center"
-              >
-                <i className="ri-phone-line mr-2"></i> Telepon
-              </a>
-              <a 
-                href="https://wa.me/628159080785" 
-                className="bg-green-500 text-white py-2 rounded-lg text-sm font-bold flex items-center justify-center"
-              >
-                <i className="ri-whatsapp-line mr-2"></i> WhatsApp
-              </a>
-            </div>
-          </div>
-        </section>
+        <section className="bg-blue-600 rounded-2xl p-6 text-center text-white shadow-md mb-8 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-blue-500 opacity-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="absolute bottom-0 opacity-30">
+                                <path fill="#ffffff" fillOpacity="1" d="M0,96L48,106.7C96,117,192,139,288,133.3C384,128,480,96,576,106.7C672,117,768,171,864,186.7C960,203,1056,181,1152,170.7C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                            </svg>
+                        </div>
+                        <div className="relative z-10">
+                            <h3 className="text-xl font-bold mb-3">Tertarik Kost di Al-Kahfi?</h3>
+                            <p className="text-blue-100 mb-5">Hubungi kami sekarang untuk info lebih lanjut atau kunjungan</p>
+                            <div className="flex justify-center space-x-3">
+                                <button className="bg-white text-blue-700 px-5 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                                <i className="ri-phone-line mr-2"></i> Telepon
+                                </button>
+                                <button className="bg-blue-700 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-800 transition-colors">
+                                <i className="ri-whatsapp-line mr-2"></i> WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </section>
 
         {/* FAQ Section */}
         <section className="mb-8 bg-white rounded-xl p-4 shadow-sm">
           <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
             <i className="ri-question-line mr-2 text-blue-600"></i> Pertanyaan Umum
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-3 text-gray-700">
             <div className="border-b border-gray-200 pb-3">
               <details className="group">
                 <summary className="flex justify-between items-center font-medium cursor-pointer list-none">
