@@ -4,7 +4,7 @@ import Logo from '/logo.png';
 function Home() {
   // Fasilitas utama
   const mainFacilities = [
-    { name: "Kamar Mandi Dalam", icon: "ri-shower-line" },
+    { name: "Kamar Mandi Dalam", icon: "ri-showers-line" },
     { name: "Kasur & Lemari", icon: "ri-hotel-bed-line" },
     { name: "WiFi Cepat", icon: "ri-wifi-line" },
     { name: "Dapur Umum", icon: "ri-restaurant-line" },
@@ -56,7 +56,7 @@ function Home() {
       <header className="fixed top-0 left-0 right-0 bg-blue-600 z-50 shadow-md py-3">
         <div className="w-full mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
-            <img src={Logo} alt="Kost Al-Kahfi Logo" className="h-8 mr-2" />
+            {/* <img src={Logo} alt="Kost Al-Kahfi Logo" className="h-8 mr-2" /> */}
             <span className="text-white font-bold text-lg">Kost Al-Kahfi</span>
           </div>
           <div className="flex space-x-3">
@@ -142,9 +142,9 @@ function Home() {
             <a href="/facilities" className="text-blue-600 text-sm">Lihat Semua</a>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {mainFacilities.map((facility, index) => (
+          {mainFacilities.map((facility, index) => (
               <div key={index} className="bg-blue-50 p-3 rounded-lg flex items-center shadow-sm">
-                <div className="bg-blue-100 p-2 rounded-full mr-3">
+                <div className="bg-blue-100 w-10 h-10 flex items-center justify-center rounded-full mr-3">
                   <i className={`${facility.icon} text-blue-600 text-lg`}></i>
                 </div>
                 <span className="text-sm text-gray-700 font-medium">{facility.name}</span>
@@ -288,7 +288,7 @@ function Home() {
             </div>
           </div>
           <a href="/cavelatte" className="text-blue-600 text-sm font-medium flex items-center justify-end">
-            Lihat lebih banyak <i className="ri-arrow-right-line ml-1"></i>
+            Lihat lebih/ banyak <i className="ri-arrow-right-line ml-1"></i>;
           </a>
         </section>
 

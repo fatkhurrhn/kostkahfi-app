@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 function Program() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [activeTab, setActiveTab] = useState('all');
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState(null);
     const [isTestimonialExpanded, setIsTestimonialExpanded] = useState({});
@@ -20,7 +19,6 @@ function Program() {
         // Check if URL has a hash for direct program navigation
         if (location.hash) {
             const hash = location.hash.substring(1);
-            setActiveTab(hash);
             
             // Smooth scroll to section after a delay
             setTimeout(() => {
@@ -30,10 +28,6 @@ function Program() {
             }, 1200);
         }
     }, [location.hash]);
-
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-    };
 
     const openRegisterModal = (program) => {
         setSelectedProgram(program);
@@ -104,25 +98,6 @@ function Program() {
         }
     ];
 
-    const upcomingEvents = [
-        {
-            id: 1,
-            title: "Kajian Akbar: Menjaga Keimanan di Era Digital",
-            date: "25 April 2025",
-            time: "19:30 - 21:00 WIB",
-            location: "Aula Utama Kost Al-Kahfi",
-            speaker: "Ustadz Dr. Abdullah Taslim, MA"
-        },
-        {
-            id: 2,
-            title: "Workshop Tahsin Metode Utsmani",
-            date: "27-28 April 2025",
-            time: "08:00 - 16:00 WIB",
-            location: "Ruang Multimedia Al-Kahfi",
-            speaker: "Ustadz Hasan Al-Jufri, Lc"
-        }
-    ];
-
     if (isLoading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-blue-50">
@@ -171,27 +146,14 @@ function Program() {
                     <p className="text-blue-100 text-center mb-6">Mencetak generasi berilmu, berakhlak, dan bermanfaat</p>
                     
                     <div className="flex justify-center">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-1 inline-flex">
-                            <button 
-                                onClick={() => handleTabChange('all')}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'all' ? 'bg-white text-blue-700' : 'text-white hover:bg-white/10'}`}
-                            >
-                                Semua
-                            </button>
-                            <button 
-                                onClick={() => handleTabChange('mahasantri')}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'mahasantri' ? 'bg-white text-blue-700' : 'text-white hover:bg-white/10'}`}
-                            >
-                                Mahasantri
-                            </button>
-                            <button 
-                                onClick={() => handleTabChange('biman')}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'biman' ? 'bg-white text-blue-700' : 'text-white hover:bg-white/10'}`}
-                            >
-                                BIMAN
-                            </button>
+                        <div className="rounded-lg p-1 inline-flex gap-2">
+                            <a href="/program/mahasantri" className="px-4 py-2 rounded-md text-sm font-medium transition-all bg-white text-blue-700 hover:bg-blue-100">
+                            Mahasantri</a>
+                            <a href="/program/biman" className="px-4 py-2 rounded-md text-sm font-medium transition-all text-white bg-white/10">
+                            BIMAN</a>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -199,14 +161,10 @@ function Program() {
                 <div className="max-w-3xl mx-auto px-4 py-6">
                     {/* Program Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                        {(activeTab === 'all' || activeTab === 'mahasantri') && (
                             <div id="mahasantri" className="bg-white rounded-2xl shadow-md overflow-hidden transform transition hover:shadow-lg">
                                 <div className="h-40 bg-blue-600 relative overflow-hidden">
                                     <div className="absolute inset-0 flex items-center justify-center bg-blue-900/30">
-                                        <i className="ri-book-open-line text-6xl text-white/80"></i>
-                                    </div>
-                                    <div className="absolute top-4 left-4 bg-blue-700 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        Full Time
+                                        <img src="https://ponpes.alhasanah.sch.id/wp-content/uploads/2020/05/Pentingnya-Kajian-Walaupun-Minimal-Sekali-Sepekan.jpg" alt="Program Mahasantri" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                                 <div className="p-5">
@@ -234,16 +192,10 @@ function Program() {
                                     </div>
                                 </div>
                             </div>
-                        )}
-
-                        {(activeTab === 'all' || activeTab === 'biman') && (
                             <div id="biman" className="bg-white rounded-2xl shadow-md overflow-hidden transform transition hover:shadow-lg">
                                 <div className="h-40 bg-blue-500 relative overflow-hidden">
                                     <div className="absolute inset-0 flex items-center justify-center bg-blue-800/30">
-                                        <i className="ri-team-line text-6xl text-white/80"></i>
-                                    </div>
-                                    <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        Part Time
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Suasana_Kajian_Rutin_di_Masjid_Ubay_bin_Kaab_Jambi.jpg" alt="Program Mahasantri" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                                 <div className="p-5">
@@ -271,50 +223,7 @@ function Program() {
                                     </div>
                                 </div>
                             </div>
-                        )}
                     </div>
-
-                    {/* Upcoming Events */}
-                    <section className="mb-8">
-                        <h3 className="text-lg font-bold mb-4 text-blue-900 flex items-center">
-                            <i className="ri-calendar-event-line mr-2 text-blue-600"></i>
-                            Event Mendatang
-                        </h3>
-                        <div className="space-y-3">
-                            {upcomingEvents.map(event => (
-                                <div key={event.id} className="bg-white rounded-xl p-4 shadow-sm border-l-4 border-blue-500">
-                                    <h4 className="font-semibold text-blue-800">{event.title}</h4>
-                                    <div className="flex items-center text-sm text-gray-600 mt-2">
-                                        <i className="ri-calendar-line mr-1 text-blue-500"></i>
-                                        <span>{event.date}</span>
-                                        <span className="mx-1">•</span>
-                                        <i className="ri-time-line mr-1 text-blue-500"></i>
-                                        <span>{event.time}</span>
-                                    </div>
-                                    <div className="flex items-center text-sm text-gray-600 mt-1">
-                                        <i className="ri-map-pin-line mr-1 text-blue-500"></i>
-                                        <span>{event.location}</span>
-                                    </div>
-                                    <div className="flex items-center text-sm text-gray-600 mt-1">
-                                        <i className="ri-user-voice-line mr-1 text-blue-500"></i>
-                                        <span>{event.speaker}</span>
-                                    </div>
-                                    <div className="mt-3 flex justify-end">
-                                        <button className="text-blue-600 text-sm font-medium hover:text-blue-800 transition-colors flex items-center">
-                                            <span>Ingatkan Saya</span>
-                                            <i className="ri-notification-3-line ml-1"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-3 flex justify-center">
-                            <button className="text-blue-600 text-sm font-medium hover:text-blue-800 transition-colors flex items-center">
-                                <span>Lihat Semua Event</span>
-                                <i className="ri-arrow-right-line ml-1"></i>
-                            </button>
-                        </div>
-                    </section>
 
                     {/* Program Comparison */}
                     <section className="mb-8 overflow-hidden bg-white rounded-2xl shadow-sm">
