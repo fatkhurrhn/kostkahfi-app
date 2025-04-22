@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import { db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from '../../firebase';
 // import { useAuth } from '../../components/AuthContext';
 
-import MobileSidebar from '../../components/MobileSidebar';
-import DesktopNavbar from '../../components/DesktopNavbar';
-
 const MAHASANTRI_LIST = [
   'Fathur', 'Faiz', 'Budiman', 'Khair',
   'Romi', 'Ikhsan', 'Yazid', 'Sayyid', 'Sigma', 'Fano'

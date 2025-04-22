@@ -14,7 +14,7 @@ function Program() {
         // Simulate loading state
         setTimeout(() => {
             setIsLoading(false);
-        }, 1000);
+        }, 500);
 
         // Check if URL has a hash for direct program navigation
         if (location.hash) {
@@ -100,15 +100,15 @@ function Program() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-blue-50">
+            <div className="min-h-screen max-w-3xl mx-auto flex flex-col items-center justify-center bg-blue-50">
                 <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                <p className="text-blue-800 font-medium">Memuat Program...</p>
+                <p className="text-blue-800 font-medium">Memuat Data</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-blue-50">
+        <div className="min-h-screen flex flex-col bg-blue-50 max-w-3xl mx-auto">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-white shadow-md py-3 px-4">
                 <div className="max-w-3xl mx-auto flex items-center justify-between">
@@ -131,7 +131,7 @@ function Program() {
             </header>
 
             {/* Hero Section */}
-            <div className="bg-blue-600 text-white px-4 py-8 relative overflow-hidden">
+            <div className=" bg-blue-600 text-white px-4 py-8 relative overflow-hidden">
                 <div className="absolute inset-0 bg-blue-700 opacity-30">
                     <div className="absolute top-0 left-0 w-full h-full">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="opacity-20">
@@ -158,7 +158,7 @@ function Program() {
             </div>
 
             <main className="flex-1 pb-20">
-                <div className="max-w-3xl mx-auto px-4 py-6">
+                <div className="px-4 py-6">
                     {/* Program Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                             <div id="mahasantri" className="bg-white rounded-2xl shadow-md overflow-hidden transform transition hover:shadow-lg">

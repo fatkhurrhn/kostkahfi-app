@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCZU9VOBHiEFL2fwZPVA2Aa3jYE6pu4Uo8",
@@ -16,9 +18,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const storage = getStorage(app);
+
+export const galleryRef = collection(db, "gallery_mahasantri"); // Nama collection disesuaikan
+export { db, storage };
+
 export { 
   auth, 
-  db,
   signInWithEmailAndPassword, 
   signOut,
   collection,

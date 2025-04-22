@@ -29,10 +29,11 @@ const AdminLayout = () => {
   }, [location, isMobileView]);
 
   const navItems = [
-    { path: '/admin', icon: 'ri-dashboard-line', label: 'Dashboard' },
-    { path: '/admin/setoran', icon: 'ri-book-line', label: 'Setoran' },
-    { path: '/admin/kehadiran', icon: 'ri-calendar-check-line', label: 'Kehadiran' },
-    { path: '/admin/profile', icon: 'ri-user-line', label: 'Profile' },
+    { path: '/mahasantri/dashboard', icon: 'ri-dashboard-line', label: 'Dashboard' },
+    { path: '/mahasantri/setoran', icon: 'ri-book-line', label: 'Setoran' },
+    { path: '/mahasantri/kehadiran', icon: 'ri-calendar-check-line', label: 'Kehadiran' },
+    { path: '/mahasantri/gallery', icon: 'ri-image-line', label: 'Gallery' },
+    { path: '/mahasantri/profile', icon: 'ri-user-line', label: 'Profile' },
   ];
 
   return (

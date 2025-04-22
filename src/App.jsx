@@ -5,15 +5,17 @@ import HomePage from './pages/HomePage';
 import Tes from './pages/Tes';
 import Program from './pages/Program';
 
-import Login from './pages/admin/Login';
+import Login from './pages/adminMahasantri/Login';
 
-import AdminHome from './pages/admin/Home';
-import RecapKehadiran from './pages/admin/recapKehadiran';
-import AdminSetoran from './pages/admin/Setoran';
+import AdminHome from './pages/adminMahasantri/Home';
+import RecapKehadiran from './pages/adminMahasantri/recapKehadiran';
+import AdminSetoran from './pages/adminMahasantri/Setoran';
+import AdminGallery from './pages/adminMahasantri/GalleryControl';
 
 import HomeMahasantri from './pages/mahasantri/Home';
 import Kehadiran from './pages/mahasantri/Kehadiran';
 import Setoran from './pages/mahasantri/Setoran';
+import Gallery from './pages/mahasantri/Gallery';
 
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
@@ -43,11 +45,12 @@ function App() {
           <Route path="/program/mahasantri" element={<HomeMahasantri />} />
           <Route path="/program/mahasantri/setoran" element={<Setoran />} />
           <Route path="/program/mahasantri/kehadiran" element={<Kehadiran />} />
+          <Route path="/program/mahasantri/gallery" element={<Gallery />} />
 
-          <Route path="/login" element={<Login />} />
+          <Route path="/mahasantri/login" element={<Login />} />
 
           {/* Admin Routes */}
-          <Route path="/admin" element={
+          <Route path="/mahasantri/dashboard" element={
             <PrivateRoute>
               <AdminLayout>
                 <AdminHome />
@@ -55,7 +58,7 @@ function App() {
             </PrivateRoute>
           } />
           
-          <Route path="/admin/setoran" element={
+          <Route path="/mahasantri/setoran" element={
             <PrivateRoute>
               <AdminLayout>
                 <AdminSetoran />
@@ -63,10 +66,18 @@ function App() {
             </PrivateRoute>
           } />
 
-          <Route path="/admin/kehadiran" element={
+          <Route path="/mahasantri/kehadiran" element={
             <PrivateRoute>
               <AdminLayout>
                 <RecapKehadiran />
+              </AdminLayout>
+            </PrivateRoute>
+          } />
+
+          <Route path="/mahasantri/gallery" element={
+            <PrivateRoute>
+              <AdminLayout>
+                <AdminGallery />
               </AdminLayout>
             </PrivateRoute>
           } />

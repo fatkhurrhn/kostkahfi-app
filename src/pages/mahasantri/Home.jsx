@@ -1,9 +1,31 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BottomNavbar from '../../components/BottomNavbar';
+import { useState, useEffect } from 'react';
 
 function Home() {
     const navigate = useNavigate();
-    
+    const location = useLocation();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulate loading state
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 500);
+
+        // Check if URL has a hash for direct program navigation
+        if (location.hash) {
+            const hash = location.hash.substring(1);
+
+            // Smooth scroll to section after a delay
+            setTimeout(() => {
+                document.getElementById(hash)?.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, 1200);
+        }
+    }, [location.hash]);
+
     // Dummy data
     const upcomingActivities = [
         {
@@ -32,14 +54,23 @@ function Home() {
         }
     ];
 
+    if (isLoading) {
+        return (
+            <div className="min-h-screen max-w-3xl mx-auto flex flex-col items-center justify-center bg-blue-50">
+                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                <p className="text-blue-800 font-medium">Memuat Data</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="h-screen flex flex-col bg-slate-50">
-            <div className="flex-1 overflow-y-auto container mx-auto px-4 pt-[70px] pb-20">
+        <div className="h-screen flex flex-col bg-slate-50 max-w-3xl mx-auto">
+            <div className="flex-1 overflow-y-auto container px-4 pt-[70px] pb-20 scrollbar-hide">
                 {/* back */}
-                <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3">
+                <div className="fixed top-0 left-0 right-0 bg-white z-50 max-w-3xl mx-auto border-b border-gray-300 py-3">
                     <div className=" w-full mx-auto px-6 flex justify-between items-center">
                         <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
-                            <i className="ri-arrow-left-line text-lg"></i> Mahasantri
+                            <i className="ri-arrow-left-line text-lg"></i>Mahasantri
                         </h3>
                         <div className="flex items-center space-x-4">
                             <i className="ri-notification-3-line text-lg text-gray-700"></i>
@@ -160,14 +191,14 @@ function Home() {
 
                 {/* Data Buttons */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                    <button 
+                    <button
                         onClick={() => navigate('/program/mahasantri/setoran')}
                         className="flex flex-col items-center p-4 bg-blue-600 rounded-xl shadow-sm transition hover:bg-blue-700"
                     >
                         <i className="ri-file-list-3-line text-white text-2xl mb-2"></i>
                         <span className="text-white font-medium">Lihat Data Setoran</span>
                     </button>
-                    <button 
+                    <button
                         onClick={() => navigate('/program/mahasantri/kehadiran')}
                         className="flex flex-col items-center p-4 bg-blue-600 rounded-xl shadow-sm transition hover:bg-blue-700"
                     >
@@ -176,8 +207,51 @@ function Home() {
                     </button>
                 </div>
 
+                {/* Gallery */}
+        <section id="gallery" className="mb-8 bg-white rounded-xl p-4 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center">
+              <i className="ri-image-line mr-2 text-blue-600"></i> Dokumentasi
+            </h2>
+            <a href="/program/mahasantri/gallery" className="text-blue-600 text-sm">Lihat Semua</a>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <div className="aspect-square rounded-lg overflow-hidden shadow">
+              <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhkq9rpqVR08NY9ImgYezuUEhozn4p3p32jOHcombHafgWu6qvoua3qgPAkqXocej7BHe4c6DnLN3YS8BDijefFV7P3MAyjjV1kE-Qsfc5w5smZOgzDkUfuadqLB6X8E8Rfe31uZExvPDwE/s320/kost+samping+UI+depok2.jpg" 
+                className="w-full h-full object-cover" 
+                alt="Tampak depan kost"
+              />
+            </div>
+            <div className="aspect-square rounded-lg overflow-hidden shadow">
+              <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg4a0eCC4te68wBRzVlLBNVOoYnIla4fj7YUcxVaPFC3OvT3F7u2nV7ZFPVwi09XYa9C7LkuPJU-e6s8oYX3ubwWZZ61I9d8Iu3wYqI7mTpqmnXKgfImeD1SEIBoJlrOZjxB46Xn8rehCav/s400/kost+kosan+dekat+ui+depok+7.jpg" 
+                className="w-full h-full object-cover" 
+                alt="Kamar kost"
+              />
+            </div>
+            <div className="aspect-square rounded-lg overflow-hidden shadow">
+              <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgTd9-m7mw-k8gLeFiTGFiXBfKKYxRz74TGcg1a-99iVWYeKHLYKqxc-r4-KTS9SmOacPpxNnGBE2wfeoK4D2nGQzuhv566FPjgzrlPvewkNDwqCcGKDuJzMzY48DOe25H8K0LfoSlBHD8u/s400/kost+dekat+UI+kutek.jpg" 
+                className="w-full h-full object-cover" 
+                alt="Fasilitas umum"
+              />
+            </div>
+            <div className="aspect-square rounded-lg overflow-hidden shadow">
+              <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjt0zVF3T7bA5er94hf6lLPJ2hSFlEvqCgu-f24C_C4G-F4QWbOc-qWntHdhK3ppXUOMLWW1W18MyC3rzZi90Nt6fG2yrY1SAq2235rwbMdvWtiPHBV1rTjmktwRfQGqEdtMeraQpFDrVlF/s1600/KOST+UI+DEPOK+KUTEK+KAHFI2.JPG" 
+                className="w-full h-full object-cover" 
+                alt="Area sekitar kost"
+              />
+            </div>
+          </div>
+          
+          <div className="mt-3">
+            <a href="/program/mahasantri/gallery" className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center">
+              Lihat Galeri Lengkap <i className="ri-arrow-right-line ml-2"></i>
+            </a>
+          </div>
+        </section>
+
                 {/* Recent Activity */}
-                <div className="bg-white rounded-xl p-5 shadow-sm mb-6">
+                {/* <div className="bg-white rounded-xl p-5 shadow-sm mb-6">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold text-gray-800">Aktivitas Terakhir</h3>
                     </div>
@@ -203,7 +277,7 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
             {/* Bottom Navbar */}
             <BottomNavbar />

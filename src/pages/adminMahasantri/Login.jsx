@@ -16,7 +16,7 @@ function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/admin');
+      navigate('/mahasantri/dashboard');
     } catch (err) {
       setError('Email atau password salah');
       console.error("Login error:", err);
@@ -26,8 +26,8 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-black p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 text-gray-800">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Login Admin</h1>
         
         {error && (
@@ -38,13 +38,13 @@ function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-white mb-2" htmlFor="email">
+            <label className="block text-gray-700 mb-2" htmlFor="email">
               Email
             </label>
             <input
               id="email"
               type="email"
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 bg-white py-2 border rounded"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -58,7 +58,7 @@ function Login() {
             <input
               id="password"
               type="password"
-              className="w-full px-3 py-2 border rounded"
+              className="w-full bg-white px-3 py-2 border rounded"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

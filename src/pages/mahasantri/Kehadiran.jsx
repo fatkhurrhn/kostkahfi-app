@@ -93,11 +93,9 @@ function Kehadiran() {
 
     if (loading) {
         return (
-            <div className="h-screen flex flex-col items-center justify-center bg-slate-50">
-                <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="mt-4 text-gray-600 font-medium">Memuat data kehadiran...</p>
-                </div>
+            <div className="min-h-screen max-w-3xl mx-auto flex flex-col items-center justify-center bg-blue-50">
+                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                <p className="text-blue-800 font-medium">Memuat Data</p>
             </div>
         );
     }
@@ -124,9 +122,9 @@ function Kehadiran() {
 
     return (
         <div className="h-screen flex flex-col bg-slate-50">
-            <div className="flex-1 overflow-y-auto container mx-auto px-4 pt-[70px] pb-20">
+            <div className="flex-1 overflow-y-auto container max-w-3xl mx-auto px-4 pt-[70px] pb-20 scrollbar-hide">
                 {/* Header */}
-                <div className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3">
+                <div className="fixed top-0 left-0 max-w-3xl mx-auto right-0 bg-white z-50 border-b border-gray-300 py-3">
                     <div className="w-full mx-auto px-6 flex justify-between items-center">
                         <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
                             <i className="ri-arrow-left-line text-lg"></i> Kajian

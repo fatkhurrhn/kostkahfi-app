@@ -2,6 +2,7 @@ import BottomNavbar from '../components/BottomNavbar';
 import Logo from '/logo.png';
 
 function Home() {
+  
   // Fasilitas utama
   const mainFacilities = [
     { name: "Kamar Mandi Dalam", icon: "ri-showers-line" },
@@ -51,9 +52,9 @@ function Home() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-blue-50">
+    <div className="min-h-screen flex flex-col bg-blue-50 max-w-3xl mx-auto">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-blue-600 z-50 shadow-md py-3">
+      <header className="fixed top-0 left-0 right-0 bg-blue-600 z-50 shadow-md py-3 max-w-3xl mx-auto">
         <div className="w-full mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
             {/* <img src={Logo} alt="Kost Al-Kahfi Logo" className="h-8 mr-2" /> */}

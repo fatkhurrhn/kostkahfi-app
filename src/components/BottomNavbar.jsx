@@ -23,7 +23,7 @@ const BottomNavbar = () => {
       activeIcon: 'ri-calendar-event-fill', 
       label: 'Program',
       activePaths: ['/program',
-                    '/program/mahasantri', '/program/mahasantri/setoran', '/program/mahasantri/kehadiran',
+                    '/program/mahasantri', '/program/mahasantri/setoran', '/program/mahasantri/kehadiran', '/program/mahasantri/gallery',
                     '/program/biman', '/program/biman/kehadiran', '/program/biman/setoran']
 
     },
@@ -44,8 +44,8 @@ const BottomNavbar = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 z-50">
-        <div className="w-full mx-auto flex justify-around items-stretch py-1">
+      <div className="max-w-3xl mx-auto fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 z-50">
+        <div className="flex justify-around items-stretch py-1">
           {navItems.map((item, index) => {
             let isActive = false;
 
