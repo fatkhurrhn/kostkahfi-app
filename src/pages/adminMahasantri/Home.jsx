@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../components/AuthContext';
 import MobileSidebar from '../../components/MobileSidebar';
 import DesktopNavbar from '../../components/DesktopNavbar';
+import { auth, signOut } from '../../firebase';
+
 
 const AdminLayout = () => {
+  const navigate = useNavigate();
+
   const [isMobileView, setIsMobileView] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { currentUser } = useAuth();
@@ -36,11 +40,20 @@ const AdminLayout = () => {
     { path: '/mahasantri/profile', icon: 'ri-user-line', label: 'Profile' },
   ];
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/');
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Tampilan Mobile - Sidebar */}
       {isMobileView && (
-        <MobileSidebar 
+        <MobileSidebar
           isOpen={mobileSidebarOpen}
           onClose={() => setMobileSidebarOpen(false)}
           navItems={navItems}
@@ -50,11 +63,18 @@ const AdminLayout = () => {
 
       {/* Tampilan Desktop - Navbar */}
       {!isMobileView && (
-        <DesktopNavbar 
+        <DesktopNavbar
           navItems={navItems}
-          userEmail={currentUser?.email}
+            // userEmail={currentUser?.email}
         />
       )}
+
+      <button
+        onClick={handleLogout}
+        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
+      >
+        Logout
+      </button>
 
       {/* Header dengan Hamburger (Mobile) */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
