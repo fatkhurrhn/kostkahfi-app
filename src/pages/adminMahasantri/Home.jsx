@@ -1,105 +1,70 @@
-import { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../components/AuthContext';
-import MobileSidebar from '../../components/MobileSidebar';
-import DesktopNavbar from '../../components/DesktopNavbar';
-import { auth, signOut } from '../../firebase';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
+import { signOut } from "firebase/auth";
+import LogoutConfirmModal from "../../components/LogoutConfirmModal";
 
-
-const AdminLayout = () => {
+export default function Dashboard() {
   const navigate = useNavigate();
-
-  const [isMobileView, setIsMobileView] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const { currentUser } = useAuth();
-  const location = useLocation();
-
-  // Cek viewport saat resize
-  useEffect(() => {
-    const checkViewport = () => {
-      setIsMobileView(window.innerWidth < 768);
-    };
-
-    checkViewport();
-    window.addEventListener('resize', checkViewport);
-    return () => window.removeEventListener('resize', checkViewport);
-  }, []);
-
-  // Tutup sidebar saat navigasi di mobile
-  useEffect(() => {
-    if (isMobileView) {
-      setMobileSidebarOpen(false);
-    }
-  }, [location, isMobileView]);
-
-  const navItems = [
-    { path: '/mahasantri/dashboard', icon: 'ri-dashboard-line', label: 'Dashboard' },
-    { path: '/mahasantri/setoran', icon: 'ri-book-line', label: 'Setoran' },
-    { path: '/mahasantri/kehadiran', icon: 'ri-calendar-check-line', label: 'Kehadiran' },
-    { path: '/mahasantri/gallery', icon: 'ri-image-line', label: 'Gallery' },
-    { path: '/mahasantri/profile', icon: 'ri-user-line', label: 'Profile' },
-  ];
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate('/');
-    } catch (err) {
-      console.error("Logout error:", err);
+      navigate("/program/mahasantri");
+    } catch (error) {
+      console.error("Error logging out: ", error);
+      alert("Logout gagal: " + error.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Tampilan Mobile - Sidebar */}
-      {isMobileView && (
-        <MobileSidebar
-          isOpen={mobileSidebarOpen}
-          onClose={() => setMobileSidebarOpen(false)}
-          navItems={navItems}
-          userEmail={currentUser?.email}
-        />
-      )}
+    <div className="bg-gray-50 min-h-screen text-gray-800">
+      {/* Modal Konfirmasi */}
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
 
-      {/* Tampilan Desktop - Navbar */}
-      {!isMobileView && (
-        <DesktopNavbar
-          navItems={navItems}
-            // userEmail={currentUser?.email}
-        />
-      )}
-
-      <button
-        onClick={handleLogout}
-        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
-      >
-        Logout
-      </button>
-
-      {/* Header dengan Hamburger (Mobile) */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex items-center">
-          {isMobileView && (
-            <button
-              onClick={() => setMobileSidebarOpen(true)}
-              className="mr-3 p-1 rounded-md text-gray-600 hover:bg-gray-100"
-              aria-label="Open menu"
-            >
-              <i className="ri-menu-fold-4-line text-xl" />
-            </button>
-          )}
-          <h1 className="text-lg font-semibold text-gray-800">
-            {navItems.find(item => location.pathname === item.path)?.label || 'Dashboard'}
-          </h1>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+            </svg>
+            Logout
+          </button>
         </div>
-      </header>
-
-      {/* Konten Utama */}
-      <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <Outlet />
-      </main>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Link 
+            to="/mahasantri/kehadiran" 
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <h2 className="text-xl font-semibold mb-2">Manage Kajian</h2>
+            <p className="text-gray-600">Add, edit, or delete Kajian</p>
+          </Link>
+          <Link 
+            to="/mahasantri/setoran" 
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <h2 className="text-xl font-semibold mb-2">Manage Setoran</h2>
+            <p className="text-gray-600">Add, edit, or delete Setoran</p>
+          </Link>
+          <Link 
+            to="/mahasantri/gallery" 
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <h2 className="text-xl font-semibold mb-2">Manage Gallery</h2>
+            <p className="text-gray-600">Add, edit, or delete Gallery</p>
+          </Link>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default AdminLayout;
+}
