@@ -249,7 +249,7 @@ const Gallery = () => {
               alt={image.description}
               className="w-full h-48 object-cover"
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
               }}
             />
           </div>
