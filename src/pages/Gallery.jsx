@@ -196,7 +196,7 @@ const Gallery = () => {
   }, [selectedCategory]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Gallery Kost</h1>
       
       {/* Search and Filter Section */}
@@ -245,13 +245,13 @@ const Gallery = () => {
               {image.category}
             </div>
             <img
-              src={image.url}
-              alt={image.description}
-              className="w-full h-48 object-cover"
-              onError={(e) => {
-                e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
-              }}
-            />
+  src={image.url}
+  alt={image.description}
+  className="w-full object-contain"
+  onError={(e) => {
+    e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
+  }}
+/>
           </div>
         ))}
       </div>
@@ -411,7 +411,7 @@ const Gallery = () => {
                     onClick={() => handleDelete(selectedImage.id)}
                     className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                   >
-                    <i className="ri-delete-bin-line"></i> Delete
+                    <i className="ri-delete-bin-line"></i> Deletes
                   </button>
                 </div>
               </div>
