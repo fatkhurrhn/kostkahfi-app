@@ -241,12 +241,13 @@ const Gallery = () => {
   }, []); // Only on mount, since we handle category changes separately now
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-6xl">
+    <div className="container mx-auto px-4 py-6 max-w-5xl relative min-h-screen">
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">Gallery Kost</h1>
       
-      {/* Search Box - Mobile Optimized */}
-      <div className="mb-4">
-        <div className="relative w-full">
+      {/* Desktop: Search and Filter Row, Mobile: Stacked Layout */}
+      <div className="md:flex md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
+        {/* Search Box */}
+        <div className="relative md:w-1/3">
           <i className="ri-search-line absolute left-3 top-3 text-gray-400"></i>
           <input
             type="text"
@@ -256,61 +257,54 @@ const Gallery = () => {
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
-      </div>
-      
-      {/* Categories - Scrollable on Mobile */}
-      <div className="mb-6 overflow-x-auto pb-2">
-        <div className="flex gap-2 min-w-max">
-          {categories.map(cat => (
-            <button
-              key={cat.value}
-              onClick={() => handleCategoryFilter(cat.value)}
-              className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition ${
-                selectedCategory === cat.value 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+        
+        {/* Categories - Mobile: Scrollable, Desktop: Right Aligned */}
+        <div className="overflow-x-auto pb-2 md:pb-0">
+          <div className="flex gap-2 min-w-max md:justify-end">
+            {categories.map(cat => (
+              <button
+                key={cat.value}
+                onClick={() => handleCategoryFilter(cat.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition ${
+                  selectedCategory === cat.value 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       
-      {/* Add Image Button */}
-      <button
-        onClick={openAddForm}
-        className="mb-6 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition mx-auto"
-      >
-        <i className="ri-image-add-line"></i> Add New Image
-      </button>
-      
-      <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-5 gap-2 space-y-2">
-  {filteredImages.map(image => (
-    <div 
-      key={image.id}
-      className="break-inside-avoid w-full max-w-[250px] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer bg-white"
-      onClick={() => openImageDetail(image)}
-    >
-      <div className="relative">
-        <div className="absolute top-2 left-2 bg-white bg-opacity-80 px-2 py-1 rounded text-xs md:text-sm font-medium z-10">
-          {image.category}
-        </div>
-        <img
-          src={image.url}
-          alt={image.description}
-          className="w-full object-cover"
-          onError={(e) => {
-            e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
-          }}
-        />
+      {/* Image Grid - Masonry Layout */}
+      <div className="columns-2 md:columns-3 lg:columns-4 gap-2 space-y-2 mb-24">
+        {filteredImages.map(image => (
+          <div 
+            key={image.id}
+            className="break-inside-avoid mb-3 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer bg-white"
+            onClick={() => openImageDetail(image)}
+          >
+            <div className="relative">
+              <div className="absolute top-2 left-2 bg-white bg-opacity-80 px-2 py-1 rounded text-xs md:text-sm font-medium z-10">
+                {image.category}
+              </div>
+              <img
+                src={image.url}
+                alt={image.description}
+                className="w-full object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
+                }}
+              />
+            </div>
+            <div className="p-2 bg-white">
+              <p className="text-xs md:text-sm line-clamp-1 text-gray-700">{image.description}</p>
+            </div>
+          </div>
+        ))}
       </div>
-      <div className="p-2 bg-white">
-        <p className="text-xs md:text-sm line-clamp-1 text-gray-700">{image.description}</p>
-      </div>
-    </div>
-  ))}
-</div>
 
       {/* Empty state when no images match filters */}
       {filteredImages.length === 0 && (
@@ -320,6 +314,15 @@ const Gallery = () => {
           <p className="text-gray-400 text-sm">Try changing your search or category filter</p>
         </div>
       )}
+      
+      {/* Floating Add Button */}
+      <button
+        onClick={openAddForm}
+        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center shadow-lg transition-all hover:scale-110 z-40"
+        aria-label="Add new image"
+      >
+        <i className="ri-image-add-line text-[18px]"></i>
+      </button>
       
       {/* Form Popup - Mobile Optimized */}
       {isFormOpen && (
@@ -346,6 +349,7 @@ const Gallery = () => {
                   required
                   placeholder="https://example.com/image.jpg"
                 />
+                <p className='text-[12px]'>klik <a href="https://assets-gallery.vercel.app/" target='_blank'><u><b>disini</b></u></a> untuk ubah image jadi link</p>
               </div>
               
               <div className="mb-4">
