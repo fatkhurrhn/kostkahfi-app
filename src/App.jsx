@@ -1,66 +1,166 @@
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import HomePage from './pages/index';
-// import Login from './pages/adminKost/Login';
-// import Dashboard from './pages/adminKost/Dashboard';
-// import DataPenyewa from './pages/DataPenyewa';
-// import Pembayaran from './pages/Pembayaran';
-// import Gallery from './pages/Gallery';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import DashboardAdmin from './pages/DashboardAdmin';
+import DashboardSantri from './pages/DashboardSantri';
+import RekapKehadiranAdmin from './components/Dashboard/Admin/RekapKehadiran';
+import RekapSetoranAdmin from './components/Dashboard/Admin/RekapSetoran';
+import RecapHabits from './pages/RecapHabits';
+import Index from './pages/index';
+import RecapKehadiran from './pages/RecapKehadiran';
+import RecapSetoran from './pages/RecapSetoran';
 
-// import AdminDataPenyewa from './pages/adminKost/DataPenyewa';
-// import PembayaranAdmin from './pages/adminKost/AdminPembayaran';
-// import KonfirmasiPembayaran from './pages/adminKost/KonfirmasiPembayaran';
+function PrivateRoute({ children, role }) {
+  const { currentUser } = useAuth();
 
-// import AdminRooms from './pages/adminKost/AdminRooms';
-// import AdminResidents from './pages/adminKost/AdminResidents';
-// import RoomChecker from './pages/RoomChecker';
-// // import ResidentProfiles from './pages/ResidentProfiles';
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
+
+  if (role && currentUser.role !== role) {
+    return <Navigate to={currentUser.role === 'admin' ? '/dashboard-admin' : '/dashboard-santri'} />;
+  }
+
+  return children;
+}
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard-admin/kehadiran-kajian" element={<RekapKehadiranAdmin />} />
+          <Route path="/dashboard-admin/setoran" element={<RekapSetoranAdmin />} />
+          <Route path="/recap-habits" element={<RecapHabits />} />
+          <Route path="/recap-kehadiran" element={<RecapKehadiran />} />
+          <Route path="/recap-setoran" element={<RecapSetoran />} />
+
+          <Route 
+            path="/dashboard-admin" 
+            element={
+              <PrivateRoute role="admin">
+                <DashboardAdmin />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard-santri" 
+            element={
+              <PrivateRoute role="santri">
+                <DashboardSantri />
+              </PrivateRoute>
+            } 
+          />
+          <Route path="/" element={<Navigate to="/login" />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
+  );
+}
+
+export default App;
+
+
+
+
+
+// import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// import { AuthProvider } from './components/AuthContext';
+// import { useAuth } from './components/AuthContext';
+// import HomePage from './pages/HomePage';
+// import Tes from './pages/Tes';
+// import Program from './pages/Program';
+// import GalleryKahfi from './pages/Gallery';
+// import Cavelatte from './pages/Cavelatte';
+
+// import Login from './pages/adminMahasantri/Login';
+
+// import AdminHome from './pages/adminMahasantri/Home';
+// import RecapKehadiran from './pages/adminMahasantri/recapKehadiran';
+// import AdminSetoran from './pages/adminMahasantri/Setoran';
+// import AdminGallery from './pages/adminMahasantri/GalleryControl';
+
+// import HomeMahasantri from './pages/mahasantri/Home';
+// import Kehadiran from './pages/mahasantri/Kehadiran';
+// import Setoran from './pages/mahasantri/Setoran';
+// import Gallery from './pages/mahasantri/Gallery';
+
+// function PrivateRoute({ children }) {
+//   const { currentUser } = useAuth();
+//   return currentUser ? children : <Navigate to="/" />;
+// }
+
+// function AdminLayout({ children }) {
+//   return (
+//     <div className="min-h-screen bg-gray-50">
+//       {/* Header bisa dipindahkan ke sini jika sama di semua halaman admin */}
+//       {children}
+//     </div>
+//   );
+// }
 
 // function App() {
 //   return (
-//     <Router>
-//       <Routes>
+//     <AuthProvider>
+//       <BrowserRouter>
+//         <Routes>
+//           {/* Public Routes */}
+//           <Route path="/" element={<HomePage />} />
+//           <Route path="/tes" element={<Tes />} />
+//           <Route path="/program" element={<Program />} />
+//           <Route path="/gallery" element={<GalleryKahfi />} />
+//           <Route path="/cavelatte" element={<Cavelatte />} />
 
-//       <Route path="/admin/rooms" element={<AdminRooms />} />
-//         <Route path="/admin/residents" element={<AdminResidents />} />
-//         <Route path="/x" element={<RoomChecker />} />
-//         {/* <Route path="/profiles" element={<ResidentProfiles />} /> */}
+//           {/* mahasantri */}
+//           <Route path="/program/mahasantri" element={<HomeMahasantri />} />
+//           <Route path="/program/mahasantri/setoran" element={<Setoran />} />
+//           <Route path="/program/mahasantri/kehadiran" element={<Kehadiran />} />
+//           <Route path="/program/mahasantri/gallery" element={<Gallery />} />
 
+//           <Route path="/mahasantri/login" element={<Login />} />
 
+//           {/* Admin Routes */}
+//           <Route path="/mahasantri/dashboard" element={
+//             <PrivateRoute>
+//               <AdminLayout>
+//                 <AdminHome />
+//               </AdminLayout>
+//             </PrivateRoute>
+//           } />
+          
+//           <Route path="/mahasantri/setoran" element={
+//             <PrivateRoute>
+//               <AdminLayout>
+//                 <AdminSetoran />
+//               </AdminLayout>
+//             </PrivateRoute>
+//           } />
 
-//         <Route path="/home" element={<HomePage />} />
-//         <Route path="/penyewa" element={<DataPenyewa />} />
-//         <Route path="/gallery" element={<Gallery />} />
+//           <Route path="/mahasantri/kehadiran" element={
+//             <PrivateRoute>
+//               <AdminLayout>
+//                 <RecapKehadiran />
+//               </AdminLayout>
+//             </PrivateRoute>
+//           } />
 
-//         <Route path="/kost/login" element={<Login />} />
-//         <Route path="/kost/dashboard" element={<Dashboard />} />
-//         <Route path="/kost/penyewa" element={<AdminDataPenyewa />} />
-
-//         {/* // Tambahkan route ini */}
-//       <Route path="/pembayaran" element={<Pembayaran />} />
-//       <Route path="/kost/pembayaran" element={<PembayaranAdmin />} />
-//       <Route path="/kost/konfirmasi-pembayaran" element={<KonfirmasiPembayaran />} />
-//       </Routes>
-//     </Router>
+//           <Route path="/mahasantri/gallery" element={
+//             <PrivateRoute>
+//               <AdminLayout>
+//                 <AdminGallery />
+//               </AdminLayout>
+//             </PrivateRoute>
+//           } />
+          
+//           <Route path="*" element={<Navigate to="/" />} />
+//         </Routes>
+//       </BrowserRouter>
+//     </AuthProvider>
 //   );
 // }
 
 // export default App;
-
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Booking from './pages/Booking';
-import Login from './pages/Admin/Login';
-import Dashboard from './pages/Admin/Dashboard';
-
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/booking" element={<Booking />} />
-        <Route path="/admin/login" element={<Login />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}

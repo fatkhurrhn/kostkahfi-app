@@ -1,500 +1,180 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase'; // Updated import path
-import { Timestamp } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import { galleryRef } from '../firebase';
+import { getDocs } from 'firebase/firestore';
+import BottomNavbar from '../components/BottomNavbar';
 
-const Gallery = () => {
-  // State management
-  const [images, setImages] = useState([]);
-  const [filteredImages, setFilteredImages] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+function Gallery() {
+  const navigate = useNavigate();
+  const [galleryItems, setGalleryItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [formData, setFormData] = useState({
-    id: '',
-    url: '',
-    description: '',
-    category: 'umum',
-    uploader: '',
-    uploadDate: ''
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const categories = ['all', 'kajian', 'diskusi', 'makan-makan', 'bermain'];
+
+  useEffect(() => {
+    const fetchGalleryItems = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const querySnapshot = await getDocs(galleryRef);
+        const items = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setGalleryItems(items);
+      } catch (error) {
+        console.error("Error fetching gallery items: ", error);
+        setError("Gagal memuat galeri. Silakan coba lagi.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGalleryItems();
+  }, []);
+
+  const filteredItems = selectedCategory === 'all' 
+    ? galleryItems 
+    : galleryItems.filter(item => item.category === selectedCategory);
+
+    const searchedItems = searchQuery 
+    ? filteredItems.filter(item => {
+        const desc = item.description || '';
+        return desc.toLowerCase().includes(searchQuery.toLowerCase());
+      })
+    : filteredItems;
+
+  // Urutkan berdasarkan tanggal terbaru
+  const sortedItems = [...searchedItems].sort((a, b) => {
+    const dateA = a.createdAt || '0';
+    const dateB = b.createdAt || '0';
+    return dateB.localeCompare(dateA);
   });
 
-  // Categories
-  const categories = [
-    { value: 'all', label: 'All' },
-    { value: 'umum', label: 'Umum' },
-    { value: 'cavelatte', label: 'Cavelatte' },
-    { value: 'biman', label: 'Biman' },
-    { value: 'mahasantri', label: 'Mahasantri' },
-    { value: 'kostan', label: 'Kostan' }
-  ];
-
-  // Format date from Firestore Timestamp
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'No date';
-    if (timestamp.toDate) {
-      return timestamp.toDate().toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-    return new Date(timestamp).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  // Fetch images from Firestore - Fixed category filter
-  const fetchImages = async () => {
-    try {
-      // First, get all images
-      const baseQuery = query(collection(db, 'gallery_kost'), orderBy('uploadDate', 'desc'));
-      const querySnapshot = await getDocs(baseQuery);
-      
-      const imagesData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      setImages(imagesData);
-      
-      // Then filter based on selected category
-      if (selectedCategory === 'all') {
-        setFilteredImages(imagesData);
-      } else {
-        const filtered = imagesData.filter(img => img.category === selectedCategory);
-        setFilteredImages(filtered);
-      }
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    }
-  };
-
-  // Handle search
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    if (term === '') {
-      // If search is cleared, respect the category filter
-      if (selectedCategory === 'all') {
-        setFilteredImages(images);
-      } else {
-        setFilteredImages(images.filter(img => img.category === selectedCategory));
-      }
-    } else {
-      // Apply search filter along with category filter if needed
-      let filtered = images;
-      
-      // Apply category filter first if not "all"
-      if (selectedCategory !== 'all') {
-        filtered = filtered.filter(img => img.category === selectedCategory);
-      }
-      
-      // Then apply search term filter
-      filtered = filtered.filter(image =>
-        image.description.toLowerCase().includes(term.toLowerCase()) ||
-        image.uploader.toLowerCase().includes(term.toLowerCase())
-      );
-      
-      setFilteredImages(filtered);
-    }
-  };
-
-  // Handle category filter - Fixed to properly filter
-  const handleCategoryFilter = (category) => {
-    setSelectedCategory(category);
-    
-    // Apply filtering immediately
-    if (category === 'all') {
-      // If "all" is selected, just apply any existing search filter
-      if (searchTerm) {
-        const filtered = images.filter(image =>
-          image.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          image.uploader.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredImages(filtered);
-      } else {
-        setFilteredImages(images);
-      }
-    } else {
-      // Filter by category and then by search term if it exists
-      let filtered = images.filter(img => img.category === category);
-      
-      if (searchTerm) {
-        filtered = filtered.filter(image =>
-          image.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          image.uploader.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      
-      setFilteredImages(filtered);
-    }
-  };
-
-  // Reset form
-  const resetForm = () => {
-    setFormData({
-      id: '',
-      url: '',
-      description: '',
-      category: 'umum',
-      uploader: '',
-      uploadDate: ''
-    });
-  };
-
-  // Open form for adding new image
-  const openAddForm = () => {
-    resetForm();
-    setIsFormOpen(true);
-  };
-
-  // Open form for editing image
-  const openEditForm = (image) => {
-    setFormData({
-      id: image.id,
-      url: image.url,
-      description: image.description,
-      category: image.category,
-      uploader: image.uploader,
-      uploadDate: image.uploadDate
-    });
-    setIsFormOpen(true);
-    setIsDetailOpen(false);
-  };
-
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  // Submit form (add or update)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (formData.id) {
-        // Update existing document
-        const docRef = doc(db, 'gallery_kost', formData.id);
-        await updateDoc(docRef, {
-          url: formData.url,
-          description: formData.description,
-          category: formData.category,
-          uploader: formData.uploader,
-          uploadDate: formData.uploadDate || Timestamp.fromDate(new Date())
-        });
-      } else {
-        // Add new document
-        await addDoc(collection(db, 'gallery_kost'), {
-          url: formData.url,
-          description: formData.description,
-          category: formData.category,
-          uploader: formData.uploader,
-          uploadDate: Timestamp.fromDate(new Date())
-        });
-      }
-      setIsFormOpen(false);
-      fetchImages();
-    } catch (error) {
-      console.error('Error saving image:', error);
-    }
-  };
-
-  // Delete image
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this image?')) {
-      try {
-        await deleteDoc(doc(db, 'gallery_kost', id));
-        setIsDetailOpen(false);
-        fetchImages();
-      } catch (error) {
-        console.error('Error deleting image:', error);
-      }
-    }
-  };
-
-  // Open image detail
-  const openImageDetail = (image) => {
-    setSelectedImage(image);
-    setIsDetailOpen(true);
-  };
-
-  // Close image detail
-  const closeImageDetail = () => {
-    setIsDetailOpen(false);
-    setSelectedImage(null);
-  };
-
-  // Fetch images on component mount and when needed
-  useEffect(() => {
-    fetchImages();
-  }, []); // Only on mount, since we handle category changes separately now
-
   return (
-    <div className="container mx-auto px-4 py-6 max-w-5xl relative min-h-screen">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">Gallery Kost</h1>
-      
-      {/* Desktop: Search and Filter Row, Mobile: Stacked Layout */}
-      <div className="md:flex md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
-        {/* Search Box */}
-        <div className="relative md:w-1/3">
-          <i className="ri-search-line absolute left-3 top-3 text-gray-400"></i>
-          <input
-            type="text"
-            placeholder="Search by description or uploader..."
-            className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-        
-        {/* Categories - Mobile: Scrollable, Desktop: Right Aligned */}
-        <div className="overflow-x-auto pb-2 md:pb-0">
-          <div className="flex gap-2 min-w-max md:justify-end">
-            {categories.map(cat => (
-              <button
-                key={cat.value}
-                onClick={() => handleCategoryFilter(cat.value)}
-                className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition ${
-                  selectedCategory === cat.value 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* Image Grid - Masonry Layout */}
-      <div className="columns-2 md:columns-3 lg:columns-4 gap-2 space-y-2 mb-24">
-        {filteredImages.map(image => (
-          <div 
-            key={image.id}
-            className="break-inside-avoid mb-3 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer bg-white"
-            onClick={() => openImageDetail(image)}
-          >
-            <div className="relative">
-              <div className="absolute top-2 left-2 bg-white bg-opacity-80 px-2 py-1 rounded text-xs md:text-sm font-medium z-10">
-                {image.category}
-              </div>
-              <img
-                src={image.url}
-                alt={image.description}
-                className="w-full object-cover"
-                onError={(e) => {
-                  e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
-                }}
-              />
-            </div>
-            <div className="p-2 bg-white">
-              <p className="text-xs md:text-sm line-clamp-1 text-gray-700">{image.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="h-screen flex flex-col bg-slate-50 max-w-3xl mx-auto">
+            <div className="flex-1 overflow-y-auto container px-4 pt-[70px] pb-20 scrollbar-hide">
+                {/* back */}
+                <div className="fixed top-0 left-0 right-0 bg-white z-50 max-w-3xl mx-auto border-b border-gray-300 py-3">
+                    <div className=" w-full mx-auto px-6 flex justify-between items-center">
+                        <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+                            <i className="ri-arrow-left-line text-lg"></i>Gallery
+                        </h3>
+                        <div className="flex items-center space-x-4">
+                            <i className="ri-notification-3-line text-lg text-gray-700"></i>
+                            <i className="ri-user-line text-lg text-gray-700"></i>
+                        </div>
+                    </div>
+                </div>
 
-      {/* Empty state when no images match filters */}
-      {filteredImages.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <i className="ri-image-line text-6xl text-gray-300 mb-4"></i>
-          <p className="text-gray-500 mb-2">No images found</p>
-          <p className="text-gray-400 text-sm">Try changing your search or category filter</p>
-        </div>
-      )}
-      
-      {/* Floating Add Button */}
-      <button
-        onClick={openAddForm}
-        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center shadow-lg transition-all hover:scale-110 z-40"
-        aria-label="Add new image"
-      >
-        <i className="ri-image-add-line text-[18px]"></i>
-      </button>
-      
-      {/* Form Popup - Mobile Optimized */}
-      {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">
-                {formData.id ? 'Edit Image' : 'Add New Image'}
-              </h2>
-              <button onClick={() => setIsFormOpen(false)} className="text-gray-500 hover:text-gray-700">
-                <i className="ri-close-line text-2xl"></i>
-              </button>
+        {/* Search and Filter Row */}
+        <div className="mt-0 mb-4 flex gap-2">
+          {/* Search Input - takes more space */}
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i className="ri-search-line text-blue-500"></i>
             </div>
-            
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 text-sm font-medium">Image URL</label>
-                <input
-                  type="url"
-                  name="url"
-                  value={formData.url}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  placeholder="https://example.com/image.jpg"
-                />
-                <p className='text-[12px]'>klik <a href="https://assets-gallery.vercel.app/" target='_blank'><u><b>disini</b></u></a> untuk ubah image jadi link</p>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 text-sm font-medium">Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="3"
-                  required
-                  placeholder="Describe this image..."
-                ></textarea>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 text-sm font-medium">Category</label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
+            <input
+              type="text"
+              placeholder="Cari deskripsi..."
+              className="w-full pl-10 pr-4 py-2 text-gray-800 rounded-[10px] border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          {/* Category Dropdown */}
+          <div className="relative">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="appearance-none bg-blue-600 text-white pl-3 pr-8 py-2 rounded-[10px] border-none focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              {categories.map((category) => (
+                <option 
+                  key={category} 
+                  value={category}
+                  className="bg-white text-gray-800"
                 >
-                  {categories.filter(c => c.value !== 'all').map(cat => (
-                    <option key={cat.value} value={cat.value}>{cat.label}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 text-sm font-medium">Uploader Name</label>
-                <input
-                  type="text"
-                  name="uploader"
-                  value={formData.uploader}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  placeholder="Your name"
-                />
-              </div>
-              
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsFormOpen(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                >
-                  {formData.id ? 'Update' : 'Save'}
-                </button>
-              </div>
-            </form>
+                  {category === 'all' ? 'Semua' : category}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i className="ri-arrow-down-s-line text-white"></i>
+            </div>
           </div>
         </div>
-      )}
-      
-      {/* Image Detail Popup - Mobile Optimized */}
-      {isDetailOpen && selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
-          <div className="bg-white rounded-lg p-4 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg md:text-xl font-bold">Image Details</h2>
-              <button onClick={closeImageDetail} className="text-gray-500 hover:text-gray-700">
-                <i className="ri-close-line text-2xl"></i>
-              </button>
-            </div>
-            
-            <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-              <div className="md:w-1/2">
-                <div className="bg-gray-100 rounded-lg overflow-hidden">
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {/* Gallery Content */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : sortedItems.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {searchQuery ? 
+              'Tidak ditemukan foto dengan deskripsi tersebut' : 
+              'Tidak ada foto untuk kategori ini'}
+          </div>
+        ) : (
+            <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 gap-2 pt-2">
+            {sortedItems.map((item) => (
+              <div key={item.id} className="mb-2 break-inside-avoid">
+                <div className="relative group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  {/* Image with original aspect ratio */}
                   <img
-                    src={selectedImage.url}
-                    alt={selectedImage.description}
-                    className="w-full h-auto object-contain max-h-[50vh]"
+                    src={item.imageUrl}
+                    alt={item.description || 'Foto kegiatan'}
+                    className="w-full h-auto object-cover rounded-lg"
                     onError={(e) => {
-                      e.target.src = 'https://png.pngtree.com/png-vector/20190820/ourmid/pngtree-no-image-vector-illustration-isolated-png-image_1694547.jpg';
+                      e.target.onerror = null;
+                      e.target.src = 'https://via.placeholder.com/300?text=Gambar+Tidak+Tersedia';
                     }}
                   />
-                </div>
-              </div>
-              
-              <div className="md:w-1/2">
-                <div className="mb-3 md:mb-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <i className="ri-information-line text-blue-500"></i>
-                    <h3 className="text-base md:text-lg font-semibold">Description</h3>
-                  </div>
-                  <p className="text-sm md:text-base">{selectedImage.description}</p>
-                </div>
-                
-                <div className="mb-3 md:mb-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <i className="ri-user-line text-blue-500"></i>
-                    <h3 className="text-base md:text-lg font-semibold">Uploader</h3>
-                  </div>
-                  <p className="text-sm md:text-base">{selectedImage.uploader}</p>
-                </div>
-                
-                <div className="mb-3 md:mb-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <i className="ri-calendar-line text-blue-500"></i>
-                    <h3 className="text-base md:text-lg font-semibold">Upload Date</h3>
-                  </div>
-                  <p className="text-sm md:text-base">{formatDate(selectedImage.uploadDate)}</p>
-                </div>
-                
-                <div className="mb-4 md:mb-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <i className="ri-price-tag-3-line text-blue-500"></i>
-                    <h3 className="text-base md:text-lg font-semibold">Category</h3>
-                  </div>
-                  <span className="inline-block bg-gray-200 px-3 py-1 rounded-full text-xs md:text-sm">
-                    {selectedImage.category}
+                  
+                  {/* Category badge - top left */}
+                  <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-medium px-2 py-1 rounded-[5px] z-10">
+                    {item.category}
                   </span>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3 mt-4 pt-3 border-t">
-                  <button
-                    onClick={() => openEditForm(selectedImage)}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition flex-1"
-                  >
-                    <i className="ri-edit-line"></i> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(selectedImage.id)}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex-1"
-                  >
-                    <i className="ri-delete-bin-line"></i> Delete
-                  </button>
+                  
+                  {/* Description overlay - appears on hover/click */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
+                    <p className="text-sm text-white line-clamp-2">
+                      {item.description || 'Tidak ada deskripsi'}
+                    </p>
+                    {item.createdAt && (
+                      <p className="text-xs text-blue-100 mt-1">
+                        <i className="ri-calendar-line mr-1"></i>
+                        {new Date(item.createdAt).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      
+      {/* Bottom Navbar */}
+      <BottomNavbar />
     </div>
   );
-};
+}
 
 export default Gallery;
