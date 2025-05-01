@@ -138,27 +138,28 @@ function Admin() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0 space-y-6">
-          {/* Add Data Button */}
-          <div className="flex justify-end">
-            <button
-              onClick={() => {
-                resetForm();
-                setEditingId(null);
-                setShowModal(true);
-              }}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm flex items-center"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Tambah Data Baru
-            </button>
-          </div>
+{/* Add Data Header & Button */}
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+  <h2 className="text-lg font-semibold text-gray-800">Daftar Setoran / Murojaah</h2>
+  
+  <button
+    onClick={() => {
+      resetForm();
+      setEditingId(null);
+      setShowModal(true);
+    }}
+    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm flex items-center shadow-sm transition duration-150"
+  >
+    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+    </svg>
+    Tambah Data Baru
+  </button>
+</div>
+
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-  <div className="p-4 border-b border-gray-100">
-    <h2 className="text-lg font-semibold text-gray-800">Daftar Setoran/Murojaah</h2>
-  </div>
+ 
 
   {loading ? (
     <div className="p-4 text-center text-gray-500">Memuat data...</div>
