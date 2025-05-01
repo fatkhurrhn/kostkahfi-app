@@ -367,153 +367,173 @@ function RecapKehadiran() {
         </div>
       </div>
 
-      {/* Modal Form */}
       {isModalOpen && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={closeModal}></div>
+  <div className="fixed inset-0 z-50 overflow-y-auto">
+    {/* Overlay */}
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+      onClick={closeModal}
+      aria-hidden="true"
+    ></div>
+
+    {/* Modal container */}
+    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      {/* Modal content */}
+      <div className="inline-block bg-white rounded-t-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:rounded-lg sm:p-6 w-full">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold text-gray-900">
+            {editingId ? 'Edit Kehadiran' : 'Tambah Kehadiran'}
+          </h3>
+          <button
+            onClick={closeModal}
+            className="text-gray-500 hover:text-gray-700"
+            aria-label="Tutup"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Form grid - single column on mobile */}
+          <div className="space-y-4">
+            {/* Waktu Kajian */}
+            <div>
+              <label htmlFor="waktu" className="block text-sm font-medium text-gray-700 mb-1">
+                Waktu Kajian <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="datetime-local"
+                name="waktu"
+                id="waktu"
+                className="w-full p-2 border bg-white text-gray-800 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                value={formData.waktu}
+                onChange={handleInputChange}
+                required
+              />
             </div>
 
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            {/* Asatidz */}
+            <div>
+              <label htmlFor="asatidz" className="block text-sm font-medium text-gray-700 mb-1">
+                Asatidz <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="asatidz"
+                name="asatidz"
+                className="w-full p-2  bg-white text-gray-800 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                value={formData.asatidz}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Pilih Asatidz</option>
+                <option value="Ustadz Khanzan">Ustadz Khanzan</option>
+                <option value="Ustadz Haidir">Ustadz Haidir</option>
+              </select>
+            </div>
 
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
-              <div>
-                <div className="mt-3 text-center sm:mt-0 sm:text-left">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    {editingId ? 'Edit Data Kehadiran' : 'Tambah Data Kehadiran Baru'}
-                  </h3>
-                  <div className="mt-2">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-3">
-                        <div>
-                          <label htmlFor="waktu" className="block text-sm font-medium text-gray-700">Waktu Kajian*</label>
-                          <div className="mt-1">
-                            <input
-                              type="datetime-local"
-                              name="waktu"
-                              id="waktu"
-                              className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                              value={formData.waktu}
-                              onChange={handleInputChange}
-                              required
-                            />
-                          </div>
-                        </div>
+            {/* Jenis Kajian */}
+            <div>
+              <label htmlFor="jenis" className="block text-sm font-medium text-gray-700 mb-1">
+                Jenis Kajian <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="jenis"
+                name="jenis"
+                className="w-full p-2 border bg-white text-gray-800 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                value={formData.jenis}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Pilih Jenis</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+              </select>
+            </div>
 
-                        <div>
-                          <label htmlFor="asatidz" className="block text-sm font-medium text-gray-700">Asatidz*</label>
-                          <div className="mt-1">
-                            <select
-                              id="asatidz"
-                              name="asatidz"
-                              className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                              value={formData.asatidz}
-                              onChange={handleInputChange}
-                              required
-                            >
-                              <option value="Ustadz Khanzan">Ustadz Khanzan</option>
-                              <option value="Ustadz Haidir">Ustadz Haidir</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label htmlFor="jenis" className="block text-sm font-medium text-gray-700">Jenis Kajian*</label>
-                          <div className="mt-1">
-                            <select
-                              id="jenis"
-                              name="jenis"
-                              className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                              value={formData.jenis}
-                              onChange={handleInputChange}
-                              required
-                            >
-                              <option value="online">Online</option>
-                              <option value="offline">Offline</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="tema" className="block text-sm font-medium text-gray-700">Tema/Materi Kajian*</label>
-                        <div className="mt-1">
-                          <input
-                            type="text"
-                            name="tema"
-                            id="tema"
-                            className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                            value={formData.tema}
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="border-t border-gray-200 pt-4">
-                        <h3 className="text-md font-medium text-gray-700 mb-3">Daftar Kehadiran Mahasantri</h3>
-                        <div className="space-y-3">
-                          {formData.peserta.map((peserta, index) => (
-                            <div key={peserta.nama} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <span className="text-sm font-medium text-gray-700 sm:w-24">{peserta.nama}</span>
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                                <label className="inline-flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    checked={peserta.hadir}
-                                    onChange={() => handlePesertaChange(index, 'hadir')}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                  />
-                                  <span className="ml-2 text-sm text-gray-700">Hadir</span>
-                                </label>
-                                <input
-                                  type="text"
-                                  placeholder="Catatan"
-                                  className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                  value={peserta.catatan}
-                                  onChange={(e) => handlePesertaChange(index, 'catatan', e.target.value)}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="pt-5">
-                        <div className="flex justify-end">
-                          <button
-                            type="button"
-                            onClick={closeModal}
-                            className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          >
-                            Batal
-                          </button>
-                          <button
-                            type="submit"
-                            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                            disabled={loading}
-                          >
-                            {loading ? (
-                              <>
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Menyimpan...
-                              </>
-                            ) : editingId ? 'Update' : 'Simpan'}
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+            {/* Tema Kajian */}
+            <div>
+              <label htmlFor="tema" className="block text-sm font-medium text-gray-700 mb-1">
+                Tema Kajian <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="tema"
+                id="tema"
+                className="w-full p-2 border bg-white text-gray-800 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                value={formData.tema}
+                onChange={handleInputChange}
+                required
+                placeholder="Masukkan tema kajian"
+              />
             </div>
           </div>
-        </div>
-      )}
+
+          {/* Daftar Kehadiran */}
+          <div className="mt-6 border-t border-gray-200 pt-4">
+            <h3 className="text-md font-semibold text-gray-800 mb-3">Daftar Kehadiran</h3>
+            <div className="space-y-3 max-h-[300px] overflow-y-auto">
+              {formData.peserta.map((peserta, index) => (
+                <div 
+                  key={peserta.nama} 
+                  className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${peserta.hadir ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100'}`}
+                  onClick={() => handlePesertaChange(index, 'hadir')}
+                >
+                  <span className="text-sm font-medium text-gray-700">{peserta.nama}</span>
+                  <div className="relative">
+                    {/* Custom checkbox */}
+                    <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${peserta.hadir ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                      {peserta.hadir && (
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={peserta.hadir}
+                      onChange={() => handlePesertaChange(index, 'hadir')}
+                      className="absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 rounded-lg shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 flex justify-center items-center"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Menyimpan...
+                </>
+              ) : editingId ? 'Update' : 'Simpan'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
