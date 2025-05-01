@@ -463,7 +463,7 @@ function RecapKehadiran() {
                 type="text"
                 name="tema"
                 id="tema"
-                className="w-full p-2 border bg-white text-gray-800 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                 value={formData.tema}
                 onChange={handleInputChange}
                 required
