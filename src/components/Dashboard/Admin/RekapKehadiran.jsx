@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from '../../../firebase';
 // import { useAuth } from '../../components/AuthContext';
+import Navbar from './AdminNavbar';
 
 const MAHASANTRI_LIST = [
   'Fathur', 'Faiz', 'Budiman', 'Khair',
@@ -177,6 +178,7 @@ function RecapKehadiran() {
           {error}
         </div>
       )}
+      <Navbar/>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
         <h2 className="text-lg font-semibold mb-4 text-gray-800">

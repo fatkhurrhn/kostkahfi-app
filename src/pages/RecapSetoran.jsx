@@ -122,7 +122,7 @@ function Setoran() {
   // Loading state
   if (loading || !randomAyah) {
     return (
-      <div className="min-h-screen max-w-3xl mx-auto flex flex-col items-center justify-center bg-blue-50">
+      <div className="min-h-screen max-w-2xl mx-auto flex flex-col items-center justify-center bg-blue-50">
                 <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
                 <p className="text-blue-800 font-medium">Memuat Data</p>
             </div>
@@ -130,16 +130,16 @@ function Setoran() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50 max-w-3xl mx-auto">
+    <div className="h-screen flex flex-col bg-slate-50 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="fixed max-w-3xl mx-auto top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3">
+      <div className="fixed max-w-2xl mx-auto top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3">
         <div className="w-full mx-auto px-6 flex justify-between items-center">
           <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
             <i className="ri-arrow-left-line text-lg"></i> Data Setoran
           </h3>
           <div className="flex items-center space-x-4">
             <i className="ri-notification-3-line text-lg text-gray-700"></i>
-            <i className="ri-user-line text-lg text-gray-700"></i>
+            <a href="/login"><i className="ri-user-line text-lg text-gray-700"></i></a>
           </div>
         </div>
       </div>
