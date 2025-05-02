@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { db } from '../../firebase/config';
 
 const months = [
   { name: "Januari", value: "01", days: 31 },

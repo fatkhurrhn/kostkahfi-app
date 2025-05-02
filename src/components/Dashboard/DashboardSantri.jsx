@@ -2,10 +2,10 @@
 // import SantriNavbar from '../components/Dashboard/Santri/SantriNavbar';
 // import SantriProfile from '../components/Dashboard/Santri/SantriProfile';
 
-import { useAuth } from '../context/AuthContext';
-import SantriNavbar from '../components/Dashboard/Santri/SantriNavbar';
-import SantriProfile from '../components/Dashboard/Santri/SantriProfile';
-import AmalYaumiyah from '../components/Dashboard/Santri/AmalYaumiyah';
+import { useAuth } from '../../context/AuthContext';
+import SantriNavbar from './Santri/SantriNavbar';
+import SantriProfile from './Santri/SantriProfile';
+import AmalYaumiyah from './Santri/AmalYaumiyah';
 
 export default function DashboardSantri() {
   const { currentUser } = useAuth();

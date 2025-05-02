@@ -1,6 +1,6 @@
-import { useAuth } from '../context/AuthContext';
-import AdminNavbar from '../components/Dashboard/Admin/AdminNavbar';
-import UserManagement from '../components/Dashboard/Admin/UserManagement';
+import { useAuth } from '../../context/AuthContext';
+import AdminNavbar from './Admin/AdminNavbar';
+import UserManagement from './Admin/UserManagement';
 
 export default function DashboardAdmin() {
   const { currentUser } = useAuth();
