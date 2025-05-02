@@ -485,7 +485,7 @@ export default function RecapKehadiran() {
                           className="text-sm font-medium text-red-600 hover:text-red-500 flex items-center"
                         >
                           <i className="ri-delete-bin-line mr-1"></i>
-                          Hapus
+                          Hapuss
                         </button>
                       </div>
                     </div>
