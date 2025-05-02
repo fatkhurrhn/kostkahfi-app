@@ -30,7 +30,7 @@ export default function Admin() {
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
-  
+
   const tahunList = [2025, 2026, 2027];
   const pekanList = [1, 2, 3, 4];
   const jenisList = ['setoran', 'murojaah'];
@@ -146,20 +146,20 @@ export default function Admin() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop Navbar */}
           <div className="hidden md:flex h-16 items-center justify-between">
-            <div 
+            <div
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard-admin/')}
             >
               <h1 className="text-xl font-bold">Admin Dashboard</h1>
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
                 <i className="ri-user-line"></i>
                 <span className="hidden sm:inline">Welcome,</span>
                 <span className="font-medium">{currentUser?.nama}</span>
               </div>
-              <button 
+              <button
                 onClick={() => setShowLogoutModal(true)}
                 className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center"
               >
@@ -171,14 +171,14 @@ export default function Admin() {
 
           {/* Mobile Navbar */}
           <div className="md:hidden flex h-16 items-center justify-between">
-            <div 
+            <div
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard-admin/')}
             >
               <i className="ri-dashboard-line text-lg mr-2"></i>
               <h1 className="text-lg font-bold">Admin Panel</h1>
             </div>
-            
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
@@ -200,24 +200,24 @@ export default function Admin() {
                 <i className="ri-user-line mr-2"></i>
                 <span>{currentUser?.nama}</span>
               </div>
-              <button 
+              <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
                 <i className="ri-close-line text-xl"></i>
               </button>
             </div>
-            
+
             <div className="flex-1 flex flex-col justify-between py-4">
               <div>
-                <Link to="/dashboard-admin/" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Home 
+                <Link to="/dashboard-admin/" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Home
                 </Link>
-                <Link to="/dashboard-admin/kehadiran-kajian" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Kehadiran 
+                <Link to="/dashboard-admin/kehadiran-kajian" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Kehadiran
                 </Link>
-                <Link to="/dashboard-admin/setoran" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Setoran 
+                <Link to="/dashboard-admin/setoran" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Setoran
                 </Link>
               </div>
-              
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -231,10 +231,10 @@ export default function Admin() {
             </div>
           </div>
         </div>
-        
+
         {/* Overlay when mobile menu is open */}
         {mobileMenuOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           ></div>
@@ -253,7 +253,7 @@ export default function Admin() {
             Welcome back, {currentUser?.nama || 'Admin'}!
           </p>
         </div>
-        
+
         {/* Data Management Section */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Header */}
@@ -264,20 +264,20 @@ export default function Admin() {
                   <a href="/dashboard-admin/">Home </a>/ Daftar Hafalan Santri
                 </h2> */}
                 <nav className="text-xl md:text-2xl font-semibold text-gray-800 mb-4" aria-label="Breadcrumb">
-  <ol className="list-reset flex items-center space-x-2">
-    <li>
-      <a href="/dashboard-admin" className="text-blue-600 hover:underline">Home</a>
-    </li>
-    <li>/</li>
-    <li className="text-gray-800 font-semibold">Daftar Hafalan Santri</li>
-  </ol>
-</nav>
+                  <ol className="list-reset flex items-center space-x-2">
+                    <li>
+                      <a href="/dashboard-admin" className="text-blue-600 hover:underline">Home</a>
+                    </li>
+                    <li>/</li>
+                    <li className="text-gray-800 font-semibold">Daftar Hafalan Santri</li>
+                  </ol>
+                </nav>
                 <p className="text-gray-600 mt-1 flex items-center">
                   <i className="ri-database-line mr-1"></i>
                   {setoranList.length} data ditemukan
                 </p>
               </div>
-              
+
               <button
                 onClick={() => {
                   resetForm();
@@ -309,7 +309,7 @@ export default function Admin() {
                       Nama
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                     Ayat
+                      Ayat
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Halaman/Juz
@@ -330,11 +330,10 @@ export default function Admin() {
                     setoranList.map((setoran) => (
                       <tr key={setoran.id} className="hover:bg-gray-50">
                         <td className="px-4 py-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            setoran.jenis === 'setoran'
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
+                          <span className={`px-2 py-1 rounded-full text-xs ${setoran.jenis === 'setoran'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                            }`}>
                             {setoran.jenis || 'setoran'}
                           </span>
                         </td>
@@ -356,35 +355,34 @@ export default function Admin() {
                           </div>
                         </td>
                         <td className="px-4 py-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            setoran.metode === 'online'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}>
+                          <span className={`px-2 py-1 rounded-full text-xs ${setoran.metode === 'online'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-blue-100 text-blue-800'
+                            }`}>
                             {setoran.metode}
                           </span>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
-  <div className="flex flex-col items-start space-y-2">
-    <button
-      onClick={() => handleEdit(setoran)}
-      className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
-    >
-      <i className="ri-edit-line mr-1"></i>
-      <span className="hidden sm:inline">Edit</span>
-    </button>
-    <button
-      onClick={() => {
-        setSelectedId(setoran.id);
-        setShowDeleteModal(true);
-      }}
-      className="text-red-500 hover:text-red-700 text-sm flex items-center"
-    >
-      <i className="ri-delete-bin-line mr-1"></i>
-      <span className="hidden sm:inline">Hapus</span>
-    </button>
-  </div>
-</td>
+                          <div className="flex flex-col items-start space-y-2">
+                            <button
+                              onClick={() => handleEdit(setoran)}
+                              className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
+                            >
+                              <i className="ri-edit-line mr-1"></i>
+                              <span className="hidden sm:inline">Edit</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedId(setoran.id);
+                                setShowDeleteModal(true);
+                              }}
+                              className="text-red-500 hover:text-red-700 text-sm flex items-center"
+                            >
+                              <i className="ri-delete-bin-line mr-1"></i>
+                              <span className="hidden sm:inline">Hapus</span>
+                            </button>
+                          </div>
+                        </td>
 
                       </tr>
                     ))
@@ -412,7 +410,7 @@ export default function Admin() {
                 <h3 className="text-lg font-semibold text-gray-800">
                   {editingId ? 'Edit Data' : 'Tambah Data Baru'}
                 </h3>
-                <button 
+                <button
                   onClick={() => {
                     setShowModal(false);
                     resetForm();
@@ -442,7 +440,7 @@ export default function Admin() {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Pekan</label>
                     <select
@@ -458,7 +456,7 @@ export default function Admin() {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                     <select
@@ -492,7 +490,7 @@ export default function Admin() {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Metode</label>
                     <select
@@ -533,7 +531,7 @@ export default function Admin() {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Ayat Selesai</label>
                     <input

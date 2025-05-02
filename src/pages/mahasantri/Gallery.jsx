@@ -300,6 +300,7 @@ function Gallery() {
                       required
                       disabled={loading}
                     />
+                    <p className='text-gray-800 text-[13px]'>ubah foto jadi url <a href="https://assets-gallery.vercel.app/" target='_blank'><b><u>disini</u></b></a></p>
                   </div>
 
                   <div className="flex justify-end space-x-3">
