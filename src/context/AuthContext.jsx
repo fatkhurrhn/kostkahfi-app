@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
     try {
       await signOut(auth);
       setCurrentUser(null);
-      navigate('/login');
+      navigate('/mahasantri');
     } catch (error) {
       console.error("Logout error:", error);
       throw error;

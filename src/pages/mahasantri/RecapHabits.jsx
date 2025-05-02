@@ -51,12 +51,12 @@ export default function RecapHabits() {
   const getDaysInMonth = (month, year) => {
     const monthObj = months[month - 1];
     let days = monthObj.days;
-    
+
     if (month === 2) {
       const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
       days = isLeapYear ? 29 : 28;
     }
-    
+
     return days;
   };
 
@@ -64,10 +64,10 @@ export default function RecapHabits() {
   useEffect(() => {
     const loadData = async () => {
       if (!selectedUserId) return;
-      
+
       setLoading(true);
       const monthYear = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
-      
+
       try {
         // Get user data
         const userDoc = await getDoc(doc(db, 'users', selectedUserId));
@@ -76,7 +76,7 @@ export default function RecapHabits() {
         // Get habits data
         const docRef = doc(db, 'daily_habits', `${selectedUserId}_${monthYear}`);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           setHabitsData(docSnap.data());
         } else {
@@ -88,23 +88,23 @@ export default function RecapHabits() {
         setLoading(false);
       }
     };
-    
+
     loadData();
   }, [selectedUserId, selectedMonth, selectedYear]);
 
   const calculateCompletionPercentage = (habitIndex) => {
     if (!habitsData || !habitsData.completions) return 0;
-    
+
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
     let completed = 0;
-    
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       if (habitsData.completions[dateKey]?.[habitIndex]) {
         completed++;
       }
     }
-    
+
     return Math.round((completed / daysInMonth) * 100);
   };
 
@@ -113,44 +113,44 @@ export default function RecapHabits() {
       <div className="flex-1 overflow-y-auto container max-w-2xl mx-auto px-4 pt-[70px] pb-20 scrollbar-hide">
         {/* Header */}
         <div className="fixed top-0 left-0 max-w-[710px] mx-auto right-0 bg-white z-50 border-b border-gray-300 py-3">
-                    <div className="w-full mx-auto px-6 flex justify-between items-center">
-                        <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
-                            <i className="ri-arrow-left-line text-lg"></i> Daily Habist
-                        </h3>
-                        <div className="flex items-center space-x-4">
-                            <i className="ri-notification-3-line text-lg text-gray-700"></i>
-                            <i className="ri-user-line text-lg text-gray-700"></i>
-                        </div>
-                    </div>
-                </div>
+          <div className="w-full mx-auto px-6 flex justify-between items-center">
+            <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+              <i className="ri-arrow-left-line text-lg"></i> Daily Habist
+            </h3>
+            <div className="flex items-center space-x-4">
+              <i className="ri-notification-3-line text-lg text-gray-700"></i>
+              <a href="/mahasantri/login"><i className="ri-user-line text-lg text-gray-700"></i></a>
+            </div>
+          </div>
+        </div>
 
-                {/* Page Title with Gradient Background */}
-                <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-md">
-                    <div className="absolute top-0 right-0 opacity-20">
-                        <i className="ri-sticky-note-line text-9xl text-white"></i>
-                    </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Amal Yaumiyah Santri</h1>
-                    <p className="text-white text-sm opacity-90">Semua itu berawal dari sebuah keterpaksaan</p>
-                    {/* <div className="mt-4 bg-white rounded-lg p-3 backdrop-blur-sm"> */}
-                        <div className="mt-4 flex items-center text-white">
-                        <select
-                value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
-                className="w-full px-3 py-3 bg-white/50 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              >
-                <option value="">-- Pilih Santri --</option>
-                {users.map(user => (
-                  <option key={user.id} value={user.id}>
-                    {user.nama}
-                  </option>
-                ))}
-              </select>
-                        </div>
-                </div>
+        {/* Page Title with Gradient Background */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-md">
+          <div className="absolute top-0 right-0 opacity-20">
+            <i className="ri-sticky-note-line text-9xl text-white"></i>
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Amal Yaumiyah Santri</h1>
+          <p className="text-white text-sm opacity-90">Semua itu berawal dari sebuah keterpaksaan</p>
+          {/* <div className="mt-4 bg-white rounded-lg p-3 backdrop-blur-sm"> */}
+          <div className="mt-4 flex items-center text-white">
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="w-full px-3 py-2 bg-white/50 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            >
+              <option value="">-- Pilih Santri --</option>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.nama}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         {/* Filter Section */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6 pt-7">
+        <div className="bg-white rounded-lg shadow p-6 mb-6 pt-7">
           <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                 <select
@@ -165,7 +165,7 @@ export default function RecapHabits() {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
                 <select
@@ -180,17 +180,17 @@ export default function RecapHabits() {
               </div>
             </div>
           </div>
-          
+
           {userData && (
             <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
               <h2 className="text-md font-semibold text-gray-800 flex items-center">
-               Nama: Akhi {userData.nama}
+                Nama: Akhi {userData.nama}
               </h2>
               <p className="text-xs text-gray-600 mt-1">Email: {userData.email}</p>
             </div>
           )}
         </div>
-        
+
         {/* Loading State */}
         {loading && (
           <div className="bg-white rounded-lg shadow p-6 text-center">
@@ -198,7 +198,7 @@ export default function RecapHabits() {
             <p className="text-blue-800 font-medium">Memuat data...</p>
           </div>
         )}
-        
+
         {/* Habits Data */}
         {!loading && habitsData && (
           <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -211,29 +211,28 @@ export default function RecapHabits() {
                       {calculateCompletionPercentage(index)}%
                     </span>
                   </div>
-                  
+
                   <div className="mb-3">
                     <div className="w-full bg-gray-200 rounded-full h-1.5">
-                      <div 
-                        className="bg-blue-600 h-1.5 rounded-full" 
+                      <div
+                        className="bg-blue-600 h-1.5 rounded-full"
                         style={{ width: `${calculateCompletionPercentage(index)}%` }}
                       ></div>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-1">
                     {Array.from({ length: getDaysInMonth(selectedMonth, selectedYear) }, (_, i) => i + 1).map(day => {
                       const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                       const isCompleted = habitsData.completions[dateKey]?.[index] || false;
-                      
+
                       return (
-                        <div 
-                          key={day} 
-                          className={`w-5 h-5 rounded-sm flex items-center justify-center text-[10px] ${
-                            isCompleted 
-                              ? 'bg-green-100 text-green-800 border border-green-200' 
+                        <div
+                          key={day}
+                          className={`w-5 h-5 rounded-sm flex items-center justify-center text-[10px] ${isCompleted
+                              ? 'bg-green-100 text-green-800 border border-green-200'
                               : 'bg-red-100 text-red-800 border border-red-200'
-                          }`}
+                            }`}
                           title={`Tanggal ${day}`}
                         >
                           {day}
@@ -246,7 +245,7 @@ export default function RecapHabits() {
             </div>
           </div>
         )}
-        
+
         {/* Empty State */}
         {!loading && !habitsData && selectedUserId && (
           <div className="bg-white rounded-lg shadow p-6 text-center">
@@ -257,7 +256,7 @@ export default function RecapHabits() {
             <p className="text-xs text-gray-500">Tidak ada data untuk bulan dan tahun yang dipilih</p>
           </div>
         )}
-     </div>
+      </div>
     </div>
   );
 }

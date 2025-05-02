@@ -15,13 +15,14 @@ import RecapHabits from './pages/mahasantri/RecapHabits';
 import RecapKehadiran from './pages/mahasantri/RecapKehadiran';
 import RecapSetoran from './pages/mahasantri/RecapSetoran';
 import GallerySantri from './pages/mahasantri/Gallery';
+import Tes from './pages/mahasantri/tes';
 
 function PrivateRoute({ children, role }) {
   const { currentUser } = useAuth();
 
-  if (!currentUser) {
-    return <Navigate to="/login" />;
-  }
+  // if (!currentUser) {
+  //   return <Navigate to="/login" />;
+  // }
 
   if (role && currentUser.role !== role) {
     return <Navigate to={currentUser.role === 'admin' ? '/dashboard-admin' : '/dashboard-santri'} />;
@@ -44,6 +45,7 @@ function App() {
           <Route path="/mahasantri/recap-kehadiran" element={<RecapKehadiran />} />
           <Route path="/mahasantri/recap-setoran" element={<RecapSetoran />} />
           <Route path="/mahasantri/gallery" element={<GallerySantri />} />
+          <Route path="/mahasantri/tes" element={<Tes />} />
 
           <Route path="/dashboard-admin" element={ <PrivateRoute role="admin"> <DashboardAdmin /></PrivateRoute> } />
           <Route path="/dashboard-admin/kehadiran-kajian" element={<RekapKehadiranAdmin />} />

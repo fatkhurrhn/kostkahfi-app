@@ -140,8 +140,8 @@ function Setoran() {
             </h3>
             <div className="flex items-center space-x-4">
               <i className="ri-notification-3-line text-lg text-gray-700"></i>
-              <i className="ri-user-line text-lg text-gray-700"></i>
-            </div>
+              <a href="/mahasantri/login"><i className="ri-user-line text-lg text-gray-700"></i></a>
+              </div>
           </div>
         </div>
         {/* Page Title with Gradient Background */}

@@ -161,30 +161,30 @@ function Gallery() {
             </h3>
             <div className="flex items-center space-x-4">
               <i className="ri-notification-3-line text-lg text-gray-700"></i>
-              <i className="ri-user-line text-lg text-gray-700"></i>
+              <a href="/mahasantri/login"><i className="ri-user-line text-lg text-gray-700"></i></a>
             </div>
           </div>
         </div>
 
         {/* Page Title with Gradient Background */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-md">
-                    <div className="absolute top-0 right-0 opacity-20">
-                        <i className="ri-image-ai-line text-9xl text-white"></i>
-                    </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Gallery Mahasantri</h1>
-                    <p className="text-white text-sm opacity-90">Semua kenangan harus terdokumentasikan</p>
-                    {/* <div className="mt-4 bg-white/20 rounded-lg p-3 backdrop-blur-sm"> */}
-                    <div className="mt-4 relative w-full max-w-full text-white">
-  <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-lg"></i>
-  <input
-    type="text"
-    placeholder="Cari foto..."
-    className="w-full pl-10 pr-4 py-3 placeholder:text-white bg-white/20 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-  />
-</div>
-                    </div>
+          <div className="absolute top-0 right-0 opacity-20">
+            <i className="ri-image-ai-line text-9xl text-white"></i>
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Gallery Mahasantri</h1>
+          <p className="text-white text-sm opacity-90">Semua kenangan harus terdokumentasikan</p>
+          {/* <div className="mt-4 bg-white/20 rounded-lg p-3 backdrop-blur-sm"> */}
+          <div className="mt-4 relative w-full max-w-full text-white">
+            <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-white text-lg"></i>
+            <input
+              type="text"
+              placeholder="Cari foto..."
+              className="w-full pl-10 pr-4 py-3 placeholder:text-white bg-white/20 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
 
         {/* Gallery Grid */}
         {loading && !galleryItems.length ? (
