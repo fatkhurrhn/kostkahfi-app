@@ -109,41 +109,48 @@ export default function RecapHabits() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-              {/* Header */}
-              <div className="sticky pb-3 top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3 shadow-sm">
-        <div className="w-full max-w-2xl mx-auto px-4 flex justify-between items-center">
-          <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
-            <i className="ri-arrow-left-line text-lg"></i> Daily Habits
-          </h3>
-          <div className="flex items-center space-x-4">
-            <i className="ri-notification-3-line text-lg text-gray-700"></i>
-            <i className="ri-user-line text-lg text-gray-700"></i>
-          </div>
-        </div>
-      </div>
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="h-screen flex flex-col bg-slate-50">
+      <div className="flex-1 overflow-y-auto container max-w-2xl mx-auto px-4 pt-[70px] pb-20 scrollbar-hide">
+        {/* Header */}
+        <div className="fixed top-0 left-0 max-w-[710px] mx-auto right-0 bg-white z-50 border-b border-gray-300 py-3">
+                    <div className="w-full mx-auto px-6 flex justify-between items-center">
+                        <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+                            <i className="ri-arrow-left-line text-lg"></i> Daily Habist
+                        </h3>
+                        <div className="flex items-center space-x-4">
+                            <i className="ri-notification-3-line text-lg text-gray-700"></i>
+                            <i className="ri-user-line text-lg text-gray-700"></i>
+                        </div>
+                    </div>
+                </div>
 
-        {/* Filter Section */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6 pt-7">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Santri</label>
-              <select
+                {/* Page Title with Gradient Background */}
+                <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-2xl p-6 mb-6 relative overflow-hidden shadow-md">
+                    <div className="absolute top-0 right-0 opacity-20">
+                        <i className="ri-sticky-note-line text-9xl text-white"></i>
+                    </div>
+                    <h1 className="text-2xl font-bold text-white mb-2">Amal Yaumiyah Santri</h1>
+                    <p className="text-white text-sm opacity-90">Semua itu berawal dari sebuah keterpaksaan</p>
+                    {/* <div className="mt-4 bg-white rounded-lg p-3 backdrop-blur-sm"> */}
+                        <div className="mt-4 flex items-center text-white">
+                        <select
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-3 bg-white/50 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
                 <option value="">-- Pilih Santri --</option>
                 {users.map(user => (
                   <option key={user.id} value={user.id}>
-                    {user.nama} ({user.email})
+                    {user.nama}
                   </option>
                 ))}
               </select>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
+                        </div>
+                </div>
+        {/* Filter Section */}
+      <div className="bg-white rounded-lg shadow p-6 mb-6 pt-7">
+          <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                 <select
@@ -177,10 +184,9 @@ export default function RecapHabits() {
           {userData && (
             <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
               <h2 className="text-md font-semibold text-gray-800 flex items-center">
-                <i className="ri-user-3-line mr-2 text-blue-600"></i>
-                {userData.nama}
+               Nama: Akhi {userData.nama}
               </h2>
-              <p className="text-xs text-gray-600 mt-1">{userData.email}</p>
+              <p className="text-xs text-gray-600 mt-1">Email: {userData.email}</p>
             </div>
           )}
         </div>
@@ -251,7 +257,7 @@ export default function RecapHabits() {
             <p className="text-xs text-gray-500">Tidak ada data untuk bulan dan tahun yang dipilih</p>
           </div>
         )}
-      </div>
+     </div>
     </div>
   );
 }
