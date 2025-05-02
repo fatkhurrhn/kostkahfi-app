@@ -1,182 +1,431 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { galleryRef } from '../../firebase';
-import { getDocs } from 'firebase/firestore';
-import BottomNavbar from '../../components/BottomNavbar';
+import { addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 function Gallery() {
   const navigate = useNavigate();
   const [galleryItems, setGalleryItems] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [formData, setFormData] = useState({
+    id: '',
+    category: 'kajian',
+    description: '',
+    imageUrl: ''
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const categories = ['all', 'kajian', 'diskusi', 'makan-makan', 'bermain'];
-
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showModal, setShowModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  
   useEffect(() => {
-    const fetchGalleryItems = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const querySnapshot = await getDocs(galleryRef);
-        const items = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setGalleryItems(items);
-      } catch (error) {
-        console.error("Error fetching gallery items: ", error);
-        setError("Gagal memuat galeri. Silakan coba lagi.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchGalleryItems();
   }, []);
 
-  const filteredItems = selectedCategory === 'all' 
-    ? galleryItems 
-    : galleryItems.filter(item => item.category === selectedCategory);
+  useEffect(() => {
+    filterItems();
+  }, [galleryItems, searchQuery, selectedCategory]);
 
-    const searchedItems = searchQuery 
-    ? filteredItems.filter(item => {
-        const desc = item.description || '';
-        return desc.toLowerCase().includes(searchQuery.toLowerCase());
-      })
-    : filteredItems;
+  const fetchGalleryItems = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const querySnapshot = await getDocs(galleryRef);
+      const items = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setGalleryItems(items);
+    } catch (error) {
+      console.error("Error fetching gallery items: ", error);
+      setError("Gagal memuat data. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Urutkan berdasarkan tanggal terbaru
-  const sortedItems = [...searchedItems].sort((a, b) => {
-    const dateA = a.createdAt || '0';
-    const dateB = b.createdAt || '0';
-    return dateB.localeCompare(dateA);
-  });
+  const filterItems = () => {
+    let filtered = [...galleryItems];
+    
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(item => item.category === selectedCategory);
+    }
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(item => 
+        item.description.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+      );
+    }
+    
+    setFilteredItems(filtered);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    
+    try {
+      if (isEditing) {
+        await updateDoc(doc(galleryRef, formData.id), {
+          category: formData.category,
+          description: formData.description,
+          imageUrl: formData.imageUrl,
+          updatedAt: new Date().toISOString()
+        });
+      } else {
+        await addDoc(galleryRef, {
+          category: formData.category,
+          description: formData.description,
+          imageUrl: formData.imageUrl,
+          createdAt: new Date().toISOString()
+        });
+      }
+      resetForm();
+      setShowModal(false);
+      await fetchGalleryItems();
+    } catch (error) {
+      console.error("Error submitting form: ", error);
+      setError(`Gagal menyimpan data: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (item) => {
+    setFormData({
+      id: item.id,
+      category: item.category,
+      description: item.description,
+      imageUrl: item.imageUrl
+    });
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus item ini?")) {
+      setLoading(true);
+      try {
+        await deleteDoc(doc(galleryRef, id));
+        await fetchGalleryItems();
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+        setError(`Gagal menghapus data: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      id: '',
+      category: 'kajian',
+      description: '',
+      imageUrl: ''
+    });
+    setIsEditing(false);
+    setError(null);
+  };
+
+  const openImageModal = (item) => {
+    setSelectedImage(item);
+    setShowImageModal(true);
+  };
 
   return (
-    <div className="h-screen flex flex-col bg-blue-50 max-w-3xl mx-auto">
-      <div className="flex-1 overflow-y-auto container px-4 pt-[70px] pb-20 scrollbar-hide">
-        {/* Header */}
-        <div className="fixed top-0 left-0 right-0 text-white z-50 max-w-3xl mx-auto shadow-md py-3">
-          <div className="w-full mx-auto px-4 flex justify-between items-center">
-            <button 
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => navigate(-1)}
-            >
-              <i className="ri-arrow-left-line text-lg text-gray-800"></i>
-              <span className="font-medium text-gray-800">Gallery Mahasantri</span>
-            </button>
-            <div className="flex items-center space-x-4 text-gray-800">
-              <i className="ri-notification-3-line text-lg"></i>
-              <i className="ri-user-line text-lg"></i>
+    <div className="min-h-screen max-auto bg-gray-50">
+      {/* Header */}
+      <div className="sticky top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3 shadow-sm">
+        <div className="w-full max-w-2xl mx-auto px-4 flex justify-between items-center">
+          <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+            <i className="ri-arrow-left-line text-lg"></i> Gallery Santri
+          </h3>
+          <div className="flex items-center space-x-4">
+            <i className="ri-notification-3-line text-lg text-gray-700"></i>
+            <i className="ri-user-line text-lg text-gray-700"></i>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 pt-4 pb-16 max-w-2xl">
+        {/* Search and Filter Section */}
+        <div className="mb-4 bg-white p-4 rounded-lg shadow">
+          <div className="flex flex-col space-y-3">
+            <div className="relative">
+              <i className="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input
+                type="text"
+                placeholder="Cari foto..."
+                className="w-full pl-10 pr-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
         </div>
 
-        {/* Search and Filter Row */}
-        <div className="mt-0 mb-4 flex gap-2">
-          {/* Search Input - takes more space */}
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i className="ri-search-line text-blue-500"></i>
-            </div>
-            <input
-              type="text"
-              placeholder="Cari deskripsi..."
-              className="w-full pl-10 pr-4 py-2 text-gray-800 rounded-[10px] border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        {/* Gallery Grid */}
+        {loading && !galleryItems.length ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+            <p>Memuat data...</p>
           </div>
-          
-          {/* Category Dropdown */}
-          <div className="relative">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="appearance-none bg-blue-600 text-white pl-3 pr-8 py-2 rounded-[10px] border-none focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              {categories.map((category) => (
-                <option 
-                  key={category} 
-                  value={category}
-                  className="bg-white text-gray-800"
-                >
-                  {category === 'all' ? 'Semua' : category}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <i className="ri-arrow-down-s-line text-white"></i>
-            </div>
-          </div>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        {/* Gallery Content */}
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : sortedItems.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            {searchQuery ? 
-              'Tidak ditemukan foto dengan deskripsi tersebut' : 
-              'Tidak ada foto untuk kategori ini'}
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow">
+            <i className="ri-image-line text-4xl text-gray-300 mb-2"></i>
+            <p className="text-gray-500">Tidak ada foto yang ditemukan</p>
+            {(searchQuery || selectedCategory !== 'all') && (
+              <button 
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                }}
+                className="mt-2 text-blue-500 hover:text-blue-700 text-sm"
+              >
+                Reset pencarian
+              </button>
+            )}
           </div>
         ) : (
-            <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 gap-2 pt-2">
-            {sortedItems.map((item) => (
-              <div key={item.id} className="mb-2 break-inside-avoid">
-                <div className="relative group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  {/* Image with original aspect ratio */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-24">
+            {filteredItems.map((item) => (
+              <div 
+                key={item.id} 
+                className="relative group rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer bg-white"
+                onClick={() => openImageModal(item)}
+              >
+                <div className="aspect-square w-full overflow-hidden">
                   <img
                     src={item.imageUrl}
-                    alt={item.description || 'Foto kegiatan'}
-                    className="w-full h-auto object-cover rounded-lg"
+                    alt={item.description}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300?text=Gambar+Tidak+Tersedia';
+                      e.target.src = 'https://via.placeholder.com/300x300?text=Image+Not+Found';
                     }}
                   />
-                  
-                  {/* Category badge - top left */}
-                  <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-medium px-2 py-1 rounded-[5px] z-10">
-                    {item.category}
-                  </span>
-                  
-                  {/* Description overlay - appears on hover/click */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
-                    <p className="text-sm text-white line-clamp-2">
-                      {item.description || 'Tidak ada deskripsi'}
-                    </p>
-                    {item.createdAt && (
-                      <p className="text-xs text-blue-100 mt-1">
-                        <i className="ri-calendar-line mr-1"></i>
-                        {new Date(item.createdAt).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </p>
-                    )}
-                  </div>
                 </div>
+                {item.description && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                    <p className="text-white text-xs line-clamp-2">{item.description}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
       </div>
-      
-      {/* Bottom Navbar */}
-      <BottomNavbar />
+
+      {/* Floating Add Button */}
+      <button
+        onClick={() => {
+          resetForm();
+          setShowModal(true);
+        }}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all hover:shadow-xl flex items-center justify-center"
+      >
+        <i className="ri-image-add-line text-xl"></i>
+      </button>
+
+      {/* Add/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {isEditing ? 'Edit Foto' : 'Tambah Foto Baru'}
+                </h3>
+                <button
+                  onClick={() => {
+                    resetForm();
+                    setShowModal(false);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <i className="ri-close-line text-xl"></i>
+                </button>
+              </div>
+              
+              {error && (
+                <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">Kategori</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                    disabled={loading}
+                  >
+                    <option value="kajian">Kajian</option>
+                    <option value="kegiatan">Kegiatan</option>
+                    <option value="prestasi">Prestasi</option>
+                  </select>
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">Deskripsi</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="3"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-medium mb-1">URL Gambar</label>
+                  <input
+                    type="url"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://example.com/image.jpg"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetForm();
+                      setShowModal(false);
+                    }}
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    disabled={loading}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className={`px-4 py-2 text-white rounded-lg ${loading ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <i className="ri-loader-4-line animate-spin mr-1"></i> Memproses...
+                      </>
+                    ) : isEditing ? (
+                      'Update'
+                    ) : (
+                      'Simpan'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Detail Modal */}
+      {showImageModal && selectedImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-800">Detail Foto</h3>
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <i className="ri-close-line text-xl"></i>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto flex flex-col md:flex-row">
+              <div className="md:w-2/3 bg-black flex items-center justify-center p-2">
+                <img
+                  src={selectedImage.imageUrl}
+                  alt={selectedImage.description}
+                  className="max-h-[60vh] w-auto max-w-full object-contain"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
+                  }}
+                />
+              </div>
+              
+              <div className="md:w-1/3 p-4 border-t md:border-t-0 md:border-l">
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Kategori</h4>
+                  <p className="text-gray-800 capitalize">{selectedImage.category || '-'}</p>
+                </div>
+                
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Deskripsi</h4>
+                  <p className="text-gray-800">{selectedImage.description || '-'}</p>
+                </div>
+                
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Tanggal Upload</h4>
+                  <p className="text-gray-800">
+                    {new Date(selectedImage.createdAt || selectedImage.updatedAt).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+                
+                <div className="flex space-x-3 mt-6 pt-4 border-t">
+                  <button
+                    onClick={() => {
+                      setShowImageModal(false);
+                      handleEdit(selectedImage);
+                    }}
+                    className="flex-1 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center justify-center"
+                  >
+                    <i className="ri-edit-line mr-2"></i> Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm("Apakah Anda yakin ingin menghapus foto ini?")) {
+                        handleDelete(selectedImage.id);
+                        setShowImageModal(false);
+                      }
+                    }}
+                    className="flex-1 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center justify-center"
+                  >
+                    <i className="ri-delete-bin-line mr-2"></i> Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { useNavigate } from 'react-router-dom';
 
 const months = [
   { name: "Januari", value: "01", days: 31 },
@@ -18,6 +19,7 @@ const months = [
 ];
 
 export default function RecapHabits() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -107,23 +109,30 @@ export default function RecapHabits() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Rekapitulasi Amal Yaumiyah Santri</h1>
-          <p className="text-gray-600">Pantau perkembangan kebiasaan harian santri</p>
+    <div className="min-h-screen bg-gray-50">
+              {/* Header */}
+              <div className="sticky pb-3 top-0 left-0 right-0 bg-white z-50 border-b border-gray-300 py-3 shadow-sm">
+        <div className="w-full max-w-2xl mx-auto px-4 flex justify-between items-center">
+          <h3 className="text-black flex items-center gap-2 cursor-pointer" onClick={() => navigate(-1)}>
+            <i className="ri-arrow-left-line text-lg"></i> Daily Habits
+          </h3>
+          <div className="flex items-center space-x-4">
+            <i className="ri-notification-3-line text-lg text-gray-700"></i>
+            <i className="ri-user-line text-lg text-gray-700"></i>
+          </div>
         </div>
+      </div>
+      <div className="max-w-2xl mx-auto px-4 py-8">
 
         {/* Filter Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-lg shadow p-6 mb-6 pt-7">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Pilih Santri</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Santri</label>
               <select
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-lg text-gray-700 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
                 <option value="">-- Pilih Santri --</option>
                 {users.map(user => (
@@ -136,11 +145,11 @@ export default function RecapHabits() {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                  className="w-full p-3 border border-gray-200 rounded-lg text-gray-700 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
                   {months.map((month, index) => (
                     <option key={month.value} value={index + 1}>
@@ -151,11 +160,11 @@ export default function RecapHabits() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                  className="w-full p-3 border border-gray-200 rounded-lg text-gray-700 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 >
                   {[2024, 2025, 2026].map(year => (
                     <option key={year} value={year}>{year}</option>
@@ -166,47 +175,47 @@ export default function RecapHabits() {
           </div>
           
           {userData && (
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+            <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+              <h2 className="text-md font-semibold text-gray-800 flex items-center">
                 <i className="ri-user-3-line mr-2 text-blue-600"></i>
                 {userData.nama}
               </h2>
-              <p className="text-sm text-gray-600 mt-1">{userData.email}</p>
+              <p className="text-xs text-gray-600 mt-1">{userData.email}</p>
             </div>
           )}
         </div>
         
         {/* Loading State */}
         {loading && (
-          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-            <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="bg-white rounded-lg shadow p-6 text-center">
+            <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
             <p className="text-blue-800 font-medium">Memuat data...</p>
           </div>
         )}
         
         {/* Habits Data */}
         {!loading && habitsData && (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="divide-y divide-gray-200">
               {habitsData.habits.map((habit, index) => (
-                <div key={index} className="p-5">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-medium text-gray-800">{habit}</h3>
-                    <span className="text-sm font-medium text-blue-600">
+                <div key={index} className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-gray-800 text-sm">{habit}</h3>
+                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
                       {calculateCompletionPercentage(index)}%
                     </span>
                   </div>
                   
-                  <div className="mb-4">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="mb-3">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full" 
+                        className="bg-blue-600 h-1.5 rounded-full" 
                         style={{ width: `${calculateCompletionPercentage(index)}%` }}
                       ></div>
                     </div>
                   </div>
                   
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {Array.from({ length: getDaysInMonth(selectedMonth, selectedYear) }, (_, i) => i + 1).map(day => {
                       const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                       const isCompleted = habitsData.completions[dateKey]?.[index] || false;
@@ -214,7 +223,7 @@ export default function RecapHabits() {
                       return (
                         <div 
                           key={day} 
-                          className={`w-6 h-6 rounded-md flex items-center justify-center text-xs ${
+                          className={`w-5 h-5 rounded-sm flex items-center justify-center text-[10px] ${
                             isCompleted 
                               ? 'bg-green-100 text-green-800 border border-green-200' 
                               : 'bg-red-100 text-red-800 border border-red-200'
@@ -234,12 +243,12 @@ export default function RecapHabits() {
         
         {/* Empty State */}
         {!loading && !habitsData && selectedUserId && (
-          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="ri-file-search-line text-2xl text-gray-400"></i>
+          <div className="bg-white rounded-lg shadow p-6 text-center">
+            <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <i className="ri-file-search-line text-xl text-gray-400"></i>
             </div>
-            <h3 className="text-gray-800 font-medium mb-1">Tidak ada data</h3>
-            <p className="text-sm text-gray-500">Tidak ada data untuk bulan dan tahun yang dipilih</p>
+            <h3 className="text-gray-800 font-medium text-sm mb-1">Tidak ada data</h3>
+            <p className="text-xs text-gray-500">Tidak ada data untuk bulan dan tahun yang dipilih</p>
           </div>
         )}
       </div>

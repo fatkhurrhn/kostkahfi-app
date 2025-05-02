@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import RegisterForm from '../components/Auth/RegisterForm';
+import { useAuth } from '../../context/AuthContext';
+import RegisterForm from '../../components/Auth/RegisterForm';
 
 export default function Register() {
   const [error, setError] = useState('');
@@ -27,8 +27,8 @@ export default function Register() {
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Register Santri</h1>
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
         <RegisterForm onSubmit={handleRegister} loading={loading} />
-        <p className="mt-4 text-center">
-          Already have an account? <a href="/login" className="text-blue-500 hover:underline">Login here</a>
+        <p className="mt-4 text-center text-gray-800">
+          Already have an account? <a href="/mahasantri/login" className="text-blue-500 hover:underline">Login here</a>
         </p>
       </div>
     </div>

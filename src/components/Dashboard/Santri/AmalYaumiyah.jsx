@@ -4,24 +4,25 @@ import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 
 const habits = [
+  "Tahajud 🌙🙏",
   "Sholat Subuh 🌅🙏",
+  "Al-Matsurat Pagi 📿📖",
+  "Istigfar min 100x 🙏🕌",
+  "Sedekah subuh 🤲💰",
+  "Minum air putih 💧🥤",
+  "Olahraga 🏃‍♂️💪",
+  "Dhuha ☀️🙏",
+  "Baca Buku 📚👓",
+  "Mendengarkan Kajian/Podcast 🎧",
   "Sholat Dzuhur ☀️🙏",
   "Sholat Ashar 🌇🙏",
+  "Al-Matsurat Petang 📿📖",
   "Sholat Maghrib 🌆🙏",
   "Sholat Isya 🌙🙏",
   "Sholat Rawatib 🌙🙏",
-  "Tahajud 🌙🙏",
-  "Al-Matsurat Pagi 📿📖",
-  "Al-Matsurat Petang 📿📖",
-  "Istigfar min 100x 🙏🕌",
-  "Sedekah subuh 🤲💰",
-  "Olahraga 🏃‍♂️💪",
-  "Dhuha ☀️🙏",
-  "Minum air putih 💧🥤",
-  "Tilawah minimal 4 Halaman 📖",
-  "Baca Buku 📚👓",
-  "Mendengarkan Kajian/Podcast 🎧"
+  "Tilawah minimal 4 Halaman 📖"
 ];
+
 
 const months = [
   { name: "Januari", value: "01", days: 31 },

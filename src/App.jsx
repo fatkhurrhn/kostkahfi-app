@@ -1,16 +1,20 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Index from './pages/index';
+
 import DashboardAdmin from './components/Dashboard/DashboardAdmin';
 import DashboardSantri from './components/Dashboard/DashboardSantri';
+
 import RekapKehadiranAdmin from './components/Dashboard/Admin/RekapKehadiran';
 import RekapSetoranAdmin from './components/Dashboard/Admin/RekapSetoran';
+
+import Login from './pages/mahasantri/Login';
+import Register from './pages/mahasantri/Register';
+import HomeMahasantri from './pages/mahasantri/Home';
 import RecapHabits from './pages/mahasantri/RecapHabits';
-import Index from './pages/index';
 import RecapKehadiran from './pages/mahasantri/RecapKehadiran';
 import RecapSetoran from './pages/mahasantri/RecapSetoran';
-import HomeMahasantri from './pages/mahasantri/Home';
+import GallerySantri from './pages/mahasantri/Gallery';
 
 function PrivateRoute({ children, role }) {
   const { currentUser } = useAuth();
@@ -32,13 +36,14 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
 
+          <Route path="/mahasantri" element={<HomeMahasantri />} />
+          <Route path="/mahasantri/login" element={<Login />} />
+          <Route path="/mahasantri/register" element={<Register />} />
           <Route path="/mahasantri/recap-habits" element={<RecapHabits />} />
           <Route path="/mahasantri/recap-kehadiran" element={<RecapKehadiran />} />
           <Route path="/mahasantri/recap-setoran" element={<RecapSetoran />} />
-          <Route path="/mahasantri" element={<HomeMahasantri />} />
+          <Route path="/mahasantri/gallery" element={<GallerySantri />} />
 
           <Route path="/dashboard-admin" element={ <PrivateRoute role="admin"> <DashboardAdmin /></PrivateRoute> } />
           <Route path="/dashboard-admin/kehadiran-kajian" element={<RekapKehadiranAdmin />} />

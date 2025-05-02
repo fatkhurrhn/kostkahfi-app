@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import LoginForm from '../components/Auth/LoginForm';
+import { useAuth } from '../../context/AuthContext';
+import LoginForm from '../../components/Auth/LoginForm';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -32,8 +32,8 @@ export default function Login() {
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h1>
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
         <LoginForm onSubmit={handleLogin} loading={loading} />
-        <p className="mt-4 text-center">
-          Don't have an account? <a href="/register" className="text-blue-500 hover:underline">Register here</a>
+        <p className="mt-4 text-center text-gray-800">
+          Don't have an account? <a href="/mahasantri/register" className="text-blue-500 hover:underline">Register here</a>
         </p>
       </div>
     </div>
