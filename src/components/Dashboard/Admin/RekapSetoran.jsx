@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from '../../../firebase';
+import { useNavigate, Link } from 'react-router-dom';
+import { db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from '../../../firebase';
 import { useAuth } from '../../../context/AuthContext';
-import Navbar from './AdminNavbar';
 
-function Admin() {
+export default function Admin() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [setoranList, setSetoranList] = useState([]);
   const [formData, setFormData] = useState({
     pekan: '',
@@ -22,13 +21,17 @@ function Admin() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const bulanList = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
   
-  const tahunList = [2023, 2024, 2025];
+  const tahunList = [2025, 2026, 2027];
   const pekanList = [1, 2, 3, 4];
   const jenisList = ['setoran', 'murojaah'];
 
@@ -121,141 +124,286 @@ function Admin() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus setoran ini?')) {
-      try {
-        await deleteDoc(doc(db, 'setoran', id));
-        await fetchSetoran();
-      } catch (error) {
-        console.error("Error deleting setoran:", error);
-      }
+  const handleDelete = async () => {
+    try {
+      await deleteDoc(doc(db, 'setoran', selectedId));
+      await fetchSetoran();
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting setoran:", error);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/mahasantri');
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar/>
+      {/* Navbar */}
+      <nav className="bg-gray-800 text-white shadow-md">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Desktop Navbar */}
+          <div className="hidden md:flex h-16 items-center justify-between">
+            <div 
+              className="flex items-center cursor-pointer"
+              onClick={() => navigate('/dashboard-admin/')}
+            >
+              <h1 className="text-xl font-bold">Admin Dashboard</h1>
+            </div>
+            
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <i className="ri-user-line"></i>
+                <span className="hidden sm:inline">Welcome,</span>
+                <span className="font-medium">{currentUser?.nama}</span>
+              </div>
+              <button 
+                onClick={() => setShowLogoutModal(true)}
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center"
+              >
+                <i className="ri-logout-box-r-line mr-2"></i>
+                Logout
+              </button>
+            </div>
+          </div>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0 space-y-6">
-{/* Add Data Header & Button */}
-<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-  <h2 className="text-lg font-semibold text-gray-800">Daftar Setoran / Murojaah</h2>
-  
-  <button
-    onClick={() => {
-      resetForm();
-      setEditingId(null);
-      setShowModal(true);
-    }}
-    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm flex items-center shadow-sm transition duration-150"
-  >
-    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-    </svg>
-    Tambah Data Baru
-  </button>
-</div>
+          {/* Mobile Navbar */}
+          <div className="md:hidden flex h-16 items-center justify-between">
+            <div 
+              className="flex items-center cursor-pointer"
+              onClick={() => navigate('/dashboard-admin/')}
+            >
+              <i className="ri-dashboard-line text-lg mr-2"></i>
+              <h1 className="text-lg font-bold">Admin Panel</h1>
+            </div>
+            
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
+            >
+              {mobileMenuOpen ? (
+                <i className="ri-close-line text-xl"></i>
+              ) : (
+                <i className="ri-menu-line text-xl"></i>
+              )}
+            </button>
+          </div>
+        </div>
 
+        {/* Mobile Menu - Slide from right */}
+        <div className={`md:hidden fixed inset-y-0 right-0 w-64 bg-gray-800 shadow-xl transform ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+          <div className="flex flex-col h-full p-4">
+            <div className="flex justify-between items-center border-b border-gray-700 pb-4">
+              <div className="flex items-center">
+                <i className="ri-user-line mr-2"></i>
+                <span>{currentUser?.nama}</span>
+              </div>
+              <button 
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <i className="ri-close-line text-xl"></i>
+              </button>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-between py-4">
+              <div>
+                <Link to="/dashboard-admin/" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Home 
+                </Link>
+                <Link to="/dashboard-admin/kehadiran-kajian" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Kehadiran 
+                </Link>
+                <Link to="/dashboard-admin/setoran" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Setoran 
+                </Link>
+              </div>
+              
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowLogoutModal(true);
+                }}
+                className="block w-full text-left px-4 py-3 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 flex items-center"
+              >
+                <i className="ri-logout-box-r-line mr-3"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Overlay when mobile menu is open */}
+        {mobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          ></div>
+        )}
+      </nav>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
- 
+      {/* Main Content */}
+      <div className="container mx-auto p-4 md:p-6">
+        {/* Welcome Card */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-sm p-6 mb-6 text-white">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 flex items-center">
+            Admin Dashboard
+          </h1>
+          <p className="flex items-center">
+            <i className="ri-user-smile-line mr-2"></i>
+            Welcome back, {currentUser?.nama || 'Admin'}!
+          </p>
+        </div>
+        
+        {/* Data Management Section */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                {/* <h2 className="text-xl md:text-2xl font-semibold text-gray-800 flex items-center">
+                  <a href="/dashboard-admin/">Home </a>/ Daftar Hafalan Santri
+                </h2> */}
+                <nav className="text-xl md:text-2xl font-semibold text-gray-800 mb-4" aria-label="Breadcrumb">
+  <ol className="list-reset flex items-center space-x-2">
+    <li>
+      <a href="/dashboard-admin" className="text-blue-600 hover:underline">Home</a>
+    </li>
+    <li>/</li>
+    <li className="text-gray-800 font-semibold">Daftar Hafalan Santri</li>
+  </ol>
+</nav>
+                <p className="text-gray-600 mt-1 flex items-center">
+                  <i className="ri-database-line mr-1"></i>
+                  {setoranList.length} data ditemukan
+                </p>
+              </div>
+              
+              <button
+                onClick={() => {
+                  resetForm();
+                  setEditingId(null);
+                  setShowModal(true);
+                }}
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 transition text-center flex items-center justify-center shadow-md"
+              >
+                <i className="ri-add-line mr-2"></i>
+                Tambah Data Baru
+              </button>
+            </div>
+          </div>
 
-  {loading ? (
-    <div className="p-4 text-center text-gray-500">Memuat data...</div>
-  ) : (
-    <div className="overflow-x-auto">
-      <table className="min-w-[800px] w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ayat</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Halaman/Juz</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {setoranList.length > 0 ? (
-            setoranList.map((setoran) => (
-              <tr key={setoran.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    setoran.jenis === 'setoran'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {setoran.jenis || 'setoran'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{setoran.nama}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-700">
-                    {setoran.ayatMulai} - {setoran.ayatSelesai}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">{setoran.halaman}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-700">
-                    Pekan {setoran.pekan}<br />
-                    {setoran.bulan} {setoran.tahun}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    setoran.metode === 'online'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {setoran.metode}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap space-y-2 flex flex-col items-start">
-  <button
-    onClick={() => handleEdit(setoran)}
-    className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
-  >
-    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-    </svg>
-    Edit
-  </button>
-  <button
-    onClick={() => handleDelete(setoran.id)}
-    className="text-red-500 hover:text-red-700 text-sm flex items-center"
-  >
-    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-    Hapus
-  </button>
+          {/* Table */}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <i className="ri-loader-4-line animate-spin text-4xl text-blue-500"></i>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Jenis
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nama
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                     Ayat
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Halaman/Juz
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Waktu
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Metode
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {setoranList.length > 0 ? (
+                    setoranList.map((setoran) => (
+                      <tr key={setoran.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            setoran.jenis === 'setoran'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {setoran.jenis || 'setoran'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">{setoran.nama}</div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-700 whitespace-nowrap">
+                            {setoran.ayatMulai} - {setoran.ayatSelesai}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-700">{setoran.halaman}</div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-700 whitespace-nowrap">
+                            Pekan {setoran.pekan}<br />
+                            {setoran.bulan} {setoran.tahun}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            setoran.metode === 'online'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {setoran.metode}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+  <div className="flex flex-col items-start space-y-2">
+    <button
+      onClick={() => handleEdit(setoran)}
+      className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
+    >
+      <i className="ri-edit-line mr-1"></i>
+      <span className="hidden sm:inline">Edit</span>
+    </button>
+    <button
+      onClick={() => {
+        setSelectedId(setoran.id);
+        setShowDeleteModal(true);
+      }}
+      className="text-red-500 hover:text-red-700 text-sm flex items-center"
+    >
+      <i className="ri-delete-bin-line mr-1"></i>
+      <span className="hidden sm:inline">Hapus</span>
+    </button>
+  </div>
 </td>
 
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-                Tidak ada data
-              </td>
-            </tr>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-8 text-center text-gray-500 flex flex-col items-center">
+                        <i className="ri-database-2-line text-4xl text-gray-300 mb-2"></i>
+                        Tidak ada data
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
-        </tbody>
-      </table>
-    </div>
-  )}
-</div>
-
         </div>
-      </main>
+      </div>
 
-      {/* Modal Form */}
+      {/* Add/Edit Data Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -272,9 +420,7 @@ function Admin() {
                   }}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <i className="ri-close-line text-xl"></i>
                 </button>
               </div>
 
@@ -284,7 +430,7 @@ function Admin() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Jenis</label>
                     <select
                       name="jenis"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       value={formData.jenis}
                       onChange={handleInputChange}
                       required
@@ -301,7 +447,7 @@ function Admin() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Pekan</label>
                     <select
                       name="pekan"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       value={formData.pekan}
                       onChange={handleInputChange}
                       required
@@ -317,7 +463,7 @@ function Admin() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                     <select
                       name="bulan"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       value={formData.bulan}
                       onChange={handleInputChange}
                       required
@@ -335,7 +481,7 @@ function Admin() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
                     <select
                       name="tahun"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       value={formData.tahun}
                       onChange={handleInputChange}
                       required
@@ -351,7 +497,7 @@ function Admin() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Metode</label>
                     <select
                       name="metode"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       value={formData.metode}
                       onChange={handleInputChange}
                       required
@@ -367,7 +513,7 @@ function Admin() {
                   <input
                     type="text"
                     name="nama"
-                    className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                     value={formData.nama}
                     onChange={handleInputChange}
                     required
@@ -380,7 +526,7 @@ function Admin() {
                     <input
                       type="text"
                       name="ayatMulai"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Contoh: Al-Baqarah: 1"
                       value={formData.ayatMulai}
                       onChange={handleInputChange}
@@ -393,7 +539,7 @@ function Admin() {
                     <input
                       type="text"
                       name="ayatSelesai"
-                      className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Contoh: Al-Baqarah: 10"
                       value={formData.ayatSelesai}
                       onChange={handleInputChange}
@@ -407,7 +553,7 @@ function Admin() {
                   <input
                     type="text"
                     name="halaman"
-                    className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Contoh: Halaman 15-17 atau Juz 1"
                     value={formData.halaman}
                     onChange={handleInputChange}
@@ -434,17 +580,12 @@ function Admin() {
                   >
                     {loading ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <i className="ri-loader-4-line animate-spin mr-2"></i>
                         {editingId ? 'Updating...' : 'Menyimpan...'}
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                        </svg>
+                        <i className="ri-save-line mr-2"></i>
                         {editingId ? 'Update' : 'Simpan'}
                       </>
                     )}
@@ -455,8 +596,78 @@ function Admin() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600">
+                <i className="ri-delete-bin-line text-xl"></i>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">Konfirmasi Hapus</h3>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700"
+              >
+                <i className="ri-delete-bin-line mr-2"></i>
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600">
+                <i className="ri-logout-box-r-line text-xl"></i>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">Konfirmasi Logout</h3>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-500">Apakah Anda yakin ingin logout dari admin panel?</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700"
+              >
+                <i className="ri-logout-box-r-line mr-2"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default Admin;
