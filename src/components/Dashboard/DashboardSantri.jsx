@@ -70,8 +70,16 @@ export default function DashboardSantri() {
             <div className="space-y-2 text-sm">
               <p><span className="font-medium">Nama:</span> {currentUser?.nama}</p>
               <p><span className="font-medium">Email:</span> {currentUser?.email}</p>
-              {/* <p><span className="font-medium">Tanggal Daftar:</span> {currentUser?.createdAt?.toDate().toLocaleDateString()}</p> */}
-              <p><span className="font-medium">Login Terakhir:</span> {new Date(currentUser?.metadata?.lastSignInTime).toLocaleDateString()}</p>
+              <p>
+  <span className="font-medium">Tanggal Daftar:</span>{' '}
+  {currentUser?.createdAt?.toDate().toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })}
+</p>
+              {/* <p><span className="font-medium">Login Terakhir:</span> {new Date(currentUser?.metadata?.lastSignInTime).toLocaleDateString()}</p> */}
 
             </div>
           </div>
