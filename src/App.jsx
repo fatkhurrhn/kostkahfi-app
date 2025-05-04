@@ -5,8 +5,8 @@ import Index from './pages/index';
 import DashboardAdmin from './components/Dashboard/DashboardAdmin';
 import DashboardSantri from './components/Dashboard/DashboardSantri';
 
-import RekapKehadiranAdmin from './components/Dashboard/Admin/RekapKehadiran';
-import RekapSetoranAdmin from './components/Dashboard/Admin/RekapSetoran';
+import RekapKehadiranAdmin from './components/Dashboard/AdminMahasantri/RekapKehadiran';
+import RekapSetoranAdmin from './components/Dashboard/AdminMahasantri/RekapSetoran';
 
 import Login from './pages/mahasantri/Login';
 import Register from './pages/mahasantri/Register';

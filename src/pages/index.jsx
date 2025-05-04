@@ -12,14 +12,31 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="">
-        <button 
+      <div className="flex flex-col md:flex-row gap-4 justify-center items-center mt-6">
+        <button
           onClick={() => navigate('/mahasantri/')}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-4 px-6 rounded-lg shadow-md transition-colors duration-300 flex flex-col items-center"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-4 px-6 rounded-lg shadow-md transition-colors duration-300 w-64 text-center"
         >
-          Program Mahasantri
+          Program Mahasantrii
+        </button>
+
+        <button
+          onClick={() => navigate('#')}
+          className="bg-orange-400 cursor-not-allowed text-white font-medium py-4 px-6 rounded-lg shadow-md transition-colors duration-300 w-64 text-center"
+          disabled
+        >
+          Program BIMAN (Coming Soon)
+        </button>
+
+        <button
+          onClick={() => navigate('#')}
+          className="bg-green-400 cursor-not-allowed text-white font-medium py-4 px-6 rounded-lg shadow-md transition-colors duration-300 w-64 text-center"
+          disabled
+        >
+          Cavelatte (Coming Soon)
         </button>
       </div>
+
     </div>
   );
 }

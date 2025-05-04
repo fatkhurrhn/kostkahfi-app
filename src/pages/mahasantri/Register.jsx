@@ -18,7 +18,7 @@ export default function Register() {
       setLoading(true);
       setError('');
       await register(nama, email, password);
-      navigate('/login');
+      navigate('/mahasantri/login');
     } catch {
       setError('Failed to register. Email might already be in use.');
       setLoading(false);
