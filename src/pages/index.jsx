@@ -14,7 +14,7 @@ export default function HomePage() {
 
       <div className="">
         <button 
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/mahasantri/')}
           className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-4 px-6 rounded-lg shadow-md transition-colors duration-300 flex flex-col items-center"
         >
           Program Mahasantri
