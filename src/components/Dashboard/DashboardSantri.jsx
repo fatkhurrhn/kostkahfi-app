@@ -38,11 +38,11 @@ export default function DashboardSantri() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Modal Konfirmasi */}
-            <LogoutConfirmModal
-              isOpen={showLogoutModal}
-              onClose={() => setShowLogoutModal(false)}
-              onConfirm={handleLogout}
-            />
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
       {/* Santri Navbar */}
       <nav className="bg-blue-600 text-white p-3 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
@@ -50,14 +50,14 @@ export default function DashboardSantri() {
           <div className="flex items-center space-x-3">
             <span className="hidden sm:inline text-sm">Hello, {currentUser?.nama}</span>
             <button
-            onClick={() => setShowLogoutModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-            </svg>
-            Logout
-          </button>
+              onClick={() => setShowLogoutModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
       </nav>
@@ -71,14 +71,14 @@ export default function DashboardSantri() {
               <p><span className="font-medium">Nama:</span> {currentUser?.nama}</p>
               <p><span className="font-medium">Email:</span> {currentUser?.email}</p>
               <p>
-  <span className="font-medium">Tanggal Daftar:</span>{' '}
-  {currentUser?.createdAt?.toDate().toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  })}
-</p>
+                <span className="font-medium">Tanggal Daftar:</span>{' '}
+                {currentUser?.createdAt?.toDate().toLocaleDateString('id-ID', {
+                  weekday: 'long',
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </p>
               {/* <p><span className="font-medium">Login Terakhir:</span> {new Date(currentUser?.metadata?.lastSignInTime).toLocaleDateString()}</p> */}
 
             </div>
@@ -106,7 +106,7 @@ function AmalYaumiyahComponent({ currentUser }) {
   const habits = [
     "Sholat Tahajud",
     "Sholat Subuh",
-    "Al-Matsurat",
+    "Al-Matsurat (pagi)",
     "Istigfar 100x",
     "Sedekah",
     "Air putih",
@@ -116,7 +116,7 @@ function AmalYaumiyahComponent({ currentUser }) {
     "Kajian/podcast",
     "Sholat Dzuhur",
     "Sholat Ashar",
-    "Al-Matsurat",
+    "Al-Matsurat (sore)",
     "Sholat Maghrib",
     "Sholat Isya",
     "Rawatib",
@@ -141,26 +141,26 @@ function AmalYaumiyahComponent({ currentUser }) {
   useEffect(() => {
     const monthObj = months[selectedMonth - 1];
     let days = monthObj.days;
-    
+
     if (selectedMonth === 2) {
       const isLeapYear = (selectedYear % 4 === 0 && selectedYear % 100 !== 0) || (selectedYear % 400 === 0);
       days = isLeapYear ? 29 : 28;
     }
-    
+
     setDaysInMonth(days);
   }, [selectedMonth, selectedYear]);
 
   useEffect(() => {
     const loadData = async () => {
       if (!currentUser) return;
-      
+
       setLoading(true);
       const monthYear = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
       const docRef = doc(db, 'daily_habits', `${currentUser.uid}_${monthYear}`);
-      
+
       try {
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           setHabitsData(docSnap.data());
         } else {
@@ -170,7 +170,7 @@ function AmalYaumiyahComponent({ currentUser }) {
             habits,
             completions: {}
           };
-          
+
           await setDoc(docRef, newData);
           setHabitsData(newData);
         }
@@ -180,33 +180,33 @@ function AmalYaumiyahComponent({ currentUser }) {
         setLoading(false);
       }
     };
-    
+
     loadData();
   }, [currentUser, selectedMonth, selectedYear]);
 
   const handleCheckboxChange = async (day, habitIndex) => {
     if (!currentUser || !habitsData) return;
-    
+
     const today = new Date();
     const currentDate = new Date(selectedYear, selectedMonth - 1, day);
-    
+
     if (currentDate > today) return;
-    
+
     const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const updatedCompletions = { ...habitsData.completions };
-    
+
     if (!updatedCompletions[dateKey]) {
       updatedCompletions[dateKey] = Array(habits.length).fill(false);
     }
-    
+
     updatedCompletions[dateKey][habitIndex] = !updatedCompletions[dateKey][habitIndex];
-    
+
     try {
       const docRef = doc(db, 'daily_habits', `${currentUser.uid}_${habitsData.monthYear}`);
       await updateDoc(docRef, {
         completions: updatedCompletions
       });
-      
+
       setHabitsData({
         ...habitsData,
         completions: updatedCompletions
@@ -244,7 +244,7 @@ function AmalYaumiyahComponent({ currentUser }) {
             </option>
           ))}
         </select>
-        
+
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
@@ -257,69 +257,69 @@ function AmalYaumiyahComponent({ currentUser }) {
       </div>
 
       <div className="overflow-x-auto">
-  <div className="min-w-max bg-white rounded-lg shadow-sm">
-    {/* Header - Days */}
-    <div className="flex border-b border-gray-200">
-      <div className="w-32 min-w-[8rem] p-2 font-medium text-sm text-gray-800 bg-gray-50">
-        Kegiatan
-      </div>
-      <div className="flex">
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
-          <div 
-            key={day} 
-            className="w-10 min-w-[2.5rem] p-1 text-center text-xs font-medium text-gray-800 bg-gray-50"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
-    </div>
-    
-    {/* Rows - Habits */}
-    <div className="divide-y divide-gray-200">
-      {habits.map((habit, habitIndex) => (
-        <div key={habitIndex} className="flex hover:bg-gray-50 transition-colors">
-          <div className="w-32 min-w-[8rem] p-2 text-sm text-gray-800 truncate">
-            {habit}
-          </div>
-          <div className="flex">
-            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
-              const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-              const isCompleted = habitsData.completions[dateKey]?.[habitIndex] || false;
-              const editable = isDateEditable(day);
-              
-              return (
-                <div 
-                  key={day} 
-                  className="w-10 min-w-[2.5rem] p-1 flex items-center justify-center"
+        <div className="min-w-max bg-white rounded-lg shadow-sm">
+          {/* Header - Days */}
+          <div className="flex border-b border-gray-200">
+            <div className="w-32 min-w-[8rem] p-2 font-medium text-sm text-gray-800 bg-gray-50">
+              Kegiatan
+            </div>
+            <div className="flex">
+              {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
+                <div
+                  key={day}
+                  className="w-10 min-w-[2.5rem] p-1 text-center text-xs font-medium text-gray-800 bg-gray-50"
                 >
-                  <button
-                    onClick={() => handleCheckboxChange(day, habitIndex)}
-                    disabled={!editable}
-                    className={`
+                  {day}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Rows - Habits */}
+          <div className="divide-y divide-gray-200">
+            {habits.map((habit, habitIndex) => (
+              <div key={habitIndex} className="flex hover:bg-gray-50 transition-colors">
+                <div className="w-32 min-w-[8rem] p-2 text-sm text-gray-800 truncate">
+                  {habit}
+                </div>
+                <div className="flex">
+                  {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+                    const dateKey = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const isCompleted = habitsData.completions[dateKey]?.[habitIndex] || false;
+                    const editable = isDateEditable(day);
+
+                    return (
+                      <div
+                        key={day}
+                        className="w-10 min-w-[2.5rem] p-1 flex items-center justify-center"
+                      >
+                        <button
+                          onClick={() => handleCheckboxChange(day, habitIndex)}
+                          disabled={!editable}
+                          className={`
                       w-6 h-6 rounded border-2 flex items-center justify-center transition-all
                       ${isCompleted ? 'bg-green-50 border-green-300' : 'bg-white border-gray-200'}
-                      ${editable ? 
-                        'cursor-pointer hover:border-blue-300 active:scale-95' : 
-                        'cursor-not-allowed opacity-40'
-                      }
+                      ${editable ?
+                              'cursor-pointer hover:border-blue-300 active:scale-95' :
+                              'cursor-not-allowed opacity-40'
+                            }
                     `}
-                    aria-label={`Toggle habit ${habit} untuk tanggal ${day}`}
-                  >
-                    {isCompleted && (
-                      <span className="text-green-600 text-sm">✓</span>
-                    )}
-                  </button>
+                          aria-label={`Toggle habit ${habit} untuk tanggal ${day}`}
+                        >
+                          {isCompleted && (
+                            <span className="text-green-600 text-sm">✓</span>
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
-      
+      </div>
+
       <div className="mt-4 text-xs text-gray-500">
         <p>Catatan: Anda hanya bisa mencentang untuk hari yang sudah lewat atau hari ini.</p>
       </div>

@@ -17,6 +17,9 @@ import RecapSetoran from './pages/mahasantri/RecapSetoran';
 import GallerySantri from './pages/mahasantri/Gallery';
 import Tes from './pages/mahasantri/tes';
 
+import HomeBiman from './pages/biman/index';
+import LoginBiman from './pages/biman/Login';
+
 function PrivateRoute({ children, role }) {
   const { currentUser } = useAuth();
 
@@ -37,6 +40,9 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
+
+          <Route path="/biman" element={<HomeBiman />} />
+          <Route path="/biman/login" element={<LoginBiman />} />
 
           <Route path="/mahasantri" element={<HomeMahasantri />} />
           <Route path="/mahasantri/login" element={<Login />} />

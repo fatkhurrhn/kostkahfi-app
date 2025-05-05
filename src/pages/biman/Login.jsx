@@ -37,7 +37,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Ahlan Mahasantri 👋</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Ahlan BIMAN 👋</h1>
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
         
