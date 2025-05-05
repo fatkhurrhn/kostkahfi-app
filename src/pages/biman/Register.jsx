@@ -2,29 +2,25 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-export default function Login() {
+export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [nama, setNama] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       setError('');
-      const user = await login(email, password);
-
-      if (user.role === 'admin') {
-        navigate('/dashboard-admin');
-      } else {
-        navigate('/dashboard-santri');
-      }
+      await register(nama, email, password);
+      navigate('/biman/login');
     } catch {
-      setError('Failed to login. Check your email and password.');
+      setError('Failed to register. Email might already be in use.');
       setLoading(false);
     }
   };
@@ -37,10 +33,10 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Ahlan Mahasantri 👋</h1>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
+          <p className="text-gray-600 mt-2">Register as a new anak BIMAN</p>
         </div>
-
+        
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
             <div className="flex">
@@ -55,25 +51,38 @@ export default function Login() {
             </div>
           </div>
         )}
-
-        <form onSubmit={handleLogin} className="space-y-5">
+        
+        <form onSubmit={handleRegister} className="space-y-5">
+          <div>
+            <label htmlFor="nama" className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="nama"
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
+              className="w-full px-4 py-3 border bg-white text-gray-700 border-gray-300 rounded-lg outline-none transition"
+              placeholder="Your full name"
+              required
+            />
+          </div>
+          
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
             </label>
-            <div className="relative">
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border bg-white text-gray-700 border-gray-300 rounded-lg outline-none transition"
-                placeholder="your@email.com"
-                required
-              />
-            </div>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border bg-white text-gray-700 border-gray-300 rounded-lg outline-none transition"
+              placeholder="your@email.com"
+              required
+            />
           </div>
-
+          
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -85,8 +94,9 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border bg-white text-gray-700 border-gray-300 rounded-lg outline-none transition pr-10"
-                placeholder="password"
+                placeholder="••••••••"
                 required
+                minLength="6"
               />
               <button
                 type="button"
@@ -101,16 +111,18 @@ export default function Login() {
                 )}
               </button>
             </div>
+            <p className="mt-1 text-xs text-gray-500">Minimum 6 characters</p>
           </div>
-
+          
           <div className="pt-2">
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 px-4 rounded-lg font-medium text-white transition ${loading
+              className={`w-full py-3 px-4 rounded-lg font-medium text-white transition ${
+                loading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2'
-                }`}
+                  : 'bg-blue-600 hover:bg-blue-700 focus:ring-offset-2'
+              }`}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -121,18 +133,19 @@ export default function Login() {
                   Processing...
                 </span>
               ) : (
-                'Sign In'
+                'Register'
               )}
             </button>
           </div>
         </form>
+        
         <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <a
-            href="/mahasantri/register"
+          Already have an account?{' '}
+          <a 
+            href="/biman/login" 
             className="font-medium text-blue-600 hover:text-blue-500 hover:underline"
           >
-            Register here
+            Login here
           </a>
         </div>
       </div>
