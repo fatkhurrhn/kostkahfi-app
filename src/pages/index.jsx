@@ -17,7 +17,7 @@ export default function HomePage() {
           onClick={() => navigate('/mahasantri/')}
           className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-4 px-6 rounded-lg shadow-md transition-colors duration-300 w-64 text-center"
         >
-          Program Mahasantrii
+          Program Mahasantri
         </button>
 
         <button
