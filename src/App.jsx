@@ -19,6 +19,7 @@ import Tes from './pages/mahasantri/tes';
 
 import HomeBiman from './pages/biman/index';
 import LoginBiman from './pages/biman/Login';
+import RegistBiman from './pages/biman/Register';
 
 function PrivateRoute({ children, role }) {
   const { currentUser } = useAuth();
@@ -43,6 +44,7 @@ function App() {
 
           <Route path="/biman" element={<HomeBiman />} />
           <Route path="/biman/login" element={<LoginBiman />} />
+          <Route path="/biman/register" element={<RegistBiman />} />
 
           <Route path="/mahasantri" element={<HomeMahasantri />} />
           <Route path="/mahasantri/login" element={<Login />} />
