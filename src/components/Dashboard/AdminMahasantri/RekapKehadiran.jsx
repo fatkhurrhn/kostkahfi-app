@@ -45,7 +45,12 @@ export default function RecapKehadiran() {
         id: doc.id,
         ...doc.data(),
         waktu: doc.data().waktu?.toDate() || null
-      })).reverse();
+      }))
+        // Urutkan berdasarkan waktu (terbaru ke terlama)
+        .sort((a, b) => {
+          if (!a.waktu || !b.waktu) return 0;
+          return b.waktu - a.waktu;
+        });
       setKehadiranList(data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -207,21 +212,21 @@ export default function RecapKehadiran() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Desktop Navbar */}
           <div className="hidden md:flex h-16 items-center justify-between">
-            <div 
+            <div
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard-admin/')}
             >
               <i className="ri-dashboard-line text-xl mr-2"></i>
               <h1 className="text-xl font-bold">Admin Dashboard</h1>
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
                 <i className="ri-user-line"></i>
                 <span className="hidden sm:inline">Welcome,</span>
                 <span className="font-medium">{currentUser?.nama}</span>
               </div>
-              <button 
+              <button
                 onClick={() => setShowLogoutModal(true)}
                 className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center"
               >
@@ -233,14 +238,14 @@ export default function RecapKehadiran() {
 
           {/* Mobile Navbar */}
           <div className="md:hidden flex h-16 items-center justify-between">
-            <div 
+            <div
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard-admin/')}
             >
               <i className="ri-dashboard-line text-lg mr-2"></i>
               <h1 className="text-lg font-bold">Admin Panel</h1>
             </div>
-            
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
@@ -262,24 +267,24 @@ export default function RecapKehadiran() {
                 <i className="ri-user-line mr-2"></i>
                 <span>{currentUser?.nama}</span>
               </div>
-              <button 
+              <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
                 <i className="ri-close-line text-xl"></i>
               </button>
             </div>
-            
+
             <div className="flex-1 flex flex-col justify-between py-4">
               <div>
-                <Link to="/dashboard-admin/" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Home 
+                <Link to="/dashboard-admin/" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Home
                 </Link>
-                <Link to="/dashboard-admin/kehadiran-kajian" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Kehadiran 
+                <Link to="/dashboard-admin/kehadiran-kajian" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Kehadiran
                 </Link>
-                <Link to="/dashboard-admin/setoran" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Setoran 
+                <Link to="/dashboard-admin/setoran" className="block w-full text-left px-4 py-1 text-sm font-medium rounded-md hover:bg-gray-700 mb-1 flex items-center">Rekap Setoran
                 </Link>
               </div>
-              
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -293,10 +298,10 @@ export default function RecapKehadiran() {
             </div>
           </div>
         </div>
-        
+
         {/* Overlay when mobile menu is open */}
         {mobileMenuOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           ></div>
@@ -325,7 +330,7 @@ export default function RecapKehadiran() {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-red-700">{error}</p>
-                <button 
+                <button
                   onClick={() => setError(null)}
                   className="mt-2 text-sm text-red-700 underline hover:text-red-600"
                 >
@@ -343,20 +348,20 @@ export default function RecapKehadiran() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <nav className="text-xl md:text-2xl font-semibold text-gray-800 mb-4" aria-label="Breadcrumb">
-  <ol className="list-reset flex items-center space-x-2">
-    <li>
-      <a href="/dashboard-admin" className="text-blue-600 hover:underline">Home</a>
-    </li>
-    <li>/</li>
-    <li className="text-gray-800 font-semibold">Daftar Kehadiran</li>
-  </ol>
-</nav>
+                  <ol className="list-reset flex items-center space-x-2">
+                    <li>
+                      <a href="/dashboard-admin" className="text-blue-600 hover:underline">Home</a>
+                    </li>
+                    <li>/</li>
+                    <li className="text-gray-800 font-semibold">Daftar Kehadiran</li>
+                  </ol>
+                </nav>
                 <p className="text-gray-600 mt-1 flex items-center">
                   <i className="ri-database-line mr-1"></i>
                   {kehadiranList.length} data ditemukan
                 </p>
               </div>
-              
+
               <button
                 onClick={openModal}
                 className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 transition text-center flex items-center justify-center shadow-md"
@@ -376,7 +381,7 @@ export default function RecapKehadiran() {
             <div className="text-center py-12 text-gray-500 flex flex-col items-center">
               <i className="ri-calendar-2-line text-4xl text-gray-300 mb-4"></i>
               <p className="text-lg">Belum ada data kehadiran</p>
-              <button 
+              <button
                 onClick={openModal}
                 className="mt-4 text-blue-500 hover:text-blue-700 flex items-center"
               >
@@ -391,22 +396,22 @@ export default function RecapKehadiran() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <i className="ri-time-line mr-1"></i> Waktu
+                      Waktu
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <i className="ri-user-line mr-1"></i> Asatidz
+                      Asatidz
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <i className="ri-computer-line mr-1"></i> Jenis
+                      Jenis
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <i className="ri-book-mark-line mr-1"></i> Tema
+                      Tema
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <i className="ri-group-line mr-1"></i> Kehadiran
+                      Kehadiran
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <i className="ri-settings-2-line mr-1"></i> Aksi
+                      Aksi
                     </th>
                   </tr>
                 </thead>
@@ -414,15 +419,17 @@ export default function RecapKehadiran() {
                   {kehadiranList.map((data) => (
                     <tr key={data.id} className="hover:bg-gray-50">
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900">{formatDate(data.waktu)}</div>
+                        <div className="text-sm text-gray-900 whitespace-nowrap">
+                          {formatDate(data.waktu).split(',')[0]},<br />
+                          {formatDate(data.waktu).split(',')[1].trim()}
+                        </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{data.asatidz}</div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                        }`}>
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                          }`}>
                           {data.jenis}
                         </span>
                       </td>
@@ -434,25 +441,28 @@ export default function RecapKehadiran() {
                           <span className="font-medium">{data.peserta?.filter(p => p.hadir).length || 0}</span> / {data.peserta?.length || 0}
                         </div>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <button
-                          onClick={() => handleEdit(data)}
-                          className="text-blue-600 hover:text-blue-900 flex items-center"
-                        >
-                          <i className="ri-edit-line mr-1"></i>
-                          <span className="hidden sm:inline">Edit</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedId(data.id);
-                            setShowDeleteModal(true);
-                          }}
-                          className="text-red-600 hover:text-red-900 flex items-center"
-                        >
-                          <i className="ri-delete-bin-line mr-1"></i>
-                          <span className="hidden sm:inline">Hapus</span>
-                        </button>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex flex-col space-y-2">
+                          <button
+                            onClick={() => handleEdit(data)}
+                            className="text-blue-600 hover:text-blue-900 flex items-center"
+                          >
+                            <i className="ri-edit-line mr-1"></i>
+                            <span className="hidden sm:inline">Edit</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedId(data.id);
+                              setShowDeleteModal(true);
+                            }}
+                            className="text-red-600 hover:text-red-900 flex items-center"
+                          >
+                            <i className="ri-delete-bin-line mr-1"></i>
+                            <span className="hidden sm:inline">Hapus</span>
+                          </button>
+                        </div>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -464,10 +474,11 @@ export default function RecapKehadiran() {
                   <div key={data.id} className="px-4 py-5 sm:p-6 hover:bg-gray-50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <span className={`flex-shrink-0 h-4 w-4 rounded-full ${
-                          data.jenis === 'online' ? 'bg-blue-400' : 'bg-green-400'
-                        }`}></span>
-                        <span className="ml-2 text-sm font-medium text-gray-900 truncate">{formatShortDate(data.waktu)}</span>
+                        <span className={`flex-shrink-0 h-4 w-4 rounded-full ${data.jenis === 'online' ? 'bg-blue-400' : 'bg-green-400'
+                          }`}></span>
+                        <span className="ml-2 text-sm font-medium text-gray-900 truncate">
+                          {formatShortDate(data.waktu)}
+                        </span>
                       </div>
                       <div className="ml-2 flex-shrink-0 flex">
                         <button
@@ -485,7 +496,7 @@ export default function RecapKehadiran() {
                           className="text-sm font-medium text-red-600 hover:text-red-500 flex items-center"
                         >
                           <i className="ri-delete-bin-line mr-1"></i>
-                          Hapuss
+                          Hapus
                         </button>
                       </div>
                     </div>
@@ -523,7 +534,7 @@ export default function RecapKehadiran() {
                 <h3 className="text-lg font-semibold text-gray-800">
                   {editingId ? 'Edit Kehadiran' : 'Tambah Kehadiran'}
                 </h3>
-                <button 
+                <button
                   onClick={closeModal}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -546,7 +557,7 @@ export default function RecapKehadiran() {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <i className="ri-user-line mr-1"></i> Asatidz <span className="text-red-500">*</span>
@@ -580,7 +591,7 @@ export default function RecapKehadiran() {
                       <option value="offline">Offline</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <i className="ri-book-mark-line mr-1"></i> Tema Kajian <span className="text-red-500">*</span>
@@ -603,8 +614,8 @@ export default function RecapKehadiran() {
                   </h3>
                   <div className="space-y-3 max-h-[300px] overflow-y-auto">
                     {formData.peserta.map((peserta, index) => (
-                      <div 
-                        key={peserta.nama} 
+                      <div
+                        key={peserta.nama}
                         className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${peserta.hadir ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100'}`}
                         onClick={() => handlePesertaChange(index, 'hadir')}
                       >

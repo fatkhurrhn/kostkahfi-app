@@ -75,8 +75,14 @@ function Setoran() {
       const querySnapshot = await getDocs(collection(db, 'setoran'));
       const data = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
-      }));
+        ...doc.data(),
+        waktu: doc.data().waktu?.toDate() || null
+      }))
+        // Urutkan berdasarkan waktu (terbaru ke terlama)
+        .sort((a, b) => {
+          if (!a.waktu || !b.waktu) return 0;
+          return b.waktu - a.waktu;
+        });
       setSetoranList(data);
     } catch (error) {
       console.error("Error fetching setoran:", error);
@@ -157,13 +163,15 @@ function Setoran() {
               year: 'numeric'
             })}
           </h1>
-          <p className="text-white text-sm opacity-90">Capaian hafalan dan murojaah Mahasantri</p>
+          <p className="text-white text-sm opacity-90">Capaian Setoran dan murojaah Mahasantri</p>
           <div className="mt-4 bg-white/20 rounded-lg p-3 backdrop-blur-sm">
             <div className="flex items-center text-white">
               <i className="ri-award-line mr-2"></i>
               <div>
-                <p className="text-xs">Total Capaian</p>
-                <p className="font-medium">{setoranList.length} Aktivitas Tercatat</p>
+                <p className="text-xs">Capaian Hafalan Santri</p>
+                <p className="font-medium">
+                  {setoranList.length} Aktivitas Tercatat
+                </p>
               </div>
             </div>
           </div>
@@ -254,42 +262,56 @@ function Setoran() {
               <p className="text-sm text-gray-500">Tidak ada data yang sesuai dengan filter yang dipilih</p>
             </div>
           ) : (
-            [...filteredData].reverse().map((setoran) => (
-              <div key={setoran.id} className="bg-white rounded-xl p-4 shadow-sm">
-                <div className="flex items-start">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 ${setoran.jenis === 'setoran' ? 'bg-purple-100' : 'bg-yellow-100'
-                    }`}>
-                    <i className={`${setoran.jenis === 'setoran' ? 'ri-book-marked-line text-purple-600' : 'ri-refresh-line text-yellow-600'
-                      } text-xl`}></i>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-gray-800">{setoran.nama}</h4>
-                        <p className="text-sm text-gray-600 mt-1">Surah {setoran.ayatMulai} - {setoran.ayatSelesai} | {setoran.halaman}</p>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs ${setoran.jenis === 'setoran' ? 'bg-purple-100 text-purple-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                        {setoran.jenis || 'setoran'}
-                      </span>
+            filteredData
+              .sort((a, b) => {
+                // Urutkan berdasarkan bulan dan pekan
+                const bulanA = BULAN_LIST.indexOf(a.bulan);
+                const bulanB = BULAN_LIST.indexOf(b.bulan);
+                if (bulanA !== bulanB) return bulanB - bulanA;
+                return b.pekan - a.pekan;
+              })
+              .map((setoran) => (
+                <div key={setoran.id} className="bg-white rounded-xl p-4 shadow-sm">
+                  <div className="flex items-start">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 ${setoran.jenis === 'setoran' ? 'bg-purple-100' : 'bg-yellow-100'
+                      }`}>
+                      <i className={`${setoran.jenis === 'setoran' ? 'ri-book-marked-line text-purple-600' : 'ri-refresh-line text-yellow-600'
+                        } text-xl`}></i>
                     </div>
-
-                    <div className="flex flex-wrap gap-y-2 gap-x-3 mt-3 text-xs">
-                      <div className={`flex items-center px-2 py-1 rounded-full ${setoran.metode === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                        <i className={`${setoran.metode === 'online' ? 'ri-global-line' : 'ri-user-voice-line'
-                          } mr-1`}></i>
-                        <span>{setoran.metode}</span>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium text-gray-800">{setoran.nama}</h4>
+                          <p className="text-sm text-gray-600 mt-1">Surah {setoran.ayatMulai} - {setoran.ayatSelesai} | {setoran.halaman}</p>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs ${setoran.jenis === 'setoran' ? 'bg-purple-100 text-purple-800' : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                          {setoran.jenis || 'setoran'}
+                        </span>
                       </div>
-                      <div className="flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-700">
-                        <i className="ri-calendar-line mr-1"></i>
-                        <span>Pekan {setoran.pekan}, {setoran.bulan} {setoran.tahun}</span>
+
+                      <div className="flex flex-wrap gap-y-2 gap-x-3 mt-3 text-xs">
+                        <div className={`flex items-center px-2 py-1 rounded-full ${setoran.metode === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                          }`}>
+                          <i className={`${setoran.metode === 'online' ? 'ri-global-line' : 'ri-user-voice-line'
+                            } mr-1`}></i>
+                          <span>{setoran.metode}</span>
+                        </div>
+                        <div className="flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                          <i className="ri-calendar-line mr-1"></i>
+                          <span>Pekan {setoran.pekan}, {setoran.bulan} {setoran.tahun}</span>
+                        </div>
+                        {setoran.waktu && (
+                          <div className="flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                            <i className="ri-time-line mr-1"></i>
+                            <span>{setoran.waktu.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              ))
           )}
         </div>
 
