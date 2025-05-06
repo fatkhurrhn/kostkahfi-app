@@ -3,21 +3,44 @@ import { useNavigate, Link } from 'react-router-dom';
 import { db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from '../../../firebase';
 import { useAuth } from '../../../context/AuthContext';
 
-export default function Admin() {
-  const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
-  const [setoranList, setSetoranList] = useState([]);
-  const [formData, setFormData] = useState({
-    pekan: '',
-    bulan: '',
-    tahun: '',
+// Constants
+const bulanList = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
+
+const tahunList = [2025, 2026, 2027];
+const pekanList = [1, 2, 3, 4];
+const jenisList = ['setoran', 'murojaah'];
+
+// Helper functions
+const getCurrentPekan = () => {
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const diffDays = Math.floor((now - firstDay) / (1000 * 60 * 60 * 24));
+  return Math.min(Math.floor(diffDays / 7) + 1, 4); // Ensure max pekan is 4
+};
+
+const initFormData = () => {
+  const now = new Date();
+  return {
+    pekan: getCurrentPekan().toString(),
+    bulan: bulanList[now.getMonth()],
+    tahun: now.getFullYear().toString(),
     nama: '',
     ayatMulai: '',
     ayatSelesai: '',
     halaman: '',
     metode: 'online',
     jenis: 'setoran'
-  });
+  };
+};
+
+export default function Admin() {
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
+  const [setoranList, setSetoranList] = useState([]);
+  const [formData, setFormData] = useState(initFormData());
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -25,15 +48,6 @@ export default function Admin() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const bulanList = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-  ];
-
-  const tahunList = [2025, 2026, 2027];
-  const pekanList = [1, 2, 3, 4];
-  const jenisList = ['setoran', 'murojaah'];
 
   useEffect(() => {
     fetchSetoran();
@@ -45,8 +59,14 @@ export default function Admin() {
       const querySnapshot = await getDocs(collection(db, 'setoran'));
       const data = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
-      })).reverse();
+        ...doc.data(),
+        bulanIndex: bulanList.indexOf(doc.data().bulan)
+      }))
+        .sort((a, b) => {
+          if (a.tahun !== b.tahun) return b.tahun - a.tahun;
+          if (a.bulanIndex !== b.bulanIndex) return b.bulanIndex - a.bulanIndex;
+          return b.pekan - a.pekan;
+        });
       setSetoranList(data);
     } catch (error) {
       console.error("Error fetching setoran:", error);
@@ -72,6 +92,7 @@ export default function Admin() {
         ...formData,
         pekan: parseInt(formData.pekan),
         tahun: parseInt(formData.tahun),
+        bulanIndex: bulanList.indexOf(formData.bulan),
         createdAt: formData.createdAt || new Date(),
         updatedAt: new Date()
       };
@@ -94,17 +115,7 @@ export default function Admin() {
   };
 
   const resetForm = () => {
-    setFormData({
-      pekan: '',
-      bulan: '',
-      tahun: '',
-      nama: '',
-      ayatMulai: '',
-      ayatSelesai: '',
-      halaman: '',
-      metode: 'online',
-      jenis: 'setoran'
-    });
+    setFormData(initFormData());
   };
 
   const handleEdit = (setoran) => {
@@ -331,14 +342,16 @@ export default function Admin() {
                       <tr key={setoran.id} className="hover:bg-gray-50">
                         <td className="px-4 py-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${setoran.jenis === 'setoran'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-yellow-100 text-yellow-800'
                             }`}>
                             {setoran.jenis || 'setoran'}
                           </span>
                         </td>
                         <td className="px-4 py-4">
-                          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">{setoran.nama}</div>
+                          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
+                            {setoran.nama}
+                          </div>
                         </td>
                         <td className="px-4 py-4">
                           <div className="text-sm text-gray-700 whitespace-nowrap">
@@ -346,7 +359,9 @@ export default function Admin() {
                           </div>
                         </td>
                         <td className="px-4 py-4">
-                          <div className="text-sm text-gray-700">{setoran.halaman}</div>
+                          <div className="text-sm text-gray-700">
+                            {setoran.halaman}
+                          </div>
                         </td>
                         <td className="px-4 py-4">
                           <div className="text-sm text-gray-700 whitespace-nowrap">
@@ -356,8 +371,8 @@ export default function Admin() {
                         </td>
                         <td className="px-4 py-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${setoran.metode === 'online'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-blue-100 text-blue-800'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-blue-100 text-blue-800'
                             }`}>
                             {setoran.metode}
                           </span>
@@ -383,7 +398,6 @@ export default function Admin() {
                             </button>
                           </div>
                         </td>
-
                       </tr>
                     ))
                   ) : (
@@ -547,12 +561,12 @@ export default function Admin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Halaman/Juz</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Halaman</label>
                   <input
                     type="text"
                     name="halaman"
                     className="w-full p-2 border border-gray-300 bg-white text-gray-800 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Contoh: Halaman 15-17 atau Juz 1"
+                    placeholder="Contoh: 1 halaman"
                     value={formData.halaman}
                     onChange={handleInputChange}
                     required
