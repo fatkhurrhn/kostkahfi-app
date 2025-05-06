@@ -144,8 +144,8 @@ const MemoryMatchGame = () => {
                             key={index}
                             onClick={() => flipCard(index)}
                             className={`w-16 h-16 flex items-center justify-center rounded-lg cursor-pointer text-3xl transition-all duration-300 transform ${card.flipped || card.matched
-                                    ? 'bg-white rotate-y-180 shadow-inner'
-                                    : 'bg-gradient-to-br from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 hover:scale-105'
+                                ? 'bg-white rotate-y-180 shadow-inner'
+                                : 'bg-gradient-to-br from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 hover:scale-105'
                                 } ${card.matched ? 'opacity-80' : ''} shadow-md`}
                             style={{
                                 transformStyle: 'preserve-3d',
@@ -287,8 +287,8 @@ const LoginForm = ({ onClose, switchToRegister }) => {
                             type="submit"
                             disabled={loading}
                             className={`w-full py-2 px-4 rounded-lg font-medium text-white transition ${loading
-                                    ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
                                 }`}
                         >
                             {loading ? (
@@ -440,8 +440,8 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
                             type="submit"
                             disabled={loading}
                             className={`w-full py-2 px-4 rounded-lg font-medium text-white transition ${loading
-                                    ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
                                 }`}
                         >
                             {loading ? (
@@ -493,9 +493,11 @@ export default function HomePage() {
                 {/* Header */}
                 <div className="fixed top-0 left-0 max-w-[710px] mx-auto right-0 bg-white z-50 border-b border-gray-300 py-3">
                     <div className="w-full mx-auto px-6 flex justify-between items-center">
-                        <h3 className="text-black flex items-center gap-2 cursor-pointer">
-                            <i className="ri-arrow-left-line text-lg"></i> Program Mahasantri
-                        </h3>
+                        <a href="/">
+                            <h3 className="text-black flex items-center gap-2 cursor-pointer">
+                                <i className="ri-arrow-left-line text-lg"></i> Program Mahasantri
+                            </h3>
+                        </a>
                         <div className="flex items-center space-x-4">
                             <i className="ri-notification-3-line text-lg text-gray-700"></i>
                             <button
