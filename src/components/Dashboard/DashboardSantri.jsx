@@ -321,7 +321,7 @@ function AmalYaumiyahComponent({ currentUser }) {
       </div>
 
       <div className="mt-4 text-xs text-gray-500">
-        <p>Catatan: Anda hanya bisa mencentang untuk hari yang sudah lewat atau hari ini.</p>
+        <p>Catatan: kamu hanya bisa mencentang untuk hari yang sudah lewat atau hari ini</p>
       </div>
     </div>
   );
