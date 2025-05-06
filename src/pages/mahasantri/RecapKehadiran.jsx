@@ -32,7 +32,12 @@ function Kehadiran() {
                         ...docData,
                         waktu: docData.waktu?.toDate() || null
                     };
-                }).reverse();
+                })
+                    // Urutkan berdasarkan waktu (terbaru ke terlama)
+                    .sort((a, b) => {
+                        if (!a.waktu || !b.waktu) return 0;
+                        return b.waktu - a.waktu;
+                    });
                 setKehadiranList(data);
             } catch (err) {
                 console.error("Gagal memuat data:", err);
@@ -51,7 +56,8 @@ function Kehadiran() {
             weekday: 'long',
             day: 'numeric',
             month: 'long',
-            year: 'numeric',
+            year: 'numeric'
+        }) + ' ' + date.toLocaleTimeString('id-ID', {
             hour: '2-digit',
             minute: '2-digit'
         });
@@ -69,14 +75,20 @@ function Kehadiran() {
         }
     };
 
-    const filteredData = kehadiranList.filter(data => {
-        const matchesAsatidz = filter.asatidz === '' || data.asatidz === filter.asatidz;
-        const matchesJenis = filter.jenis === '' || data.jenis === filter.jenis;
-        const matchesMonth = filter.month === '' ||
-            (data.waktu && data.waktu.toLocaleDateString('id-ID', { month: 'long' }) === filter.month);
+    const filteredData = kehadiranList
+        .filter(data => {
+            const matchesAsatidz = filter.asatidz === '' || data.asatidz === filter.asatidz;
+            const matchesJenis = filter.jenis === '' || data.jenis === filter.jenis;
+            const matchesMonth = filter.month === '' ||
+                (data.waktu && data.waktu.toLocaleDateString('id-ID', { month: 'long' }) === filter.month);
 
-        return matchesAsatidz && matchesJenis && matchesMonth;
-    });
+            return matchesAsatidz && matchesJenis && matchesMonth;
+        })
+        // Tetap urutkan setelah filter
+        .sort((a, b) => {
+            if (!a.waktu || !b.waktu) return 0;
+            return b.waktu - a.waktu;
+        });
 
     const handleShowAttendance = (data) => {
         setSelectedAttendance(data);
@@ -147,8 +159,23 @@ function Kehadiran() {
                         <div className="flex items-center text-white">
                             <i className="ri-calendar-check-line mr-2"></i>
                             <div>
-                                <p className="text-xs">Total Kajian</p>
-                                <p className="font-medium">{totalKajian} Kajian Tercatat</p>
+                                <p className="text-xs">Total Kajian Pekan Ini</p>
+                                <p className="font-medium">
+                                {kehadiranList.filter(item => {
+                                if (!item.waktu) return false;
+                                const now = new Date();
+                                const day = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+                                const diffToMonday = (day === 0 ? -6 : 1) - day; // Senin sebagai awal pekan
+                                const monday = new Date(now);
+                                monday.setDate(now.getDate() + diffToMonday);
+                                monday.setHours(0, 0, 0, 0);
+
+                                const nextMonday = new Date(monday);
+                                nextMonday.setDate(monday.getDate() + 7);
+
+                                const waktu = new Date(item.waktu);
+                                return waktu >= monday && waktu < nextMonday;
+                            }).length} Kajian Tercatat</p>
                             </div>
                         </div>
                     </div>
@@ -188,29 +215,15 @@ function Kehadiran() {
                     </div>
                     <div className="bg-white p-4 rounded-xl shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-600">Pekan Ini</span>
+                            <span className="text-sm font-medium text-gray-600">Total Kajian</span>
                             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                                 <i className="ri-calendar-line text-blue-600"></i>
                             </div>
                         </div>
                         <p className="text-2xl font-bold text-gray-800">
-                            {kehadiranList.filter(item => {
-                                if (!item.waktu) return false;
-                                const now = new Date();
-                                const day = now.getDay(); // 0 (Sunday) to 6 (Saturday)
-                                const diffToMonday = (day === 0 ? -6 : 1) - day; // Senin sebagai awal pekan
-                                const monday = new Date(now);
-                                monday.setDate(now.getDate() + diffToMonday);
-                                monday.setHours(0, 0, 0, 0);
-
-                                const nextMonday = new Date(monday);
-                                nextMonday.setDate(monday.getDate() + 7);
-
-                                const waktu = new Date(item.waktu);
-                                return waktu >= monday && waktu < nextMonday;
-                            }).length}
+                            {totalKajian}
                         </p>
-                        <p className="text-xs text-blue-600 mt-1">Kajian pekan ini</p>
+                        <p className="text-xs text-blue-600 mt-1">Kajian Tercatat</p>
                     </div>
 
                 </div>
@@ -298,44 +311,39 @@ function Kehadiran() {
                             <div key={data.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
                                 <div className="p-4">
                                     <div className="flex items-start">
-                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 ${data.jenis === 'online' ? 'bg-blue-100' : 'bg-green-100'
-                                            }`}>
-                                            <i className={`${data.jenis === 'online' ? 'ri-computer-line text-blue-600' : 'ri-user-voice-line text-green-600'
-                                                } text-xl`}></i>
-                                        </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <div>
+                                                    <p className="text-sm font-medium text-blue-600 mb-1">
+                                                        {formatDate(data.waktu).split(',')[0]}, {formatDate(data.waktu).split(',')[1].trim().split(' ')[0]} {formatDate(data.waktu).split(',')[1].trim().split(' ')[1]} {formatDate(data.waktu).split(',')[1].trim().split(' ')[2]}
+                                                    </p>
                                                     <h4 className="font-medium text-gray-800">{data.tema}</h4>
-                                                    <p className="text-sm text-gray-600 mt-1">{data.asatidz}</p>
+                                                    <p className="text-sm text-gray-600 mt-1">Pemateri {data.asatidz}</p>
                                                 </div>
-                                                <span className={`px-2 py-1 rounded-full text-xs ${data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                                                    }`}>
+                                                <span className={`px-2 py-1 rounded-full text-xs ${data.jenis === 'online' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
                                                     {data.jenis}
                                                 </span>
                                             </div>
 
-                                            <div className="flex flex-wrap gap-y-2 gap-x-3 mt-3 text-xs">
-                                                <div className="flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-700">
-                                                    <i className="ri-calendar-line mr-1"></i>
-                                                    <span>{formatDate(data.waktu)}</span>
+                                            <div className="flex justify-between items-center mt-3">
+                                                <div className="flex flex-wrap gap-y-2 gap-x-3 text-xs">
+                                                    <div className="flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-800">
+                                                        <i className="ri-group-line mr-1"></i>
+                                                        <span>{data.peserta?.filter(p => p.hadir).length || 0} dari {data.peserta?.length || 0} hadir</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-800">
-                                                    <i className="ri-group-line mr-1"></i>
-                                                    <span>{data.peserta?.filter(p => p.hadir).length || 0} dari {data.peserta?.length || 0} hadir</span>
+                                                <div className="text-xs">
+                                                    <button
+                                                        onClick={() => handleShowAttendance(data)}
+                                                        className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center"
+                                                    >
+                                                        <i className="ri-group-line mr-1"></i> Lihat Detail Kehadiran
+                                                    </button>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end">
-                                    <button
-                                        onClick={() => handleShowAttendance(data)}
-                                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center"
-                                    >
-                                        <i className="ri-group-line mr-1"></i> Lihat Detail Kehadiran
-                                    </button>
                                 </div>
                             </div>
                         ))
@@ -403,8 +411,8 @@ function Kehadiran() {
                                                 </div>
                                                 <span
                                                     className={`px-2 py-1 rounded-full text-xs font-medium ${peserta.hadir
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-red-100 text-red-700'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-red-100 text-red-700'
                                                         }`}
                                                 >
                                                     {peserta.hadir ? 'Hadir' : 'Tidak Hadir'}
