@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { app } from '../../../firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   getFirestore, collection, query, where,
   getDocs, updateDoc, doc, orderBy, getDoc
@@ -199,6 +199,26 @@ export default function DashboardUsers() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="flex space-x-4 mb-4">
+                    <Link
+                        to="/dashboard-admin/manage-kamar"
+                        className="px-4 py-2 text-gray-800 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition duration-200 font-medium bg-white shadow"
+                    >
+                        🏠 Manage Kamar
+                    </Link>
+                    <Link
+                        to="/dashboard-users/manage-pembayaran"
+                        className="px-4 py-2 text-gray-800 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition duration-200 font-medium bg-white shadow"
+                    >
+                        💳 Manage Pembayaran
+                    </Link>
+                    <Link
+                        to="/dashboard-admin/manage-blogs"
+                        className="px-4 py-2 text-gray-800 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition duration-200 font-medium bg-white shadow"
+                    >
+                        📝 Manage Blogs
+                    </Link>
+                </div>
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             <i className="ri-information-line mr-2"></i>Informasi Akun

@@ -166,7 +166,7 @@ export default function Register() {
               className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
               required
             >
-              <option value="admin">Admin</option>
+              {/* <option value="admin">Admin</option> */}
               <option value="reguler">Reguler</option>
               <option value="mahasantri">Mahasantri</option>
               <option value="biman">Biman</option>
