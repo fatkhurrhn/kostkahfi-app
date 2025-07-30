@@ -4,15 +4,8 @@ import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { app } from '../../../firebase';
 import { useNavigate } from 'react-router-dom';
 import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  doc,
-  getDoc,
-  orderBy
+  getFirestore, collection, query, where,
+  getDocs, updateDoc, doc, orderBy, getDoc
 } from 'firebase/firestore';
 
 export default function DashboardUsers() {
@@ -27,42 +20,34 @@ export default function DashboardUsers() {
 
   const fetchUserData = async (currentUser) => {
     const db = getFirestore(app);
-
     try {
-      // Get user data
       const userQuery = query(
         collection(db, 'users'),
         where('uid', '==', currentUser.uid)
       );
       const userSnapshot = await getDocs(userQuery);
-
       if (!userSnapshot.empty) {
         const userData = userSnapshot.docs[0].data();
         setUser(userData);
 
-        // ✅ FIX: Use getDoc instead of getDocs
         if (userData.kamarId) {
           const kamarDoc = await getDoc(doc(db, 'kamar', userData.kamarId));
           if (kamarDoc.exists()) {
-            setUserKamar({
-              id: kamarDoc.id,
-              ...kamarDoc.data()
-            });
+            const kamar = { id: kamarDoc.id, ...kamarDoc.data() };
+            setUserKamar(kamar);
+            setSelectedKamar(kamar.id); // <-- tampilkan kamar yang sudah dipilih
           }
         }
 
-        // Get available rooms
         const kamarQuery = query(
           collection(db, 'kamar'),
           where('status', '==', 'kosong'),
           orderBy('no_kamar')
         );
         const kamarSnapshot = await getDocs(kamarQuery);
-        const kamarData = kamarSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setAvailableKamars(kamarData);
+        setAvailableKamars(
+          kamarSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        );
       }
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -79,7 +64,6 @@ export default function DashboardUsers() {
         navigate('/login');
         return;
       }
-
       const db = getFirestore(app);
       const adminCheck = query(
         collection(db, 'users'),
@@ -87,15 +71,12 @@ export default function DashboardUsers() {
         where('role', '==', 'admin')
       );
       const adminSnapshot = await getDocs(adminCheck);
-
       if (!adminSnapshot.empty) {
         navigate('/dashboard-admin');
         return;
       }
-
       await fetchUserData(currentUser);
     });
-
     return () => unsubscribe();
   }, [navigate]);
 
@@ -104,8 +85,7 @@ export default function DashboardUsers() {
       const auth = getAuth(app);
       await signOut(auth);
       navigate('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
+    } catch {
       setError('Gagal logout');
     }
   };
@@ -115,34 +95,27 @@ export default function DashboardUsers() {
       setError('Pilih kamar terlebih dahulu');
       return;
     }
-
     try {
       const auth = getAuth(app);
       const db = getFirestore(app);
       const currentUser = auth.currentUser;
-
       await updateDoc(doc(db, 'kamar', selectedKamar), {
         status: 'terisi',
         penghuniId: currentUser.uid
       });
-
       const userQuery = query(
         collection(db, 'users'),
         where('uid', '==', currentUser.uid)
       );
       const snapshot = await getDocs(userQuery);
-
       if (!snapshot.empty) {
         const userDoc = snapshot.docs[0];
-        await updateDoc(userDoc.ref, {
-          kamarId: selectedKamar
-        });
-
+        await updateDoc(userDoc.ref, { kamarId: selectedKamar });
         const selectedRoom = availableKamars.find(k => k.id === selectedKamar);
         setUserKamar(selectedRoom);
         setUser(prev => ({ ...prev, kamarId: selectedKamar }));
         setAvailableKamars(prev => prev.filter(k => k.id !== selectedKamar));
-        setSelectedKamar('');
+        setSelectedKamar(selectedRoom.id); // tetap tampilkan nomor kamar
         setError('');
         setSuccess(`Kamar ${selectedRoom.no_kamar} berhasil dipilih`);
         setTimeout(() => setSuccess(''), 3000);
@@ -155,56 +128,41 @@ export default function DashboardUsers() {
 
   const handleChangeKamar = async () => {
     if (!window.confirm('Apakah Anda yakin ingin mengganti kamar?')) return;
-
     try {
       const auth = getAuth(app);
       const db = getFirestore(app);
       const currentUser = auth.currentUser;
-
       if (userKamar) {
         await updateDoc(doc(db, 'kamar', userKamar.id), {
           status: 'kosong',
           penghuniId: null
         });
+        // hapus kamarId di user
+        const userQuery = query(
+          collection(db, 'users'),
+          where('uid', '==', currentUser.uid)
+        );
+        const snap = await getDocs(userQuery);
+        if (!snap.empty) {
+          await updateDoc(snap.docs[0].ref, { kamarId: null });
+        }
       }
-
       await updateDoc(doc(db, 'kamar', selectedKamar), {
         status: 'terisi',
         penghuniId: currentUser.uid
       });
-
-      const userQuery = query(
-        collection(db, 'users'),
-        where('uid', '==', currentUser.uid)
-      );
-      const snapshot = await getDocs(userQuery);
-
-      if (!snapshot.empty) {
-        const userDoc = snapshot.docs[0];
-        await updateDoc(userDoc.ref, {
-          kamarId: selectedKamar
-        });
-
-        const newSelectedRoom = availableKamars.find(k => k.id === selectedKamar);
-        const updatedAvailableKamars = [...availableKamars];
-
-        if (userKamar) {
-          updatedAvailableKamars.push({
-            id: userKamar.id,
-            no_kamar: userKamar.no_kamar,
-            status: 'kosong'
-          });
-          updatedAvailableKamars.sort((a, b) => parseInt(a.no_kamar) - parseInt(b.no_kamar));
-        }
-
-        setUserKamar(newSelectedRoom);
-        setUser(prev => ({ ...prev, kamarId: selectedKamar }));
-        setAvailableKamars(updatedAvailableKamars.filter(k => k.id !== selectedKamar));
-        setSelectedKamar('');
-        setError('');
-        setSuccess(`Berhasil pindah ke kamar ${newSelectedRoom.no_kamar}`);
-        setTimeout(() => setSuccess(''), 3000);
+      const newRoom = availableKamars.find(k => k.id === selectedKamar);
+      const updated = [...availableKamars];
+      if (userKamar) {
+        updated.push({ ...userKamar, status: 'kosong' });
+        updated.sort((a, b) => parseInt(a.no_kamar) - parseInt(b.no_kamar));
       }
+      setUserKamar(newRoom);
+      setUser(prev => ({ ...prev, kamarId: selectedKamar }));
+      setAvailableKamars(updated.filter(k => k.id !== selectedKamar));
+      setSelectedKamar(newRoom.id);
+      setSuccess(`Berhasil pindah ke kamar ${newRoom.no_kamar}`);
+      setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
       console.error("Error changing kamar:", error);
       setError('Gagal mengganti kamar');
@@ -287,24 +245,25 @@ export default function DashboardUsers() {
                 {userKamar ? 'Ganti Kamar' : 'Pilih Kamar'}
               </h3>
               <div className="space-y-3">
-                <div>
-                  <select
-                    value={selectedKamar}
-                    onChange={(e) => setSelectedKamar(e.target.value)}
-                    className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-                  >
-                    <option value="">-- Pilih Kamar --</option>
-                    {availableKamars.map(kamar => (
-                      <option key={kamar.id} value={kamar.id}>
-                        Kamar {kamar.no_kamar}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <select
+                  value={selectedKamar}
+                  onChange={(e) => setSelectedKamar(e.target.value)}
+                  className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
+                >
+                  <option value="">
+                    {userKamar ? `Kamar ${userKamar.no_kamar} (terisi)` : '-- Pilih Kamar --'}
+                  </option>
+                  {availableKamars.map(kamar => (
+                    <option key={kamar.id} value={kamar.id}>
+                      Kamar {kamar.no_kamar} [kosong]
+                    </option>
+                  ))}
+                </select>
+
                 {userKamar ? (
                   <button
                     onClick={handleChangeKamar}
-                    disabled={!selectedKamar}
+                    disabled={!selectedKamar || selectedKamar === userKamar.id}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     <i className="ri-home-4-line mr-2"></i> Ganti Kamar

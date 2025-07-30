@@ -6,6 +6,7 @@ import Register from './pages/auth/Register';
 import DashboardAdmin from './pages/dashboard/DashboardAdmin';
 import DashboardUsers from './pages/dashboard/DashboardUsers';
 import ManageKamar from './pages/dashboard/admin/ManageKamar';
+import Kamar from './pages/homepage/Kamar';
 
 export default function App() {
   return (
@@ -16,8 +17,8 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard-admin" element={<DashboardAdmin />} />
         <Route path="/dashboard-users" element={<DashboardUsers />} />
-        
         <Route path="/manage-kamar" element={<ManageKamar />} />
+        <Route path="/kamar" element={<Kamar />} />
       </Routes>
     </BrowserRouter>
   );
