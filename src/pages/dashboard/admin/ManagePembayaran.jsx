@@ -1,48 +1,44 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  getFirestore, 
-  collection, 
-  getDocs, 
-  updateDoc, 
-  doc, 
-  query, 
-  where, 
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  updateDoc,
+  doc,
+  query,
+  where,
   orderBy,
   addDoc,
   deleteDoc,
   serverTimestamp
 } from 'firebase/firestore';
 import { app } from '../../../../firebase';
-import { 
-  Table, 
-  Tabs, 
-  Badge, 
-  Button, 
-  Modal, 
-  Select, 
-  Card, 
-  Tag, 
+import {
+  Table,
+  Tabs,
+  Badge,
+  Button,
+  Modal,
+  Select,
+  Card,
+  Tag,
   Space,
   DatePicker,
   Input,
   message,
   Popconfirm,
-  Alert,
-  Statistic,
-  Row,
-  Col
+  Alert
 } from 'antd';
-import { 
-  EyeOutlined, 
-  CheckOutlined, 
+import {
+  EyeOutlined,
+  CheckOutlined,
   NotificationOutlined,
   SearchOutlined,
-  DownloadOutlined,
   CloseOutlined,
-  InfoCircleOutlined,
-  DollarOutlined
+  PlusOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import Layout from '../../../components/admin/Layout';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -66,7 +62,7 @@ export default function ManagePembayaranAdmin() {
   const [loading, setLoading] = useState(true);
   const [previewImage, setPreviewImage] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-  const [selectedYear, setSelectedYear] = useState(2025); // Default to 2025
+  const [selectedYear, setSelectedYear] = useState('all');
   const [selectedUser, setSelectedUser] = useState('all');
   const [searchText, setSearchText] = useState('');
   const [dateRange, setDateRange] = useState([]);
@@ -79,7 +75,7 @@ export default function ManagePembayaranAdmin() {
       try {
         setLoading(true);
         const db = getFirestore(app);
-        
+
         const [usersSnapshot, paymentsSnapshot] = await Promise.all([
           getDocs(query(collection(db, 'users'), where('role', '!=', 'admin'), orderBy('nama'))),
           getDocs(query(collection(db, 'pembayaran'), orderBy('createdAt', 'desc')))
@@ -123,14 +119,14 @@ export default function ManagePembayaranAdmin() {
     usersData.forEach(user => {
       const userPayments = paymentsData.filter(p => p.userId === user.uid);
       const paidMonths = {};
-      
+
       userPayments.forEach(payment => {
         paidMonths[`${payment.tahun}-${payment.bulan}`] = payment.status;
       });
 
       // Generate all months from Jan 2025 to Dec 2026
       const userMonths = [];
-      
+
       for (let year = startYear; year <= endYear; year++) {
         for (let month = 1; month <= 12; month++) {
           userMonths.push({
@@ -141,7 +137,7 @@ export default function ManagePembayaranAdmin() {
           });
         }
       }
-      
+
       statusMap[user.uid] = userMonths;
     });
 
@@ -159,11 +155,11 @@ export default function ManagePembayaranAdmin() {
         const monthPayments = paymentsData.filter(
           p => p.tahun === year && p.bulan === month
         );
-        
+
         const lunasCount = monthPayments.filter(p => p.status === 'lunas').length;
         const pendingCount = monthPayments.filter(p => p.status === 'pending').length;
         const totalUsers = usersData.length;
-        
+
         summary.push({
           tahun: year,
           bulan: month,
@@ -189,7 +185,9 @@ export default function ManagePembayaranAdmin() {
     let result = [...payments];
 
     // Filter by year
-    result = result.filter(p => p.tahun === selectedYear);
+    if (selectedYear !== 'all') {
+      result = result.filter(p => p.tahun === selectedYear);
+    }
 
     // Filter by user
     if (selectedUser !== 'all') {
@@ -213,7 +211,7 @@ export default function ManagePembayaranAdmin() {
     }
 
     // Filter by date range
-    if (dateRange.length === 2) {
+    if (dateRange && dateRange.length === 2) {
       const [start, end] = dateRange;
       result = result.filter(p => {
         const paymentDate = p.paymentDate;
@@ -229,7 +227,7 @@ export default function ManagePembayaranAdmin() {
   const markAsComplete = async (paymentId, userId, month, year) => {
     try {
       const db = getFirestore(app);
-      
+
       if (paymentId) {
         // Update existing payment
         await updateDoc(doc(db, 'pembayaran', paymentId), {
@@ -240,7 +238,7 @@ export default function ManagePembayaranAdmin() {
         // Create new payment record
         const user = users.find(u => u.uid === userId);
         const rolePrice = ROLE_PRICE[user?.role] || ROLE_PRICE.reguler;
-        
+
         await addDoc(collection(db, 'pembayaran'), {
           userId,
           bulan: month,
@@ -276,7 +274,7 @@ export default function ManagePembayaranAdmin() {
       setPayments(paymentsData);
       generateUserPaymentStatus(usersData, paymentsData);
       generateMonthlySummary(usersData, paymentsData);
-      
+
       message.success('Pembayaran berhasil ditandai lunas');
     } catch (error) {
       console.error("Error marking as complete:", error);
@@ -288,7 +286,7 @@ export default function ManagePembayaranAdmin() {
   const cancelPayment = async (paymentId) => {
     try {
       const db = getFirestore(app);
-      
+
       await deleteDoc(doc(db, 'pembayaran', paymentId));
 
       // Refresh data
@@ -314,7 +312,7 @@ export default function ManagePembayaranAdmin() {
       setPayments(paymentsData);
       generateUserPaymentStatus(usersData, paymentsData);
       generateMonthlySummary(usersData, paymentsData);
-      
+
       message.success('Pembayaran berhasil dibatalkan');
     } catch (error) {
       console.error("Error cancelling payment:", error);
@@ -324,19 +322,13 @@ export default function ManagePembayaranAdmin() {
 
   // Generate available years
   const availableYears = useMemo(() => {
-    return [2025, 2026]; // Fixed years
+    return ['all', 2025, 2026]; // Added 'all' option
   }, []);
 
   // Get unpaid months for a user
   const getUnpaidMonths = (userId) => {
     if (!userPaymentStatus[userId]) return [];
-    return userPaymentStatus[userId].filter(m => m.status === 'belum bayar' && m.tahun === selectedYear);
-  };
-
-  // Get user payment status for a specific year
-  const getUserYearlyStatus = (userId, year) => {
-    if (!userPaymentStatus[userId]) return [];
-    return userPaymentStatus[userId].filter(m => m.tahun === year);
+    return userPaymentStatus[userId].filter(m => m.status === 'belum bayar');
   };
 
   // Table columns for payments
@@ -349,7 +341,7 @@ export default function ManagePembayaranAdmin() {
         const user = users.find(u => u.uid === userId);
         return user ? (
           <div>
-            <div>{user.nama}</div>
+            <div className="font-medium text-gray-800">{user.nama}</div>
             <div className="text-xs text-gray-500">
               {user.role} | Masuk: {user.tglMasuk.toLocaleDateString('id-ID')}
             </div>
@@ -367,7 +359,7 @@ export default function ManagePembayaranAdmin() {
       key: 'bulanTahun',
       render: (_, record) => (
         <div>
-          <div>{MONTHS[record.bulan - 1] || record.bulan} {record.tahun}</div>
+          <div className="text-gray-800">{MONTHS[record.bulan - 1] || record.bulan} {record.tahun}</div>
           {record.adminMarked && (
             <Tag color="blue" className="mt-1">Ditandai Admin</Tag>
           )}
@@ -382,10 +374,10 @@ export default function ManagePembayaranAdmin() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status, record) => {
+      render: (status) => {
         let color = '';
         let text = '';
-        
+
         switch (status) {
           case 'lunas':
             color = 'green';
@@ -403,7 +395,7 @@ export default function ManagePembayaranAdmin() {
             color = 'red';
             text = 'Belum Lunas';
         }
-        
+
         return <Tag color={color}>{text}</Tag>;
       },
       filters: [
@@ -419,16 +411,17 @@ export default function ManagePembayaranAdmin() {
       dataIndex: 'nominal',
       key: 'nominal',
       render: (nominal, record) => {
-        if (nominal) return `Rp${nominal.toLocaleString('id-ID')}`;
+        if (nominal) return <span className="text-gray-800">Rp{nominal.toLocaleString('id-ID')}</span>;
         const user = users.find(u => u.uid === record.userId);
         const rolePrice = ROLE_PRICE[user?.role] || ROLE_PRICE.reguler;
-        return `Rp${rolePrice.toLocaleString('id-ID')}`;
+        return <span className="text-gray-800">Rp{rolePrice.toLocaleString('id-ID')}</span>;
       }
     },
     {
       title: 'Tanggal Pembayaran',
       dataIndex: 'formattedDate',
       key: 'date',
+      render: (text) => <span className="text-gray-800">{text}</span>,
       sorter: (a, b) => {
         const dateA = a.paymentDate ? new Date(a.paymentDate).getTime() : 0;
         const dateB = b.paymentDate ? new Date(b.paymentDate).getTime() : 0;
@@ -440,14 +433,15 @@ export default function ManagePembayaranAdmin() {
       dataIndex: 'buktiUrl',
       key: 'bukti',
       render: (url) => url ? (
-        <Button 
-          type="link" 
-          icon={<EyeOutlined />} 
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
           onClick={() => setPreviewImage(url)}
+          className="text-gray-600"
         >
           Lihat
         </Button>
-      ) : '-'
+      ) : <span className="text-gray-400">-</span>
     },
     {
       title: 'Aksi',
@@ -457,22 +451,24 @@ export default function ManagePembayaranAdmin() {
           {record.status === 'lunas' ? (
             <Popconfirm
               title="Batalkan pembayaran?"
-              description="Apakah Anda yakin ingin membatalkan status lunas pembayaran ini?"
+              description="Yakin ingin membatalkan status lunas pembayaran ini?"
               onConfirm={() => cancelPayment(record.id)}
               okText="Ya"
               cancelText="Tidak"
             >
-              <Button 
-                danger 
+              <Button
+                danger
                 icon={<CloseOutlined />}
+                className="bg-white text-red-500 border-red-200 hover:text-white hover:bg-red-500"
               >
                 Batalkan
               </Button>
             </Popconfirm>
           ) : (
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<CheckOutlined />}
+              className="bg-gray-800 hover:bg-gray-700 border-gray-700"
               onClick={() => markAsComplete(record.id, record.userId, record.bulan, record.tahun)}
             >
               Tandai Lunas
@@ -490,8 +486,8 @@ export default function ManagePembayaranAdmin() {
       dataIndex: 'namaBulan',
       key: 'bulan',
       render: (text, record) => (
-        <div>
-          <div>{text} {record.tahun}</div>
+        <div className="text-gray-800">
+          {text} {record.tahun}
         </div>
       ),
       sorter: (a, b) => {
@@ -517,51 +513,22 @@ export default function ManagePembayaranAdmin() {
       )
     },
     {
-      title: 'Persentase',
-      key: 'percentage',
-      render: (_, record) => (
-        <div>
-          <Progress 
-            percent={Math.round((record.lunas / record.totalUsers) * 100)} 
-            status={record.lunas === record.totalUsers ? 'success' : 'normal'}
-          />
-        </div>
-      )
-    },
-    {
       title: 'Aksi',
       key: 'action',
       render: (_, record) => (
-        <Button 
-          type="link" 
+        <Button
+          type="link"
           onClick={() => {
             setSelectedYear(record.tahun);
             setActiveTab('all');
           }}
+          className="text-gray-600"
         >
           Lihat Detail
         </Button>
       )
     }
   ];
-
-  // Summary statistics
-  const summaryStats = useMemo(() => {
-    const totalPayments = filteredPayments.length;
-    const paidCount = filteredPayments.filter(p => p.status === 'lunas').length;
-    const pendingCount = filteredPayments.filter(p => p.status === 'pending').length;
-    const unpaidCount = filteredPayments.filter(p => p.status !== 'lunas').length;
-    const cancelledCount = filteredPayments.filter(p => p.status === 'dibatalkan').length;
-    
-    return {
-      totalPayments,
-      paidCount,
-      pendingCount,
-      unpaidCount,
-      cancelledCount,
-      paidPercentage: totalPayments > 0 ? Math.round((paidCount / totalPayments) * 100) : 0
-    };
-  }, [filteredPayments]);
 
   // Add new payment modal
   const [addPaymentModalVisible, setAddPaymentModalVisible] = useState(false);
@@ -580,280 +547,246 @@ export default function ManagePembayaranAdmin() {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Manajemen Pembayaran (2025-2026)</h1>
-        <div>
-          <Button 
-            type="primary" 
-            icon={<CheckOutlined />} 
+    <Layout>
+      <div className="max-w-full mx-auto">
+        {/* Filters */}
+        <Card className="mb-6 bg-white border border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-gray-700 mb-1">Tahun</label>
+              <Select
+                className="w-full"
+                value={selectedYear}
+                onChange={setSelectedYear}
+              >
+                {availableYears.map(year => (
+                  <Option key={year} value={year}>
+                    {year === 'all' ? 'Semua Tahun' : year}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Penghuni</label>
+              <Select
+                className="w-full"
+                value={selectedUser}
+                onChange={setSelectedUser}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                <Option value="all">Semua Penghuni</Option>
+                {users.map(user => (
+                  <Option key={user.uid} value={user.uid}>{user.nama}</Option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Tanggal Pembayaran</label>
+              <RangePicker
+                className="w-full"
+                onChange={setDateRange}
+                onClear={() => setDateRange([])}
+                allowClear
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Cari Nama</label>
+              <Input
+                placeholder="Cari nama penghuni..."
+                prefix={<SearchOutlined className="text-gray-400" />}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="border-gray-300"
+              />
+            </div>
+          </div>
+        </Card>
+
+        <div className="flex justify-between items-end mb-0 flex-wrap gap-2">
+          {/* Tabs */}
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            type="card"
+            className="custom-tabs"
+            items={[
+              {
+                key: 'all',
+                label: 'Semua Pembayaran',
+              },
+              {
+                key: 'pending',
+                label: (
+                  <span className="flex items-center">
+                    <NotificationOutlined />
+                    <span className="ml-1">Konfirmasi Baru</span>
+                    {pendingCount > 0 && (
+                      <Badge count={pendingCount} className="ml-2" />
+                    )}
+                  </span>
+                ),
+              },
+            ]}
+          />
+
+          {/* Button */}
+          <button
             onClick={() => setAddPaymentModalVisible(true)}
-            className="mr-2"
+            className="bg-gray-800 text-white px-3 py-1 rounded-md text-[14px] mb-4"
           >
-            Tambah Pembayaran
-          </Button>
-          <Button type="primary" icon={<DownloadOutlined />}>
-            Export Data
-          </Button>
+            <i className="ri-add-line mr-2"></i>
+            Pembayaran Manual
+          </button>
         </div>
+
+        {/* Content based on active tab */}
+        {activeTab === 'summary' ? (
+          <Card className="bg-white border border-gray-200">
+            <Table
+              columns={summaryColumns}
+              dataSource={monthlySummary}
+              rowKey={record => `${record.tahun}-${record.bulan}`}
+              loading={loading}
+              scroll={{ x: true }}
+              pagination={{
+                pageSize: 12,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} bulan`
+              }}
+            />
+          </Card>
+        ) : (
+          <Card className="bg-white border border-gray-200">
+            <Table
+              columns={paymentColumns}
+              dataSource={filteredPayments}
+              rowKey="id"
+              loading={loading}
+              scroll={{ x: true }}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} pembayaran`
+              }}
+            />
+          </Card>
+        )}
+
+        {/* Add Payment Modal */}
+        <Modal
+          title="Tambah Pembayaran Manual"
+          open={addPaymentModalVisible}
+          onCancel={() => setAddPaymentModalVisible(false)}
+          onOk={handleAddPayment}
+          okText="Simpan"
+          cancelText="Batal"
+          width={600}
+          okButtonProps={{ className: 'bg-gray-800 hover:bg-gray-700 border-gray-700' }}
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-1">Penghuni</label>
+              <Select
+                className="w-full"
+                placeholder="Pilih penghuni"
+                onChange={setSelectedUserForAdd}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {users.map(user => (
+                  <Option key={user.uid} value={user.uid}>
+                    {user.nama} ({user.role})
+                  </Option>
+                ))}
+              </Select>
+            </div>
+
+            {selectedUserForAdd && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-1">Tahun</label>
+                    <Select
+                      className="w-full"
+                      value={selectedYearForAdd}
+                      onChange={(value) => {
+                        setSelectedYearForAdd(value);
+                        setSelectedMonthForAdd(null);
+                      }}
+                    >
+                      <Option value={2025}>2025</Option>
+                      <Option value={2026}>2026</Option>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-1">Bulan</label>
+                    <Select
+                      className="w-full"
+                      placeholder="Pilih bulan"
+                      value={selectedMonthForAdd}
+                      onChange={setSelectedMonthForAdd}
+                    >
+                      {getUnpaidMonths(selectedUserForAdd)
+                        .filter(m => m.tahun === selectedYearForAdd)
+                        .map(month => (
+                          <Option key={`${month.tahun}-${month.bulan}`} value={month.bulan}>
+                            {month.namaBulan}
+                          </Option>
+                        ))}
+                    </Select>
+                  </div>
+                </div>
+
+                {selectedMonthForAdd && (
+                  <Alert
+                    message="Informasi Pembayaran"
+                    description={
+                      <>
+                        <div>Bulan: {MONTHS[selectedMonthForAdd - 1]} {selectedYearForAdd}</div>
+                        <div>
+                          Nominal: Rp{
+                            ROLE_PRICE[users.find(u => u.uid === selectedUserForAdd)?.role]?.toLocaleString('id-ID') ||
+                            ROLE_PRICE.reguler.toLocaleString('id-ID')
+                          }
+                        </div>
+                      </>
+                    }
+                    type="info"
+                    showIcon
+                    className="bg-blue-50 border-blue-100"
+                  />
+                )}
+              </>
+            )}
+          </div>
+        </Modal>
+
+        {/* Proof Modal */}
+        <Modal
+          title="Bukti Pembayaran"
+          open={!!previewImage}
+          onCancel={() => setPreviewImage('')}
+          footer={null}
+          width={800}
+        >
+          <img
+            src={previewImage}
+            alt="Bukti Pembayaran"
+            className="w-full"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://via.placeholder.com/400x600?text=Bukti+Tidak+Tersedia';
+            }}
+          />
+        </Modal>
       </div>
-
-      {/* Summary Cards */}
-      <Row gutter={16} className="mb-6">
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Total Penghuni"
-              value={users.length}
-              prefix={<InfoCircleOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Total Pembayaran"
-              value={summaryStats.totalPayments}
-              prefix={<DollarOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Lunas"
-              value={summaryStats.paidCount}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<CheckOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Menunggu Konfirmasi"
-              value={summaryStats.pendingCount}
-              valueStyle={{ color: '#faad14' }}
-              prefix={<NotificationOutlined />}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Filters */}
-      <Card className="mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-gray-700 mb-1">Tahun</label>
-            <Select
-              className="w-full"
-              value={selectedYear}
-              onChange={setSelectedYear}
-            >
-              {availableYears.map(year => (
-                <Option key={year} value={year}>{year}</Option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <label className="block text-gray-700 mb-1">Penghuni</label>
-            <Select
-              className="w-full"
-              value={selectedUser}
-              onChange={setSelectedUser}
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              <Option value="all">Semua Penghuni</Option>
-              {users.map(user => (
-                <Option key={user.uid} value={user.uid}>{user.nama}</Option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <label className="block text-gray-700 mb-1">Tanggal Pembayaran</label>
-            <RangePicker 
-              className="w-full"
-              onChange={setDateRange}
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 mb-1">Cari Nama</label>
-            <Input
-              placeholder="Cari nama penghuni..."
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Tabs */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        type="card"
-      >
-        <TabPane tab="Semua Pembayaran" key="all" />
-        <TabPane 
-          tab={
-            <span>
-              <NotificationOutlined /> Konfirmasi Baru 
-              {pendingCount > 0 && (
-                <Badge count={pendingCount} style={{ marginLeft: 8, backgroundColor: '#faad14' }} />
-              )}
-            </span>
-          } 
-          key="pending" 
-        />
-        <TabPane tab="Belum Lunas" key="unpaid" />
-        <TabPane tab="Rekap Bulanan" key="summary" />
-      </Tabs>
-
-      {/* Content based on active tab */}
-      {activeTab === 'summary' ? (
-        <Card>
-          <Table
-            columns={summaryColumns}
-            dataSource={monthlySummary}
-            rowKey={record => `${record.tahun}-${record.bulan}`}
-            loading={loading}
-            scroll={{ x: true }}
-            pagination={{
-              pageSize: 12,
-              showSizeChanger: true,
-              showTotal: (total) => `Total ${total} bulan`
-            }}
-          />
-        </Card>
-      ) : (
-        <Card>
-          <Table
-            columns={paymentColumns}
-            dataSource={filteredPayments}
-            rowKey="id"
-            loading={loading}
-            scroll={{ x: true }}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showTotal: (total) => `Total ${total} pembayaran`
-            }}
-          />
-        </Card>
-      )}
-
-      {/* Add Payment Modal */}
-      <Modal
-        title="Tambah Pembayaran Manual"
-        open={addPaymentModalVisible}
-        onCancel={() => setAddPaymentModalVisible(false)}
-        onOk={handleAddPayment}
-        okText="Simpan"
-        cancelText="Batal"
-        width={600}
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-gray-700 mb-1">Penghuni</label>
-            <Select
-              className="w-full"
-              placeholder="Pilih penghuni"
-              onChange={setSelectedUserForAdd}
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {users.map(user => (
-                <Option key={user.uid} value={user.uid}>
-                  {user.nama} ({user.role})
-                </Option>
-              ))}
-            </Select>
-          </div>
-
-          {selectedUserForAdd && (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-1">Tahun</label>
-                  <Select
-                    className="w-full"
-                    value={selectedYearForAdd}
-                    onChange={(value) => {
-                      setSelectedYearForAdd(value);
-                      setSelectedMonthForAdd(null);
-                    }}
-                  >
-                    {availableYears.map(year => (
-                      <Option key={year} value={year}>{year}</Option>
-                    ))}
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Bulan</label>
-                  <Select
-                    className="w-full"
-                    placeholder="Pilih bulan"
-                    value={selectedMonthForAdd}
-                    onChange={setSelectedMonthForAdd}
-                  >
-                    {getUnpaidMonths(selectedUserForAdd).map(month => (
-                      <Option key={`${month.tahun}-${month.bulan}`} value={month.bulan}>
-                        {month.namaBulan}
-                      </Option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-
-              {selectedMonthForAdd && (
-                <Alert
-                  message="Informasi Pembayaran"
-                  description={
-                    <>
-                      <div>Bulan: {MONTHS[selectedMonthForAdd - 1]} {selectedYearForAdd}</div>
-                      <div>
-                        Nominal: Rp{
-                          ROLE_PRICE[users.find(u => u.uid === selectedUserForAdd)?.role]?.toLocaleString('id-ID') || 
-                          ROLE_PRICE.reguler.toLocaleString('id-ID')
-                        }
-                      </div>
-                    </>
-                  }
-                  type="info"
-                  showIcon
-                />
-              )}
-            </>
-          )}
-        </div>
-      </Modal>
-
-      {/* Proof Modal */}
-      <Modal
-        title="Bukti Pembayaran"
-        open={!!previewImage}
-        onCancel={() => setPreviewImage('')}
-        footer={null}
-        width={800}
-      >
-        <img 
-          src={previewImage} 
-          alt="Bukti Pembayaran" 
-          className="w-full"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/400x600?text=Bukti+Tidak+Tersedia';
-          }}
-        />
-      </Modal>
-    </div>
+    </Layout>
   );
 }

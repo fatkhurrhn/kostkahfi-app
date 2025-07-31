@@ -1,12 +1,13 @@
 // src/pages/dashboard/DashboardUsers.jsx
 import React, { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { app } from '../../../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     getFirestore, collection, query, where,
     getDocs, updateDoc, doc, orderBy, getDoc
 } from 'firebase/firestore';
+import Layout from '../../components/users/Layout';
 
 export default function DashboardUsers() {
     const [user, setUser] = useState(null);
@@ -79,16 +80,6 @@ export default function DashboardUsers() {
         });
         return () => unsubscribe();
     }, [navigate]);
-
-    const handleLogout = async () => {
-        try {
-            const auth = getAuth(app);
-            await signOut(auth);
-            navigate('/login');
-        } catch {
-            setError('Gagal logout');
-        }
-    };
 
     const handleSelectKamar = async () => {
         if (!selectedKamar) {
@@ -178,47 +169,8 @@ export default function DashboardUsers() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h1 className="text-xl font-bold text-gray-800">
-                        <i className="ri-dashboard-line mr-2"></i>User Dashboard
-                    </h1>
-                    <div className="flex items-center space-x-4">
-                        <span className="text-gray-700">
-                            <i className="ri-user-line mr-1"></i> {user?.nama}
-                        </span>
-                        <button
-                            onClick={handleLogout}
-                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm flex items-center"
-                        >
-                            <i className="ri-logout-box-r-line mr-1"></i> Logout
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                <div className="flex space-x-4 mb-4">
-                    {/* <Link
-                        to="/dashboard-admin/manage-kamar"
-                        className="px-4 py-2 text-gray-800 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition duration-200 font-medium bg-white shadow"
-                    >
-                        🏠 Manage Kamar
-                    </Link> */}
-                    <Link
-                        to="/dashboard-users/manage-pembayaran"
-                        className="px-4 py-2 text-gray-800 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition duration-200 font-medium bg-white shadow"
-                    >
-                        💳 Manage Pembayaran
-                    </Link>
-                    {/* <Link
-                        to="/dashboard-admin/manage-blogs"
-                        className="px-4 py-2 text-gray-800 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition duration-200 font-medium bg-white shadow"
-                    >
-                        📝 Manage Blogs
-                    </Link> */}
-                </div>
+        <Layout>
+            <main className="max-w-full mx-auto">
                 <div className="bg-white shadow rounded-lg p-6">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">
                         <i className="ri-information-line mr-2"></i>Informasi Akun
@@ -305,6 +257,6 @@ export default function DashboardUsers() {
                     </div>
                 </div>
             </main>
-        </div>
+        </Layout>
     );
 }

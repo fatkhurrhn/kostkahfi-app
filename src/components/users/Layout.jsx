@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
-import { app } from "../../../firebase"; // Make sure you have this import
+import { app } from "../../../firebase";
 
 const pageTitles = {
-  "/dashboard-admin": "Dashboard",
-  "/dashboard-admin/manage-kamar": "Manage Kamar",
-  "/dashboard-admin/manage-pembayaran": "Manage Pembayaran",
-  "/dashboard-admin/manage-blogs": "Manage Blogs",
+  "/dashboard-users": "Dashboard Users",
+  "/dashboard-users/manage-pembayaran": "Manage Pembayaran",
 };
 
 export default function Layout({ children }) {
@@ -18,6 +16,7 @@ export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const currentTitle = pageTitles[location.pathname] || "Dashboard";
 
@@ -51,31 +50,34 @@ export default function Layout({ children }) {
 
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
-          if (userData.role !== 'admin') {
-            navigate('/dashboard-users');
-            return;
-          }
           setUser(userData);
-
-          // Get all penghuni data
-          const penghuniSnapshot = await getDocs(collection(db, 'users'));
-          const penghuniData = penghuniSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          (penghuniData);
+          
+          // Hapus pengecekan role admin karena ini layout untuk user biasa
+          // if (userData.role !== 'admin') {
+          //   navigate('/dashboard-users');
+          //   return;
+          // }
         } else {
+          // Jika tidak ada data user di firestore
           navigate('/login');
         }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        (false);
+        setLoading(false);
       }
     });
 
     return () => unsubscribe();
   }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50 text-gray-800">
@@ -99,7 +101,7 @@ export default function Layout({ children }) {
 
           <div className="flex items-center space-x-4">
             <span className="text-gray-700">
-              <i className="ri-user-line mr-1"></i> {user?.nama}
+              <i className="ri-user-line mr-1"></i> {user?.nama || 'User'}
             </span>
             <button
               onClick={() => setShowLogoutModal(true)}
@@ -155,6 +157,5 @@ export default function Layout({ children }) {
         </div>
       )}
     </div>
-
   );
 }

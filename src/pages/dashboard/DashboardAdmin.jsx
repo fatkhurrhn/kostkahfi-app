@@ -20,7 +20,7 @@ export default function DashboardAdmin() {
     const [loading, setLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showFormModal, setShowFormModal] = useState(false);
-    const [formMode, setFormMode] = useState('add'); // 'add' or 'edit'
+    const [formMode, setFormMode] = useState('add');
     const [selectedPenghuni, setSelectedPenghuni] = useState(null);
     const [formData, setFormData] = useState({
         nama: '',
@@ -31,7 +31,6 @@ export default function DashboardAdmin() {
     });
     const navigate = useNavigate();
 
-    // Format date function
     const formatDate = (date) => {
         if (!date) return '-';
         if (date.toDate) return date.toDate().toLocaleDateString('id-ID');
@@ -39,19 +38,13 @@ export default function DashboardAdmin() {
         return '-';
     };
 
-    // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Handle delete penghuni
     const handleDelete = async () => {
         if (!selectedPenghuni) return;
-        
         try {
             const db = getFirestore(app);
             await deleteDoc(doc(db, 'users', selectedPenghuni.id));
@@ -62,35 +55,28 @@ export default function DashboardAdmin() {
         }
     };
 
-    // Handle form submit
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
         try {
             const db = getFirestore(app);
-            
             if (formMode === 'add') {
-                // Add new penghuni
                 const docRef = await addDoc(collection(db, 'users'), {
                     ...formData,
                     createdAt: new Date()
                 });
                 setPenghuni(prev => [...prev, { id: docRef.id, ...formData }]);
             } else {
-                // Update existing penghuni
                 await updateDoc(doc(db, 'users', selectedPenghuni.id), formData);
                 setPenghuni(prev => prev.map(p => 
                     p.id === selectedPenghuni.id ? { ...p, ...formData } : p
                 ));
             }
-            
             setShowFormModal(false);
         } catch (error) {
             console.error("Error saving document: ", error);
         }
     };
 
-    // Open form in edit mode
     const openEditForm = (penghuni) => {
         setSelectedPenghuni(penghuni);
         setFormMode('edit');
@@ -104,7 +90,6 @@ export default function DashboardAdmin() {
         setShowFormModal(true);
     };
 
-    // Open form in add mode
     const openAddForm = () => {
         setSelectedPenghuni(null);
         setFormMode('add');
@@ -129,7 +114,6 @@ export default function DashboardAdmin() {
             }
 
             try {
-                // Verify admin role
                 const q = query(
                     collection(db, 'users'),
                     where('uid', '==', currentUser.uid)
@@ -143,7 +127,6 @@ export default function DashboardAdmin() {
                         return;
                     }
 
-                    // Get all penghuni data
                     const penghuniSnapshot = await getDocs(collection(db, 'users'));
                     const penghuniData = penghuniSnapshot.docs.map(doc => ({
                         id: doc.id,
@@ -163,14 +146,7 @@ export default function DashboardAdmin() {
         return () => unsubscribe();
     }, [navigate]);
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <i className="ri-loader-4-line animate-spin text-4xl text-gray-700"></i>
-            </div>
-        );
-    }
-
+    // Tidak ada full-screen loader lagi
     return (
         <Layout>
             <div className="max-w-full mx-auto">
@@ -214,7 +190,16 @@ export default function DashboardAdmin() {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {penghuni.length > 0 ? (
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan="6" className="px-6 py-12">
+                                            <div className="flex justify-center items-center">
+                                                <i className="ri-loader-4-line animate-spin text-2xl text-gray-600"></i>
+                                                <span className="ml-2 text-sm text-gray-600">Memuat data penghuni…</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : penghuni.length > 0 ? (
                                     penghuni.map((item) => (
                                         <tr key={item.id}>
                                             <td className="px-6 py-4 whitespace-nowrap">
