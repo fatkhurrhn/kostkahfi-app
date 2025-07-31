@@ -1,3 +1,4 @@
+// src/components/users/Layout.jsx
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -16,7 +17,6 @@ export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const currentTitle = pageTitles[location.pathname] || "Dashboard";
 
@@ -41,7 +41,6 @@ export default function Layout({ children }) {
       }
 
       try {
-        // Get user data from Firestore
         const q = query(
           collection(db, 'users'),
           where('uid', '==', currentUser.uid)
@@ -51,33 +50,18 @@ export default function Layout({ children }) {
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
           setUser(userData);
-          
-          // Hapus pengecekan role admin karena ini layout untuk user biasa
-          // if (userData.role !== 'admin') {
-          //   navigate('/dashboard-users');
-          //   return;
-          // }
         } else {
-          // Jika tidak ada data user di firestore
           navigate('/login');
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
       }
     });
 
     return () => unsubscribe();
   }, [navigate]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  // HAPUS BLOK IF LOADING DI SINI
 
   return (
     <div className="flex min-h-screen bg-gray-50 text-gray-800">
@@ -121,12 +105,10 @@ export default function Layout({ children }) {
       {/* Sidebar Mobile */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          {/* Overlay */}
           <div
             className="absolute inset-0 bg-black opacity-50"
             onClick={() => setSidebarOpen(false)}
           />
-          {/* Sidebar */}
           <div className="relative z-50 w-64 bg-white h-full shadow-lg">
             <Sidebar onClose={() => setSidebarOpen(false)} />
           </div>

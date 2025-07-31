@@ -463,12 +463,14 @@ export default function ManagePembayaranAdmin() {
                 icon={<CloseOutlined />}
                 className="bg-white text-red-500 border-red-200 hover:text-white hover:bg-red-500"
               >
-                Hapus
+                Batalkan
               </Button>
             </Popconfirm>
           ) : (
             <Button
-              className="bg-gray-800 text-white border-gray-700"
+              type="primary"
+              icon={<CheckOutlined />}
+              className="bg-gray-800 hover:bg-gray-700 border-gray-700"
               onClick={() => markAsComplete(record.id, record.userId, record.bulan, record.tahun)}
             >
               Tandai Lunas
