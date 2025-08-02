@@ -1,6 +1,6 @@
 # Kost Kahfi - Sistem Manajemen Kos
 
-![Kost Kahfi Logo](https://cdn-icons-png.freepik.com/512/7718/7718888.png)
+<!-- ![Kost Kahfi Logo](https://cdn-icons-png.freepik.com/512/7718/7718888.png) -->
 
 Sistem manajemen kos modern berbasis web untuk memudahkan pengelolaan kos secara digital.
 
