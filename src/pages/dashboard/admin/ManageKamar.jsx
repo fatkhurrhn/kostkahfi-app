@@ -17,7 +17,7 @@ export default function ManageKamar() {
     const [filter, setFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const [isAdmin, setIsAdmin] = useState(false);
+    // const [isAdmin, setIsAdmin] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [kamarToFill, setKamarToFill] = useState(null);
     const [loading, setLoading] = useState(true); // Tambahan state loading
@@ -69,7 +69,7 @@ export default function ManageKamar() {
                     navigate('/dashboard-users');
                     return;
                 }
-                setIsAdmin(true);
+                // setIsAdmin(true);
                 fetchData();
             } else {
                 navigate('/login');

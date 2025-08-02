@@ -172,10 +172,16 @@ export default function DetailBlog() {
                                         <span className="mr-4">{blog.author}</span>
                                         <i className="ri-time-line mr-1" />
                                         <span>
-                                            {blog.createdAt?.toDate().toLocaleDateString()} •{' '}
+                                            {blog.createdAt?.toDate().toLocaleDateString('id-ID', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric',
+                                            })}{' '}
+                                            •{' '}
                                             {blog.createdAt
                                                 ?.toDate()
-                                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                .toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })}{' '}
+                                            WIB
                                         </span>
                                         <span className="mx-4">•</span>
                                         <i className="ri-eye-line mr-1" />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -6,23 +6,23 @@ import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Modal from 'react-modal';
 import {
-    collection, addDoc, getDocs, doc, updateDoc, deleteDoc,
+    collection, addDoc, doc, updateDoc, deleteDoc,
     serverTimestamp, query, orderBy, onSnapshot
 } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import 'remixicon/fonts/remixicon.css';
+import Layout from '../../../components/admin/Layout';
 
 Modal.setAppElement('#root'); // agar aksesibel
 
 export default function ManageBlog() {
     const [blogs, setBlogs] = useState([]);
-    const [allTags, setAllTags] = useState([]);
+    // const [allTags, setAllTags] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [form, setForm] = useState({
         id: null, title: '', thumbnail: '', tags: '', content: ''
     });
-    const [tagFilter, setTagFilter] = useState('');
 
     /* ---------- Editor ---------- */
     const editor = useEditor({
@@ -47,7 +47,7 @@ export default function ManageBlog() {
                 data.tags?.forEach(t => tagSet.add(t));
             });
             setBlogs(arr);
-            setAllTags(Array.from(tagSet));
+            // setAllTags(Array.from(tagSet));
         });
         return unsub;
     }, []);
@@ -131,131 +131,136 @@ export default function ManageBlog() {
 
     /* ---------- Render ---------- */
     return (
-        <div className="bg-gray-50 min-h-screen text-gray-800 px-4 py-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold">Manage Blogs</h1>
-                    <button
-                        onClick={openCreate}
-                        className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">
-                        <i className="ri-add-line mr-1" /> New Blog
-                    </button>
-                </div>
-
-                {/* Table */}
-                <div className="bg-white rounded-lg shadow overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-sm font-semibold">Thumbnail</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold">Title</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold">Created</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {blogs.map(b => (
-                                <tr key={b.id}>
-                                    {/* Kolom Thumbnail */}
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <img
-                                            src={b.thumbnail}
-                                            alt={b.title}
-                                            className="w-12 h-12 object-cover rounded"
-                                            onError={e => { e.target.src = 'https://via.placeholder.com/50'; }}
-                                        />
-                                    </td>
-
-                                    {/* Kolom Title (dulunya pertama) */}
-                                    <td className="px-6 py-4">
-                                        <div className="font-medium">{b.title}</div>
-                                        <div className="text-xs text-gray-500">{b.tags?.join(', ')}</div>
-                                    </td>
-
-                                    <td className="px-6 py-4 text-sm">
-                                        {b.createdAt?.toDate().toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm space-x-2">
-                                        <button onClick={() => openEdit(b)} className="text-blue-600">
-                                            <i className="ri-edit-line" /> Edit
-                                        </button>
-                                        <button onClick={() => setDeleteId(b.id)} className="text-red-600">
-                                            <i className="ri-delete-bin-line" /> Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Modal Create / Edit */}
-                <Modal
-                    isOpen={modalOpen}
-                    onRequestClose={() => setModalOpen(false)}
-                    className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-auto my-12 p-6 outline-none"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                >
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <h2 className="text-2xl font-bold mb-2">{form.id ? 'Edit Blog' : 'Create Blog'}</h2>
-
-                        <input
-                            placeholder="Title"
-                            value={form.title}
-                            onChange={e => setForm({ ...form, title: e.target.value })}
-                            className="w-full border px-3 py-2 rounded"
-                            required
-                        />
-                        <input
-                            placeholder="Thumbnail URL"
-                            value={form.thumbnail}
-                            onChange={e => setForm({ ...form, thumbnail: e.target.value })}
-                            className="w-full border px-3 py-2 rounded"
-                            required
-                        />
-                        <input
-                            placeholder="Tags (comma separated)"
-                            value={form.tags}
-                            onChange={e => setForm({ ...form, tags: e.target.value })}
-                            className="w-full border px-3 py-2 rounded"
-                        />
-
-                        <MenuBar />
-                        <EditorContent
-                            editor={editor}
-                            className="border rounded min-h-[200px] max-h-[400px] overflow-y-auto p-2"
-                        />
-
-                        <div className="flex justify-end gap-2">
-                            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 rounded border hover:bg-gray-100">
-                                Cancel
-                            </button>
-                            <button type="submit" className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700">
-                                {form.id ? 'Update' : 'Publish'}
-                            </button>
-                        </div>
-                    </form>
-                </Modal>
-
-                {/* Modal Delete */}
-                <Modal
-                    isOpen={!!deleteId}
-                    onRequestClose={() => setDeleteId(null)}
-                    className="bg-white rounded-lg shadow-xl w-96 p-6 outline-none"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                >
-                    <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
-                    <p>Are you sure you want to delete this blog permanently?</p>
-                    <div className="mt-6 flex justify-end gap-2">
-                        <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded border hover:bg-gray-100">
-                            Cancel
-                        </button>
-                        <button onClick={handleDelete} className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
-                            Delete
+        <Layout>
+            <div className="bg-gray-50 min-h-screen text-gray-800 px-4 py-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-3xl font-bold">Manage Blogs</h1>
+                        <button
+                            onClick={openCreate}
+                            className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            <i className="ri-add-line mr-1" /> New Blog
                         </button>
                     </div>
-                </Modal>
+
+                    {/* Table */}
+                    <div className="bg-white rounded-lg shadow overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold">Thumbnail</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold">Title</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold">Views</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold">Created</th>
+                                    <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {blogs.map(b => (
+                                    <tr key={b.id}>
+                                        {/* Kolom Thumbnail */}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <img
+                                                src={b.thumbnail}
+                                                alt={b.title}
+                                                className="w-12 h-12 object-cover rounded"
+                                                onError={e => { e.target.src = 'https://via.placeholder.com/50'; }}
+                                            />
+                                        </td>
+
+                                        {/* Kolom Title (dulunya pertama) */}
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium">{b.title}</div>
+                                            <div className="text-xs text-gray-500">{b.tags?.join(', ')}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {b.views}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {b.createdAt?.toDate().toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm space-x-2">
+                                            <button onClick={() => openEdit(b)} className="text-blue-600">
+                                                <i className="ri-edit-line" /> Edit
+                                            </button>
+                                            <button onClick={() => setDeleteId(b.id)} className="text-red-600">
+                                                <i className="ri-delete-bin-line" /> Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Modal Create / Edit */}
+                    <Modal
+                        isOpen={modalOpen}
+                        onRequestClose={() => setModalOpen(false)}
+                        className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-auto my-12 p-6 outline-none"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    >
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <h2 className="text-2xl font-bold mb-2">{form.id ? 'Edit Blog' : 'Create Blog'}</h2>
+
+                            <input
+                                placeholder="Title"
+                                value={form.title}
+                                onChange={e => setForm({ ...form, title: e.target.value })}
+                                className="w-full border px-3 py-2 rounded"
+                                required
+                            />
+                            <input
+                                placeholder="Thumbnail URL"
+                                value={form.thumbnail}
+                                onChange={e => setForm({ ...form, thumbnail: e.target.value })}
+                                className="w-full border px-3 py-2 rounded"
+                                required
+                            />
+                            <input
+                                placeholder="Tags (comma separated)"
+                                value={form.tags}
+                                onChange={e => setForm({ ...form, tags: e.target.value })}
+                                className="w-full border px-3 py-2 rounded"
+                            />
+
+                            <MenuBar />
+                            <EditorContent
+                                editor={editor}
+                                className="border rounded min-h-[200px] max-h-[400px] overflow-y-auto p-2"
+                            />
+
+                            <div className="flex justify-end gap-2">
+                                <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 rounded border hover:bg-gray-100">
+                                    Cancel
+                                </button>
+                                <button type="submit" className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700">
+                                    {form.id ? 'Update' : 'Publish'}
+                                </button>
+                            </div>
+                        </form>
+                    </Modal>
+
+                    {/* Modal Delete */}
+                    <Modal
+                        isOpen={!!deleteId}
+                        onRequestClose={() => setDeleteId(null)}
+                        className="bg-white rounded-lg shadow-xl w-96 p-6 outline-none"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    >
+                        <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+                        <p>Are you sure you want to delete this blog permanently?</p>
+                        <div className="mt-6 flex justify-end gap-2">
+                            <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded border hover:bg-gray-100">
+                                Cancel
+                            </button>
+                            <button onClick={handleDelete} className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                                Delete
+                            </button>
+                        </div>
+                    </Modal>
+                </div>
             </div>
-        </div>
+        </Layout>
     );
 }

@@ -5,7 +5,8 @@ const menuItems = [
   { label: "Dashboard", path: "/dashboard-admin" },
   { label: "Manage Kamar", path: "/dashboard-admin/manage-kamar" },
   { label: "Manage Pembayaran", path: "/dashboard-admin/manage-pembayaran" },
-  { label: "Manage Blogs", path: "/dashboard-admin/manage-blogs" },
+  { label: "Manage Blog", path: "/dashboard-admin/manage-blog" },
+  { label: "Manage Komentar", path: "/dashboard-admin/manage-komentar" },
 ];
 
 export default function Sidebar({ onClose }) {

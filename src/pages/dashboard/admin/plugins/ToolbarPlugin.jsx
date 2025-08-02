@@ -68,8 +68,8 @@ export default function ToolbarPlugin() {
       <button
         className="p-2 rounded hover:bg-gray-200"
         onClick={() => {
-          const url = prompt('Enter URL:');
-          if (url) editor.dispatchCommand(INSERT_LINK_COMMAND, url);
+        //   const url = prompt('Enter URL:');
+        //   if (url) editor.dispatchCommand(INSERT_LINK_COMMAND, url);
         }}
         title="Insert Link"
       >

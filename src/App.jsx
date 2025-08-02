@@ -12,6 +12,7 @@ import ManagePembayaran from './pages/dashboard/admin/ManagePembayaran';
 import Blog from './pages/homepage/Blog';
 import ManageBlog from './pages/dashboard/admin/ManageBlog';
 import DetailBlog from './pages/homepage/DetailBlog';
+import ManageComments from './pages/dashboard/admin/ManageComments';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/dashboard-users/manage-pembayaran" element={<ManagePembayaranUser />} />
         <Route path="/dashboard-admin/manage-pembayaran" element={<ManagePembayaran />} />
         <Route path="/dashboard-admin/manage-blog" element={<ManageBlog />} />
+        <Route path="/dashboard-admin/manage-komentar" element={<ManageComments />} />
 
         <Route path="/kamar" element={<Kamar />} />
         <Route path="/blog" element={<Blog />} />

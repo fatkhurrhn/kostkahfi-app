@@ -9,7 +9,8 @@ const pageTitles = {
   "/dashboard-admin": "Dashboard",
   "/dashboard-admin/manage-kamar": "Manage Kamar",
   "/dashboard-admin/manage-pembayaran": "Manage Pembayaran",
-  "/dashboard-admin/manage-blogs": "Manage Blogs",
+  "/dashboard-admin/manage-blog": "Manage Blog",
+  "/dashboard-admin/manage-komentar": "Manage Komentar",
 };
 
 export default function Layout({ children }) {
