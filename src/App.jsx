@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate  } from 'react-router-dom';
 import HomePage from './pages/homepage/HomePage';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -14,6 +14,7 @@ import ManageBlog from './pages/dashboard/admin/ManageBlog';
 import DetailBlog from './pages/homepage/DetailBlog';
 import ManageComments from './pages/dashboard/admin/ManageComments';
 import ManageUsers from './pages/dashboard/admin/ManageUsers';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
@@ -35,6 +36,8 @@ export default function App() {
         <Route path="/kamar" element={<Kamar />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<DetailBlog />} />
+        <Route path="/not-found" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/not-found" replace />} />
       </Routes>
     </BrowserRouter>
   );
