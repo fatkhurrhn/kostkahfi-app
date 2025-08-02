@@ -7,7 +7,7 @@ const NavCreator = ({ children }) => {
   const navItems = [
     { path: '/', icon: 'ri-code-s-slash-line', activeIcon: 'ri-code-s-slash-fill', label: 'Fasilitas'},
     { path: '/', icon: 'ri-folders-line', activeIcon: 'ri-folders-fill', label: 'Gallery' },
-    { path: '/', icon: 'ri-news-line', activeIcon: 'ri-news-fill', label: 'Blogs', isNew: true },
+    { path: '/blog', icon: 'ri-news-line', activeIcon: 'ri-news-fill', label: 'Blogs', isNew: true },
     { path: '/', icon: 'ri-apps-line', activeIcon: 'ri-apps-fill', label: 'Others', isNew: true },
   ];
 
