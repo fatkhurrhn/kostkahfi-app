@@ -1,336 +1,261 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import TextAlign from '@tiptap/extension-text-align';
+import Modal from 'react-modal';
+import {
+    collection, addDoc, getDocs, doc, updateDoc, deleteDoc,
+    serverTimestamp, query, orderBy, onSnapshot
+} from 'firebase/firestore';
 import { db } from '../../../../firebase';
-import { useNavigate } from 'react-router-dom';
+import 'remixicon/fonts/remixicon.css';
 
-const MenuBar = ({ editor }) => {
-  if (!editor) return null;
-
-  return (
-    <div className="flex flex-wrap gap-1 p-2 border-b border-gray-300 bg-gray-50">
-      <button
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
-        title="Bold"
-      >
-        <i className="ri-bold"></i>
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
-        title="Italic"
-      >
-        <i className="ri-italic"></i>
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleUnderline().run()}
-        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('underline') ? 'bg-gray-200' : ''}`}
-        title="Underline"
-      >
-        <i className="ri-underline"></i>
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
-        title="Bullet List"
-      >
-        <i className="ri-list-unordered"></i>
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('orderedList') ? 'bg-gray-200' : ''}`}
-        title="Numbered List"
-      >
-        <i className="ri-list-ordered"></i>
-      </button>
-      <button
-        onClick={() => {
-          const previousUrl = editor.getAttributes('link').href;
-          const url = window.prompt('URL', previousUrl);
-
-          if (url === null) return;
-          if (url === '') {
-            editor.chain().focus().extendMarkRange('link').unsetLink().run();
-            return;
-          }
-
-          editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-        }}
-        className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('link') ? 'bg-gray-200' : ''}`}
-        title="Link"
-      >
-        <i className="ri-link"></i>
-      </button>
-    </div>
-  );
-};
+Modal.setAppElement('#root'); // agar aksesibel
 
 export default function ManageBlog() {
-  const [title, setTitle] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
-  const [tags, setTags] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [blogs, setBlogs] = useState([]);
-  const [allTags, setAllTags] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const navigate = useNavigate();
+    const [blogs, setBlogs] = useState([]);
+    const [allTags, setAllTags] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [form, setForm] = useState({
+        id: null, title: '', thumbnail: '', tags: '', content: ''
+    });
+    const [tagFilter, setTagFilter] = useState('');
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Link.configure({
-        openOnClick: false,
-      }),
-    ],
-    content: '<p>Start writing your blog content here...</p>',
-  });
+    /* ---------- Editor ---------- */
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Underline,
+            Link.configure({ openOnClick: false }),
+            TextAlign.configure({ types: ['heading', 'paragraph'] }),
+        ],
+        content: '<p>Start writing...</p>',
+    });
 
-  useEffect(() => {
-    const fetchBlogsAndTags = async () => {
-      const blogsRef = collection(db, 'blog');
-      const q = query(blogsRef, orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      
-      const blogsData = [];
-      const tagsSet = new Set();
-      
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        blogsData.push({ id: doc.id, ...data });
-        
-        if (data.tags && Array.isArray(data.tags)) {
-          data.tags.forEach(tag => tagsSet.add(tag));
-        }
-      });
-      
-      setBlogs(blogsData);
-      setAllTags(Array.from(tagsSet));
+    /* ---------- Realtime data ---------- */
+    useEffect(() => {
+        const q = query(collection(db, 'blog'), orderBy('createdAt', 'desc'));
+        const unsub = onSnapshot(q, snap => {
+            const arr = [];
+            const tagSet = new Set();
+            snap.forEach(d => {
+                const data = d.data();
+                arr.push({ id: d.id, ...data });
+                data.tags?.forEach(t => tagSet.add(t));
+            });
+            setBlogs(arr);
+            setAllTags(Array.from(tagSet));
+        });
+        return unsub;
+    }, []);
+
+    /* ---------- CRUD helpers ---------- */
+    const slugify = str => str.toLowerCase().replace(/[^\w ]+/g, '').replace(/\s+/g, '-');
+
+    const resetForm = () => {
+        setForm({ id: null, title: '', thumbnail: '', tags: '', content: '' });
+        editor.commands.setContent('<p>Start writing...</p>');
     };
 
-    fetchBlogsAndTags();
-  }, []);
+    const openCreate = () => { resetForm(); setModalOpen(true); };
+    const openEdit = b => {
+        setForm({ id: b.id, title: b.title, thumbnail: b.thumbnail, tags: b.tags?.join(', ') || '', content: b.content });
+        editor.commands.setContent(b.content);
+        setModalOpen(true);
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+    const handleSubmit = async e => {
+        e.preventDefault();
+        const data = {
+            title: form.title.trim(),
+            slug: slugify(form.title),
+            thumbnail: form.thumbnail.trim(),
+            tags: form.tags.split(',').map(t => t.trim()),
+            content: editor.getHTML(),
+            updatedAt: serverTimestamp(),
+        };
 
-    try {
-      // Generate slug from title
-      const slug = title.toLowerCase()
-        .replace(/[^\w\s]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
+        try {
+            if (form.id) {
+                await updateDoc(doc(db, 'blog', form.id), data);
+            } else {
+                await addDoc(collection(db, 'blog'), { ...data, createdAt: serverTimestamp(), views: 0 });
+            }
+            setModalOpen(false);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
 
-      // Get HTML content from editor
-      const htmlContent = editor.getHTML();
+    const handleDelete = async () => {
+        await deleteDoc(doc(db, 'blog', deleteId));
+        setDeleteId(null);
+    };
 
-      const blogData = {
-        title,
-        slug,
-        author: 'Admin',
-        content: htmlContent,
-        thumbnail,
-        tags: tags.split(',').map(tag => tag.trim()),
-        views: 0,
-        updatedAt: serverTimestamp()
-      };
-
-      if (editingId) {
-        // Update existing blog
-        await updateDoc(doc(db, 'blog', editingId), blogData);
-        alert('Blog updated successfully!');
-      } else {
-        // Create new blog
-        blogData.createdAt = serverTimestamp();
-        await addDoc(collection(db, 'blog'), blogData);
-        alert('Blog created successfully!');
-      }
-
-      navigate('/blog');
-    } catch (error) {
-      console.error('Error:', error);
-      alert(`Error ${editingId ? 'updating' : 'creating'} blog`);
-    } finally {
-      setIsSubmitting(false);
-      setEditingId(null);
-    }
-  };
-
-  const handleEdit = (blog) => {
-    setTitle(blog.title);
-    setThumbnail(blog.thumbnail);
-    setTags(blog.tags?.join(', ') || '');
-    setEditingId(blog.id);
-    editor.commands.setContent(blog.content);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this blog?')) {
-      try {
-        await deleteDoc(doc(db, 'blog', id));
-        setBlogs(blogs.filter(blog => blog.id !== id));
-        alert('Blog deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting blog:', error);
-        alert('Error deleting blog');
-      }
-    }
-  };
-
-  const addSuggestedTag = (tag) => {
-    setTags(prev => prev ? `${prev}, ${tag}` : tag);
-  };
-
-  return (
-    <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">
-          {editingId ? 'Edit Blog' : 'Create New Blog'}
-        </h1>
-        
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-8">
-          {/* Form fields remain the same as before */}
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="title">
-              Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white text-gray-800"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="thumbnail">
-              Thumbnail URL
-            </label>
-            <input
-              id="thumbnail"
-              type="url"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white text-gray-800"
-              value={thumbnail}
-              onChange={(e) => setThumbnail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="tags">
-              Tags (comma separated)
-            </label>
-            <input
-              id="tags"
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white text-gray-800"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="e.g., food, health, tips"
-            />
-            {allTags.length > 0 && (
-              <div className="mt-2">
-                <span className="text-sm text-gray-600">Suggested tags: </span>
-                {allTags.map((tag, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => addSuggestedTag(tag)}
-                    className="text-sm bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded mr-1 mb-1 inline-block"
-                  >
-                    {tag}
-                  </button>
+    /* ---------- Menu Bar ---------- */
+    const MenuBar = () => {
+        if (!editor) return null;
+        return (
+            <div className="flex gap-1 border-b pb-2 mb-2">
+                {/* bold, italic, underline */}
+                {['bold', 'italic', 'underline'].map(btn => (
+                    <button key={btn}
+                        onClick={() => editor.chain().focus().toggleMark(btn).run()}
+                        className={`p-1 rounded ${editor.isActive(btn) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}>
+                        <i className={`ri-${btn === 'bold' ? 'bold' : btn === 'italic' ? 'italic' : 'underline'}`} />
+                    </button>
                 ))}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Content</label>
-            <div className="border border-gray-300 rounded-md overflow-hidden">
-              <MenuBar editor={editor} />
-              <EditorContent 
-                editor={editor} 
-                className="min-h-[200px] p-3 focus:outline-none bg-white" 
-              />
+                {/* align */}
+                {['left', 'center', 'right', 'justify'].map(a => (
+                    <button key={a}
+                        onClick={() => editor.chain().focus().setTextAlign(a).run()}
+                        className={`p-1 rounded ${editor.isActive({ textAlign: a }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}>
+                        <i className={`ri-align-${a}`} />
+                    </button>
+                ))}
+                {/* link */}
+                <button
+                    onClick={() => {
+                        const url = window.prompt('URL');
+                        if (url) editor.chain().focus().setLink({ href: url }).run();
+                    }}
+                    className={`p-1 rounded ${editor.isActive('link') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}>
+                    <i className="ri-link" />
+                </button>
             </div>
-          </div>
+        );
+    };
 
-          <button
-            type="submit"
-            className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300 flex items-center"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <i className="ri-loader-4-line animate-spin mr-2"></i>
-                {editingId ? 'Updating...' : 'Publishing...'}
-              </>
-            ) : (
-              <>
-                <i className={editingId ? 'ri-edit-line mr-2' : 'ri-save-line mr-2'}></i>
-                {editingId ? 'Update Blog' : 'Publish Blog'}
-              </>
-            )}
-          </button>
-        </form>
+    /* ---------- Render ---------- */
+    return (
+        <div className="bg-gray-50 min-h-screen text-gray-800 px-4 py-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold">Manage Blogs</h1>
+                    <button
+                        onClick={openCreate}
+                        className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                        <i className="ri-add-line mr-1" /> New Blog
+                    </button>
+                </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">Manage Blogs</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {blogs.map((blog) => (
-                  <tr key={blog.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium">{blog.title}</div>
-                      <div className="text-sm text-gray-500">
-                        {blog.tags?.join(', ')}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {blog.views}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {blog.createdAt?.toDate().toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(blog)}
-                        className="text-gray-600 hover:text-gray-900 mr-3"
-                      >
-                        <i className="ri-edit-line"></i>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(blog.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <i className="ri-delete-bin-line"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                {/* Table */}
+                <div className="bg-white rounded-lg shadow overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-100">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-sm font-semibold">Thumbnail</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold">Title</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold">Created</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {blogs.map(b => (
+                                <tr key={b.id}>
+                                    {/* Kolom Thumbnail */}
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <img
+                                            src={b.thumbnail}
+                                            alt={b.title}
+                                            className="w-12 h-12 object-cover rounded"
+                                            onError={e => { e.target.src = 'https://via.placeholder.com/50'; }}
+                                        />
+                                    </td>
+
+                                    {/* Kolom Title (dulunya pertama) */}
+                                    <td className="px-6 py-4">
+                                        <div className="font-medium">{b.title}</div>
+                                        <div className="text-xs text-gray-500">{b.tags?.join(', ')}</div>
+                                    </td>
+
+                                    <td className="px-6 py-4 text-sm">
+                                        {b.createdAt?.toDate().toLocaleDateString()}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm space-x-2">
+                                        <button onClick={() => openEdit(b)} className="text-blue-600">
+                                            <i className="ri-edit-line" /> Edit
+                                        </button>
+                                        <button onClick={() => setDeleteId(b.id)} className="text-red-600">
+                                            <i className="ri-delete-bin-line" /> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Modal Create / Edit */}
+                <Modal
+                    isOpen={modalOpen}
+                    onRequestClose={() => setModalOpen(false)}
+                    className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-auto my-12 p-6 outline-none"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <h2 className="text-2xl font-bold mb-2">{form.id ? 'Edit Blog' : 'Create Blog'}</h2>
+
+                        <input
+                            placeholder="Title"
+                            value={form.title}
+                            onChange={e => setForm({ ...form, title: e.target.value })}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                        <input
+                            placeholder="Thumbnail URL"
+                            value={form.thumbnail}
+                            onChange={e => setForm({ ...form, thumbnail: e.target.value })}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                        <input
+                            placeholder="Tags (comma separated)"
+                            value={form.tags}
+                            onChange={e => setForm({ ...form, tags: e.target.value })}
+                            className="w-full border px-3 py-2 rounded"
+                        />
+
+                        <MenuBar />
+                        <EditorContent
+                            editor={editor}
+                            className="border rounded min-h-[200px] max-h-[400px] overflow-y-auto p-2"
+                        />
+
+                        <div className="flex justify-end gap-2">
+                            <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 rounded border hover:bg-gray-100">
+                                Cancel
+                            </button>
+                            <button type="submit" className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700">
+                                {form.id ? 'Update' : 'Publish'}
+                            </button>
+                        </div>
+                    </form>
+                </Modal>
+
+                {/* Modal Delete */}
+                <Modal
+                    isOpen={!!deleteId}
+                    onRequestClose={() => setDeleteId(null)}
+                    className="bg-white rounded-lg shadow-xl w-96 p-6 outline-none"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                >
+                    <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+                    <p>Are you sure you want to delete this blog permanently?</p>
+                    <div className="mt-6 flex justify-end gap-2">
+                        <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded border hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button onClick={handleDelete} className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                            Delete
+                        </button>
+                    </div>
+                </Modal>
+            </div>
         </div>
-      </section>
-    </div>
-  );
+    );
 }
