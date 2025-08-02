@@ -1,12 +1,83 @@
-# React + Vite
+# Kost Kahfi - Sistem Manajemen Kos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Kost Kahfi Logo](https://cdn-icons-png.freepik.com/512/7718/7718888.png)
 
-Currently, two official plugins are available:
+Sistem manajemen kos modern berbasis web untuk memudahkan pengelolaan kos secara digital.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Fitur Utama
 
-## Expanding the ESLint configuration
+### 🏠 Manajemen Kamar
+- Daftar kamar lengkap dengan fasilitas
+- Sistem booking online
+- Status ketersediaan real-time
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 👨‍💼 Manajemen Penghuni
+- Registrasi penghuni baru
+- Data lengkap penghuni
+- Riwayat pembayaran otomatis
+
+### 💳 Sistem Pembayaran
+- Tagihan bulanan otomatis
+- Konfirmasi pembayaran online
+- Notifikasi jatuh tempo
+
+### 📊 Admin Dashboard
+- Monitoring penghuni
+- Laporan keuangan
+- Multi-role access (admin, staff, penghuni)
+
+## Teknologi
+
+**Frontend:**
+- React.js
+- Tailwind CSS
+- React Router
+
+**Backend:**
+- Firebase Firestore
+- Firebase Authentication
+
+## Instalasi
+
+1. Clone repo:
+```bash
+git clone https://github.com/fatkhurrhn/kostkahfi-app.git
+cd kost-kahfi
+```
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Buat file .env:
+```bash
+REACT_APP_FIREBASE_API_KEY=your_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_id
+```
+
+4. Jalankan:
+```bash
+npm start
+```
+
+## Struktur Folder
+```bash
+kost-kahfi/
+├── public/
+├── src/
+│   ├── assets/            # Gambar, icon, dll
+│   ├── components/        # Komponen reusable
+│   ├── pages/             # Halaman aplikasi
+│   │   ├── admin/         # Dashboard admin
+│   │   ├── auth/          # Autentikasi
+│   │   ├── home/          # Halaman utama
+│   │   └── user/          # Dashboard penghuni
+│   ├── services/          # API services
+│   ├── utils/             # Utility functions
+│   ├── App.js             # Main App component
+│   └── index.js           # Entry point
+├── firebase.js            # Firebase config
+├── package.json
+└── README.md
+```
