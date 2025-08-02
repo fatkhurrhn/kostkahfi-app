@@ -1,392 +1,558 @@
 import React, { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { app } from '../../../firebase';
-import { useNavigate } from 'react-router-dom';
-import { 
-  getFirestore, 
-  collection, 
-  getDocs, 
-  query, 
-  where, 
-  doc, 
-  deleteDoc,
-  addDoc,
-  updateDoc
-} from 'firebase/firestore';
 import Layout from '../../components/admin/Layout';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../../firebase';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import { Link } from 'react-router-dom';
+
+// Register ChartJS components
+ChartJS.register(
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
+    ArcElement,
+    PointElement,
+    LineElement
+);
 
 export default function DashboardAdmin() {
-    const [penghuni, setPenghuni] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showFormModal, setShowFormModal] = useState(false);
-    const [formMode, setFormMode] = useState('add');
-    const [selectedPenghuni, setSelectedPenghuni] = useState(null);
-    const [formData, setFormData] = useState({
-        nama: '',
-        email: '',
-        noTlp: '',
-        tglMasuk: '',
-        role: 'reguler'
+    const [stats, setStats] = useState({
+        users: 0,
+        blogPosts: 0,
+        comments: 0,
+        payments: 0,
+        rooms: 0,
+        revenue: 0
     });
-    const navigate = useNavigate();
-
-    const formatDate = (date) => {
-        if (!date) return '-';
-        if (date.toDate) return date.toDate().toLocaleDateString('id-ID');
-        if (typeof date === 'string') return new Date(date).toLocaleDateString('id-ID');
-        return '-';
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleDelete = async () => {
-        if (!selectedPenghuni) return;
-        try {
-            const db = getFirestore(app);
-            await deleteDoc(doc(db, 'users', selectedPenghuni.id));
-            setPenghuni(prev => prev.filter(p => p.id !== selectedPenghuni.id));
-            setShowDeleteModal(false);
-        } catch (error) {
-            console.error("Error deleting document: ", error);
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const db = getFirestore(app);
-            if (formMode === 'add') {
-                const docRef = await addDoc(collection(db, 'users'), {
-                    ...formData,
-                    createdAt: new Date()
-                });
-                setPenghuni(prev => [...prev, { id: docRef.id, ...formData }]);
-            } else {
-                await updateDoc(doc(db, 'users', selectedPenghuni.id), formData);
-                setPenghuni(prev => prev.map(p => 
-                    p.id === selectedPenghuni.id ? { ...p, ...formData } : p
-                ));
-            }
-            setShowFormModal(false);
-        } catch (error) {
-            console.error("Error saving document: ", error);
-        }
-    };
-
-    const openEditForm = (penghuni) => {
-        setSelectedPenghuni(penghuni);
-        setFormMode('edit');
-        setFormData({
-            nama: penghuni.nama || '',
-            email: penghuni.email || '',
-            noTlp: penghuni.noTlp || '',
-            tglMasuk: penghuni.tglMasuk || '',
-            role: penghuni.role || 'reguler'
-        });
-        setShowFormModal(true);
-    };
-
-    const openAddForm = () => {
-        setSelectedPenghuni(null);
-        setFormMode('add');
-        setFormData({
-            nama: '',
-            email: '',
-            noTlp: '',
-            tglMasuk: '',
-            role: 'reguler'
-        });
-        setShowFormModal(true);
-    };
+    const [recentPayments, setRecentPayments] = useState([]);
+    const [recentBlogs, setRecentBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+    const [userGrowth, setUserGrowth] = useState([]);
 
     useEffect(() => {
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            if (!currentUser) {
-                navigate('/login');
-                return;
-            }
-
+        const fetchData = async () => {
             try {
-                const q = query(
-                    collection(db, 'users'),
-                    where('uid', '==', currentUser.uid)
-                );
-                const querySnapshot = await getDocs(q);
+                setLoading(true);
 
-                if (!querySnapshot.empty) {
-                    const userData = querySnapshot.docs[0].data();
-                    if (userData.role !== 'admin') {
-                        navigate('/dashboard-users');
-                        return;
+                // Fetch all data in parallel
+                const [
+                    usersSnapshot,
+                    blogSnapshot,
+                    commentsSnapshot,
+                    paymentsSnapshot,
+                    roomsSnapshot
+                ] = await Promise.all([
+                    getDocs(collection(db, 'users')),
+                    getDocs(collection(db, 'blog')),
+                    getDocs(collection(db, 'komentar-blog')),
+                    getDocs(collection(db, 'pembayaran')),
+                    getDocs(collection(db, 'kamar'))
+                ]);
+
+                // Calculate total revenue (using 'nominal' field)
+                let totalRevenue = 0;
+                paymentsSnapshot.forEach(doc => {
+                    const payment = doc.data();
+                    if (payment.nominal) {
+                        totalRevenue += parseFloat(payment.nominal);
                     }
+                });
 
-                    const penghuniSnapshot = await getDocs(collection(db, 'users'));
-                    const penghuniData = penghuniSnapshot.docs.map(doc => ({
+                // Get recent 5 payments
+                const paymentsData = paymentsSnapshot.docs
+                    .sort((a, b) => b.data().tanggal?.toDate() - a.data().tanggal?.toDate())
+                    .slice(0, 5)
+                    .map(doc => ({
                         id: doc.id,
-                        ...doc.data()
+                        ...doc.data(),
+                        tanggal: doc.data().tanggal?.toDate().toLocaleDateString()
                     }));
-                    setPenghuni(penghuniData);
-                } else {
-                    navigate('/login');
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
+
+                // Get recent 5 blog posts with comment count
+                const blogsData = await Promise.all(
+                    blogSnapshot.docs
+                        .sort((a, b) => b.data().createdAt?.toDate() - a.data().createdAt?.toDate())
+                        .slice(0, 5)
+                        .map(async doc => {
+                            const commentsQuery = query(
+                                collection(db, 'komentar-blog'),
+                                where('blogId', '==', doc.id)
+                            );
+                            const comments = await getDocs(commentsQuery);
+
+                            return {
+                                id: doc.id,
+                                ...doc.data(),
+                                createdAt: doc.data().createdAt?.toDate().toLocaleDateString(),
+                                commentCount: comments.size
+                            };
+                        })
+                );
+
+                // Hitung data bulanan
+                const monthlyRevenueData = calculateMonthlyData(paymentsSnapshot.docs);
+                setMonthlyRevenue(monthlyRevenueData);
+
+                // Hitung pertumbuhan pengguna
+                const userGrowthData = calculateUserGrowth(usersSnapshot.docs);
+                setUserGrowth(userGrowthData);
+                
+                console.log('Monthly revenue data:', monthlyRevenueData);
+                console.log('User growth data:', userGrowthData);
+
+                setStats({
+                    users: usersSnapshot.size,
+                    blogPosts: blogSnapshot.size,
+                    comments: commentsSnapshot.size,
+                    payments: paymentsSnapshot.size,
+                    rooms: roomsSnapshot.size,
+                    revenue: totalRevenue
+                });
+
+                setRecentPayments(paymentsData);
+                setRecentBlogs(blogsData);
                 setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const calculateMonthlyData = (paymentDocs) => {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        const currentYear = new Date().getFullYear();
+        const monthlyData = Array(12).fill(0);
+
+        paymentDocs.forEach(doc => {
+            const payment = doc.data();
+            if (payment.tanggal) {
+                const date = payment.tanggal.toDate();
+                if (date.getFullYear() === currentYear) {
+                    const month = date.getMonth();
+                    monthlyData[month] += payment.nominal ? parseFloat(payment.nominal) : 0;
+                }
             }
         });
 
-        return () => unsubscribe();
-    }, [navigate]);
+        return {
+            labels: months,
+            data: monthlyData
+        };
+    };
 
-    // Tidak ada full-screen loader lagi
+    const calculateUserGrowth = (userDocs) => {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        const currentYear = new Date().getFullYear();
+        const monthlyCounts = Array(12).fill(0);
+
+        userDocs.forEach(doc => {
+            const userData = doc.data();
+            if (userData.createdAt) {
+                const date = userData.createdAt.toDate();
+                if (date.getFullYear() === currentYear) {
+                    const month = date.getMonth();
+                    monthlyCounts[month]++;
+                }
+            }
+        });
+
+        // Hitung akumulasi
+        const cumulativeCounts = monthlyCounts.map((sum => value => sum += value)(0));
+
+        return {
+            labels: months,
+            data: cumulativeCounts
+        };
+    };
+
+    // Chart data configurations
+    const userGrowthChartData = {
+        labels: userGrowth.labels,
+        datasets: [
+            {
+                label: 'Pertumbuhan Pengguna',
+                data: userGrowth.data,
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }
+        ]
+    };
+
+    const revenueChartData = {
+        labels: monthlyRevenue.labels,
+        datasets: [
+            {
+                label: 'Pendapatan Bulanan (Rp)',
+                data: monthlyRevenue.data,
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                borderWidth: 2
+            }
+        ]
+    };
+
+    const contentStatsData = {
+        labels: ['Artikel', 'Komentar'],
+        datasets: [
+            {
+                data: [stats.blogPosts, stats.comments],
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.7)',
+                    'rgba(236, 72, 153, 0.7)'
+                ],
+                borderWidth: 1
+            }
+        ]
+    };
+
+    if (loading) {
+        return (
+            <Layout>
+                <div className="p-6 flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            </Layout>
+        );
+    }
+
     return (
         <Layout>
-            <div className="max-w-full mx-auto">
-                {/* Table Header */}
+            <div className="p-">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                        <i className="ri-group-line mr-2"></i>Manajemen Penghuni
-                    </h2>
-                    <button
-                        onClick={openAddForm}
-                        className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm flex items-center"
-                    >
-                        <i className="ri-user-add-line mr-2"></i>Tambah Penghuni
-                    </button>
+                    <h1 className="text-2xl font-bold text-gray-800">Dashboard Admin</h1>
+                    <div className="relative max-w-md w-full">
+                        <input
+                            type="text"
+                            className="bg-white text-gray-800 focus:ring-1 focus:ring-gray-100 w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none pl-10"
+                            placeholder="Cari..."
+                        />
+                        <i className="ri-search-line absolute left-3 top-3 text-gray-400"></i>
+                    </div>
                 </div>
 
-                {/* Penghuni Table */}
-                <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Nama
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Email
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        No. Telepon
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tanggal Masuk
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Role
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Aksi
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {loading ? (
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-8">
+                    <StatCard
+                        icon="ri-user-line"
+                        title="Pengguna"
+                        value={stats.users}
+                        change="+12% bulan ini"
+                        color="bg-blue-100 text-blue-600"
+                    />
+                    <StatCard
+                        icon="ri-article-line"
+                        title="Artikel"
+                        value={stats.blogPosts}
+                        change="+5% bulan ini"
+                        color="bg-green-100 text-green-600"
+                    />
+                    <StatCard
+                        icon="ri-hotel-line"
+                        title="Kamar"
+                        value={stats.rooms}
+                        change="+2% bulan ini"
+                        color="bg-yellow-100 text-yellow-600"
+                    />
+                    <StatCard
+                        icon="ri-money-dollar-circle-line"
+                        title="Pembayaran"
+                        value={stats.payments}
+                        change="+15% bulan ini"
+                        color="bg-red-100 text-red-600"
+                    />
+                    <StatCard
+                        icon="ri-bank-card-line"
+                        title="Pendapatan"
+                        value={`Rp ${stats.revenue.toLocaleString('id-ID')}`}
+                        change="+18% bulan ini"
+                        color="bg-teal-100 text-teal-600"
+                    />
+                </div>
+
+                {/* Charts Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-8">
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Pertumbuhan Pengguna</h2>
+                            <div className="flex space-x-2">
+                                <button className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded">Tahun Ini</button>
+                                <button className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded">Bulan Ini</button>
+                            </div>
+                        </div>
+                        <div className="h-80">
+                            <Line
+                                data={userGrowthChartData}
+                                options={{
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Pendapatan Bulanan</h2>
+                            <div className="flex space-x-2">
+                                <button className="px-3 py-1 text-xs bg-green-100 text-green-600 rounded">2025</button>
+                                <button className="px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded">2026</button>
+                            </div>
+                        </div>
+                        <div className="h-80">
+                            <Bar
+                                data={revenueChartData}
+                                options={{
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                callback: function (value) {
+                                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                                }
+                                            }
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Additional Charts Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-8">
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Statistik Konten</h2>
+                            <i className="ri-pie-chart-line text-gray-500"></i>
+                        </div>
+                        <div className="h-64">
+                            <Pie
+                                data={contentStatsData}
+                                options={{
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                        },
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Aktivitas Terkini</h2>
+                            <i className="ri-notification-line text-gray-500"></i>
+                        </div>
+                        <div className="space-y-4">
+                            {recentPayments.slice(0, 3).map((payment, index) => (
+                                <div key={index} className="flex items-start">
+                                    <div className="bg-green-100 p-2 rounded-full mr-3">
+                                        <i className="ri-wallet-3-line text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-800">Pembayaran baru</p>
+                                        <p className="text-xs text-gray-500">Rp {payment.nominal?.toLocaleString('id-ID') || '0'} - {payment.tanggal || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            {recentBlogs.slice(0, 2).map((blog, index) => (
+                                <div key={`blog-${index}`} className="flex items-start">
+                                    <div className="bg-blue-100 p-2 rounded-full mr-3">
+                                        <i className="ri-article-line text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-800">Artikel baru: {blog.title?.substring(0, 20)}...</p>
+                                        <p className="text-xs text-gray-500">{blog.createdAt || 'N/A'} - {blog.commentCount} komentar</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Kamar Tersedia</h2>
+                            <i className="ri-hotel-line text-gray-500"></i>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <RoomStatusCard
+                                type="Standard"
+                                available={12}
+                                total={20}
+                                color="bg-blue-100 text-blue-600"
+                            />
+                            <RoomStatusCard
+                                type="Deluxe"
+                                available={5}
+                                total={10}
+                                color="bg-green-100 text-green-600"
+                            />
+                            <RoomStatusCard
+                                type="Suite"
+                                available={3}
+                                total={5}
+                                color="bg-purple-100 text-purple-600"
+                            />
+                            <RoomStatusCard
+                                type="Executive"
+                                available={2}
+                                total={4}
+                                color="bg-yellow-100 text-yellow-600"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Tables */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Pembayaran Terbaru</h2>
+                            <Link to="/dashboard-admin/manage-pembayaran" className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+                                Lihat Semua <i className="ri-arrow-right-line ml-1"></i>
+                            </Link>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
                                     <tr>
-                                        <td colSpan="6" className="px-6 py-12">
-                                            <div className="flex justify-center items-center">
-                                                <i className="ri-loader-4-line animate-spin text-2xl text-gray-600"></i>
-                                                <span className="ml-2 text-sm text-gray-600">Memuat data penghuni…</span>
-                                            </div>
-                                        </td>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     </tr>
-                                ) : penghuni.length > 0 ? (
-                                    penghuni.map((item) => (
-                                        <tr key={item.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {item.nama || '-'}
-                                                </div>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {recentPayments.map(payment => (
+                                        <tr key={payment.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payment.id.substring(0, 8)}...</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                                                Rp {payment.nominal?.toLocaleString('id-ID') || '0'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                {item.email || '-'}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                {item.noTlp || '-'}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                                {formatDate(item.tglMasuk)}
-                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payment.tanggal || '-'}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    ${item.role === 'admin' ? 'bg-gray-200 text-gray-800' : 
-                                                      item.role === 'mahasantri' ? 'bg-gray-200 text-gray-800' : 
-                                                      item.role === 'biman' ? 'bg-gray-200 text-gray-800' : 
-                                                      'bg-gray-200 text-gray-800'}`}>
-                                                    {item.role || 'reguler'}
+                          ${payment.status === 'lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                    {payment.status || 'pending'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => openEditForm(item)}
-                                                        className="text-gray-600 hover:text-gray-900"
-                                                    >
-                                                        <i className="ri-edit-line"></i>
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => {
-                                                            setSelectedPenghuni(item);
-                                                            setShowDeleteModal(true);
-                                                        }}
-                                                        className="text-gray-600 hover:text-gray-900"
-                                                    >
-                                                        <i className="ri-delete-bin-line"></i>
-                                                    </button>
-                                                </div>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Artikel Terbaru</h2>
+                            <Link to="/dashboard-admin/manage-blog" className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+                                Lihat Semua <i className="ri-arrow-right-line ml-1"></i>
+                            </Link>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Komentar</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {recentBlogs.map(blog => (
+                                        <tr key={blog.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                                                {blog.title?.substring(0, 20)}...
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{blog.uploadDate?.toDate ? blog.uploadDate.toDate().toLocaleDateString('id-ID') : '-'}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <span className="inline-flex items-center">
+                                                    <i className="ri-eye-line mr-1"></i> {blog.views}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <span className="inline-flex items-center">
+                                                    <i className="ri-chat-1-line mr-1"></i> {blog.commentCount || 0} Komentar
+                                                </span>
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
-                                            Tidak ada data penghuni
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-sm w-full border border-gray-200">
-                        <div className="flex items-center mb-4">
-                            <div className="bg-gray-100 p-2 rounded-full mr-3">
-                                <i className="ri-error-warning-line text-gray-600 text-xl"></i>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-800">Konfirmasi Hapus</h3>
-                        </div>
-                        <p className="mb-6 text-gray-600">Apakah Anda yakin ingin menghapus penghuni <span className="font-semibold">{selectedPenghuni?.nama}</span>?</p>
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                onClick={() => setShowDeleteModal(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
-                            >
-                                Hapus
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Form Modal */}
-            {showFormModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                {formMode === 'add' ? 'Tambah Penghuni' : 'Edit Penghuni'}
-                            </h3>
-                            <button 
-                                onClick={() => setShowFormModal(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                <i className="ri-close-line text-xl"></i>
-                            </button>
-                        </div>
-                        
-                        <form onSubmit={handleSubmit}>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                                    <input
-                                        type="text"
-                                        name="nama"
-                                        value={formData.nama}
-                                        onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                                        required
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                                        required
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
-                                    <input
-                                        type="tel"
-                                        name="noTlp"
-                                        value={formData.noTlp}
-                                        onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Masuk</label>
-                                    <input
-                                        type="date"
-                                        name="tglMasuk"
-                                        value={formData.tglMasuk}
-                                        onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                    <select
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                                    >
-                                        <option value="reguler">Reguler</option>
-                                        <option value="mahasantri">Mahasantri</option>
-                                        <option value="biman">BIMAN</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowFormModal(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
-                                >
-                                    {formMode === 'add' ? 'Simpan' : 'Update'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </Layout>
     );
 }
+
+const StatCard = ({ icon, title, value, change, color }) => {
+    return (
+        <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+            <div className="flex items-start">
+                <div className={`w-12 h-12 flex items-center justify-center rounded-full ${color.split(' ')[0]} ${color.split(' ')[1]} mr-4`}>
+                    <i className={`${icon} text-xl`}></i>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">{title}</p>
+                    <p className="text-xl font-bold text-gray-800">{value}</p>
+                    <p className={`text-xs mt-1 ${change?.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                        {change} <i className={`ri-arrow-${change?.startsWith('+') ? 'up' : 'down'}-line`}></i>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const RoomStatusCard = ({ type, available, total, color }) => {
+    const percentage = Math.round((available / total) * 100);
+
+    return (
+        <div className="bg-white p-3 rounded-lg border border-gray-100">
+            <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">{type}</span>
+                <span className="text-xs font-medium text-gray-500">{available}/{total}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                    className={`h-2 rounded-full ${color.split(' ')[0]}`}
+                    style={{ width: `${percentage}%` }}
+                ></div>
+            </div>
+            <div className="text-right mt-1">
+                <span className="text-xs font-medium text-gray-500">{percentage}% tersedia</span>
+            </div>
+        </div>
+    );
+};
