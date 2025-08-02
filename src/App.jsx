@@ -37,6 +37,8 @@ export default function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<DetailBlog />} />
         <Route path="/not-found" element={<NotFound />} />
+
+        {/* Catch-all untuk halaman 404 */}
         <Route path="*" element={<Navigate to="/not-found" replace />} />
       </Routes>
     </BrowserRouter>
