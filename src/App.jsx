@@ -13,6 +13,7 @@ import Blog from './pages/homepage/Blog';
 import ManageBlog from './pages/dashboard/admin/ManageBlog';
 import DetailBlog from './pages/homepage/DetailBlog';
 import ManageComments from './pages/dashboard/admin/ManageComments';
+import ManageUsers from './pages/dashboard/admin/ManageUsers';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/dashboard-admin/manage-pembayaran" element={<ManagePembayaran />} />
         <Route path="/dashboard-admin/manage-blog" element={<ManageBlog />} />
         <Route path="/dashboard-admin/manage-komentar" element={<ManageComments />} />
+        <Route path="/dashboard-admin/manage-users" element={<ManageUsers />} />
 
         <Route path="/kamar" element={<Kamar />} />
         <Route path="/blog" element={<Blog />} />

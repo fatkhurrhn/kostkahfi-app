@@ -82,8 +82,6 @@ export default function ManageComments() {
     return (
         <Layout>
             <div className="bg-gray-50 min-h-screen text-gray-800">
-                <h1 className="text-3xl font-bold mb-6">Kelola Komentar</h1>
-
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">

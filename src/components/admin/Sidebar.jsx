@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 const menuItems = [
   { label: "Dashboard", path: "/dashboard-admin" },
+  { label: "Manage Users", path: "/dashboard-admin/manage-users" },
   { label: "Manage Kamar", path: "/dashboard-admin/manage-kamar" },
   { label: "Manage Pembayaran", path: "/dashboard-admin/manage-pembayaran" },
   { label: "Manage Blog", path: "/dashboard-admin/manage-blog" },

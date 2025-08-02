@@ -289,7 +289,11 @@ export default function DetailBlog() {
                                                                 </a>
                                                             </h3>
                                                             <div className="text-xs text-gray-500">
-                                                                {latestBlog.createdAt?.toDate().toLocaleDateString()}
+                                                                {blog.createdAt?.toDate().toLocaleDateString('id-ID', {
+                                                                    day: 'numeric',
+                                                                    month: 'long',
+                                                                    year: 'numeric',
+                                                                })}{' '}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -328,7 +332,11 @@ export default function DetailBlog() {
                                                             {rb.title}
                                                         </a>
                                                     </h3>
-                                                    <div className="text-xs text-gray-500">{rb.views} views</div>
+                                                    <div className="text-xs text-gray-500">{rb.views} views • {blog.createdAt?.toDate().toLocaleDateString('id-ID', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric',
+                                            })}{' '}</div>
                                                 </div>
                                             </div>
                                         ))}

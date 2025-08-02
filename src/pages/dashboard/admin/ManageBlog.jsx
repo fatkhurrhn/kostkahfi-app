@@ -21,7 +21,7 @@ export default function ManageBlog() {
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [form, setForm] = useState({
-        id: null, title: '', thumbnail: '', tags: '', content: ''
+        id: null, title: '', thumbnail: '', tags: '', content: '', uploadDate: new Date().toISOString().substr(0, 10) // YYYY-MM-DD
     });
 
     /* ---------- Editor ---------- */
@@ -62,7 +62,7 @@ export default function ManageBlog() {
 
     const openCreate = () => { resetForm(); setModalOpen(true); };
     const openEdit = b => {
-        setForm({ id: b.id, title: b.title, thumbnail: b.thumbnail, tags: b.tags?.join(', ') || '', content: b.content });
+        setForm({ id: b.id, title: b.title, thumbnail: b.thumbnail, tags: b.tags?.join(', ') || '', content: b.content, uploadDate: b.uploadDate?.toDate ? b.uploadDate.toDate().toISOString().substr(0, 10) : new Date().toISOString().substr(0, 10) });
         editor.commands.setContent(b.content);
         setModalOpen(true);
     };
@@ -75,6 +75,8 @@ export default function ManageBlog() {
             thumbnail: form.thumbnail.trim(),
             tags: form.tags.split(',').map(t => t.trim()),
             content: editor.getHTML(),
+            author: 'Admin',
+            uploadDate: new Date(form.uploadDate), // Firestore Timestamp
             updatedAt: serverTimestamp(),
         };
 
@@ -132,7 +134,7 @@ export default function ManageBlog() {
     /* ---------- Render ---------- */
     return (
         <Layout>
-            <div className="bg-gray-50 min-h-screen text-gray-800 px-4 py-8">
+            <div className="bg-gray-50 min-h-screen text-gray-800">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-center mb-6">
                         <h1 className="text-3xl font-bold">Manage Blogs</h1>
@@ -177,7 +179,7 @@ export default function ManageBlog() {
                                             {b.views}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
-                                            {b.createdAt?.toDate().toLocaleDateString()}
+                                            {b.uploadDate?.toDate ? b.uploadDate.toDate().toLocaleDateString('id-ID') : '-'}
                                         </td>
                                         <td className="px-6 py-4 text-sm space-x-2">
                                             <button onClick={() => openEdit(b)} className="text-blue-600">
@@ -211,16 +213,37 @@ export default function ManageBlog() {
                                 required
                             />
                             <input
-                                placeholder="Thumbnail URL"
+                                id="thumbnail"
+                                type="url"
+                                placeholder="https://example.com/image.jpg"
                                 value={form.thumbnail}
                                 onChange={e => setForm({ ...form, thumbnail: e.target.value })}
                                 className="w-full border px-3 py-2 rounded"
                                 required
                             />
+                            {/* Preview otomatis */}
+                            {form.thumbnail && (
+                                <div className="mt-1">
+                                    <span className="text-xs text-gray-600 mb-1 block">Preview:</span>
+                                    <img
+                                        src={form.thumbnail}
+                                        alt="preview"
+                                        className="w-32 h-20 object-cover rounded border"
+                                        onError={e => { e.target.src = 'https://via.placeholder.com/128x80?text=No+Image'; }}
+                                    />
+                                </div>
+                            )}
                             <input
                                 placeholder="Tags (comma separated)"
                                 value={form.tags}
                                 onChange={e => setForm({ ...form, tags: e.target.value })}
+                                className="w-full border px-3 py-2 rounded"
+                            />
+                            <label className="block text-sm font-medium mb-1">Tanggal Upload</label>
+                            <input
+                                type="date"
+                                value={form.uploadDate}
+                                onChange={e => setForm({ ...form, uploadDate: e.target.value })}
                                 className="w-full border px-3 py-2 rounded"
                             />
 
@@ -245,8 +268,8 @@ export default function ManageBlog() {
                     <Modal
                         isOpen={!!deleteId}
                         onRequestClose={() => setDeleteId(null)}
-                        className="bg-white rounded-lg shadow-xl w-96 p-6 outline-none"
-                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                        className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-auto my-12 p-6 outline-none"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto z-50"
                     >
                         <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
                         <p>Are you sure you want to delete this blog permanently?</p>
