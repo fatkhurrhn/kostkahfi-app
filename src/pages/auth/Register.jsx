@@ -13,8 +13,7 @@ export default function Register() {
     password: '',
     tglMasuk: '',
     role: 'reguler',
-    jenKel: '' // <- baru
-
+    jenKel: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -53,7 +52,6 @@ export default function Register() {
         uid: userCredential.user.uid
       });
 
-
       // Redirect based on role
       if (formData.role === 'admin') {
         navigate('/dashboard-admin');
@@ -61,160 +59,220 @@ export default function Register() {
         navigate('/dashboard-users');
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.message.replace('Firebase: ', '').replace('auth/', '').replace(/-/g, ' '));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="text-center mb-6">
-          <i className="ri-user-add-line text-4xl text-gray-700 mb-2"></i>
-          <h1 className="text-2xl font-bold text-gray-800">Register</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl border border-gray-100">
+        <div className="text-center mb-8">
+          <div className="mx-auto w-20 h-20 bg-[#eb6807]/10 rounded-full flex items-center justify-center mb-4">
+            <i className="ri-user-add-line text-3xl text-[#eb6807]"></i>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
+          <p className="text-gray-500 mt-2">Fill in your details to register</p>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6 flex items-start">
+            <i className="ri-error-warning-line mr-2 mt-0.5"></i>
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="nama">
-              <i className="ri-user-line mr-2"></i>Nama Lengkap
-            </label>
-            <input
-              type="text"
-              id="nama"
-              name="nama"
-              value={formData.nama}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Column 1 */}
+            <div className="space-y-5">
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700" htmlFor="nama">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="ri-user-line text-gray-400"></i>
+                  </div>
+                  <input
+                    type="text"
+                    id="nama"
+                    name="nama"
+                    value={formData.nama}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   placeholder-gray-400 transition duration-200"
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="jenKel">
-              <i className="ri-user-2-line mr-2"></i>Jenis Kelamin
-            </label>
-            <select
-              id="jenKel"
-              name="jenKel"
-              value={formData.jenKel}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            >
-              <option value="">-- Pilih Jenis Kelamin --</option>
-              <option value="laki-laki">Laki-laki</option>
-              <option value="perempuan">Perempuan</option>
-            </select>
-          </div>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700" htmlFor="jenKel">
+                  Gender
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="ri-user-2-line text-gray-400"></i>
+                  </div>
+                  <select
+                    id="jenKel"
+                    name="jenKel"
+                    value={formData.jenKel}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   appearance-none transition duration-200"
+                    required
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="laki-laki">Male</option>
+                    <option value="perempuan">Female</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <i className="ri-arrow-down-s-line text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
 
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700" htmlFor="noTlp">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="ri-phone-line text-gray-400"></i>
+                  </div>
+                  <input
+                    type="tel"
+                    id="noTlp"
+                    name="noTlp"
+                    value={formData.noTlp}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   placeholder-gray-400 transition duration-200"
+                    placeholder="08123456789"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="noTlp">
-              <i className="ri-phone-line mr-2"></i>Nomor Telepon
-            </label>
-            <input
-              type="tel"
-              id="noTlp"
-              name="noTlp"
-              value={formData.noTlp}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            />
-          </div>
+            {/* Column 2 */}
+            <div className="space-y-5">
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="ri-mail-line text-gray-400"></i>
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   placeholder-gray-400 transition duration-200"
+                    placeholder="emailyou@kahfi.com"
+                    required
+                  />
+                </div>
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="email">
-              <i className="ri-mail-line mr-2"></i>Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            />
-          </div>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="ri-lock-line text-gray-400"></i>
+                  </div>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   placeholder-gray-400 transition duration-200"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="password">
-              <i className="ri-lock-line mr-2"></i>Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            />
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700" htmlFor="tglMasuk">
+                    Entry Date
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i className="ri-calendar-line text-gray-400"></i>
+                    </div>
+                    <input
+                      type="date"
+                      id="tglMasuk"
+                      name="tglMasuk"
+                      value={formData.tglMasuk}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   transition duration-200"
+                      required
+                    />
+                  </div>
+                </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="tglMasuk">
-              <i className="ri-calendar-line mr-2"></i>Tanggal Masuk
-            </label>
-            <input
-              type="date"
-              id="tglMasuk"
-              name="tglMasuk"
-              value={formData.tglMasuk}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="role">
-              <i className="ri-user-settings-line mr-2"></i>Role
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full bg-white text-gray-800 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300"
-              required
-            >
-              {/* <option value="admin">Admin</option> */}
-              <option value="reguler">Reguler</option>
-              <option value="mahasantri">Mahasantri</option>
-              <option value="biman">Biman</option>
-            </select>
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700" htmlFor="role">
+                    Role
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i className="ri-user-settings-line text-gray-400"></i>
+                    </div>
+                    <select
+                      id="role"
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg bg-gray-50   appearance-none transition duration-200"
+                      required
+                    >
+                      <option value="reguler">Regular</option>
+                      <option value="mahasantri">Mahasantri</option>
+                      <option value="biman">Biman</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <i className="ri-arrow-down-s-line text-gray-400"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition duration-150"
+            className="w-full py-3 px-4 bg-[#eb6807] hover:bg-[#d45e06] text-white font-medium rounded-lg shadow-md transition duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#eb6807]/50 focus:ring-offset-2"
           >
             {loading ? (
-              <span className="flex items-center justify-center">
+              <>
                 <i className="ri-loader-4-line animate-spin mr-2"></i>
-                Processing...
-              </span>
+                Registering...
+              </>
             ) : (
-              'Register'
+              <>
+                <i className="ri-user-add-line mr-2"></i>
+                Register Now
+              </>
             )}
           </button>
         </form>
 
-        <div className="mt-4 text-center text-gray-600">
-          Sudah punya akun?{' '}
-          <Link to="/login" className="text-gray-800 hover:underline">
-            Login disini
+        <div className="mt-6 text-center text-sm text-gray-500">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-[#eb6807] hover:text-[#d45e06] hover:underline">
+            Login here
           </Link>
         </div>
       </div>
