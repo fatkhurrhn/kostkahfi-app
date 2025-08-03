@@ -3,7 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 
 const NavCreator = ({ children }) => {
   const location = useLocation();
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const toggleDropdown = (section) => {
+    setOpenDropdown(openDropdown === section ? null : section);
+  };
 
   const navItems = [
     { path: '/', icon: 'ri-code-s-slash-line', activeIcon: 'ri-code-s-slash-fill', label: 'Fasilitas'},
@@ -11,9 +16,6 @@ const NavCreator = ({ children }) => {
     { path: '/blog', icon: 'ri-news-line', activeIcon: 'ri-news-fill', label: 'Blogs', isNew: true },
     { path: '/', icon: 'ri-apps-line', activeIcon: 'ri-apps-fill', label: 'Others', isNew: true },
   ];
-
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-  const closeSidebar = () => setSidebarOpen(false);
 
   return (
     <>
@@ -29,15 +31,15 @@ const NavCreator = ({ children }) => {
             {/* Mobile Menu Icon */}
             <button
               className="md:hidden text-gray-800 p-2 rounded-lg hover:bg-gray-100"
-              onClick={toggleSidebar}
+              onClick={() => setIsSidebarOpen(true)}
             >
               <i className="ri-menu-2-line text-xl"></i>
             </button>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {navItems.map((item, index) => (
-                <div key={index} className="relative">
+              {navItems.map((item) => (
+                <div key={item.label} className="relative">
                   <Link
                     to={item.path}
                     className={`text-black hover:text-gray-600 transition-colors font-medium ${
@@ -61,51 +63,81 @@ const NavCreator = ({ children }) => {
         </div>
       </nav>
 
-      {/* Sidebar Mobile */}
-      <div className={`fixed inset-0 z-40 md:hidden transition duration-300 ${isSidebarOpen ? 'block' : 'hidden'}`}>
-        {/* Overlay */}
-        <div
-          className="absolute inset-0 bg-black bg-opacity-30"
-          onClick={closeSidebar}
-        ></div>
+      {/* Sidebar (Mobile) */}
+      <div
+        className={`fixed top-0 left-0 h-full w-2/4 bg-white text-gray-800 transform ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } transition-transform duration-300 ease-in-out z-30 px-6`}
+      >
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Fatkhurrhn</h3>
+          <button onClick={() => setIsSidebarOpen(false)} className="text-2xl">
+            <i className="ri-close-line"></i>
+          </button>
+        </div>
 
-        {/* Sidebar Panel */}
-        <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="p-4 flex items-center justify-between border-b">
-            <span className="text-lg font-semibold">Menu</span>
-            <button onClick={closeSidebar}>
-              <i className="ri-close-line text-xl text-gray-600"></i>
+        {/* Sidebar Menu */}
+        <ul className="pt-8 ml-[-7px] mt-6 space-y-2">
+          <li>
+            <Link to="/" className="block hover:text-blue-400">Home</Link>
+          </li>
+          <li>
+            <button onClick={() => toggleDropdown("frontend")} className="flex items-center hover:text-blue-400 w-full">
+              <i className={`${openDropdown === "frontend" ? "ri-arrow-down-s-line mr-2" : "ri-arrow-right-s-line mr-1"}`}></i>
+              Frontdev
             </button>
-          </div>
-          <nav className="flex flex-col p-4 space-y-3">
-            {navItems.map((item, index) => (
-              <Link
-                key={index}
-                to={item.path}
-                onClick={closeSidebar}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                  location.pathname === item.path
-                    ? 'bg-gray-100 text-gray-900 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <i className={`${location.pathname === item.path ? item.activeIcon : item.icon} text-lg`}></i>
-                <span>{item.label}</span>
-              </Link>
-            ))}
-
-            <Link
-              to="/cavelatte"
-              onClick={closeSidebar}
-              className="mt-4 text-center text-gray-800 font-medium rounded-lg text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200"
+            {openDropdown === "frontend" && (
+              <ul className="mt-2 ml-4 space-y-2 border-l-2 border-gray-600 pl-4">
+                <li><Link to="/projects" className="block hover:text-blue-400">Projects</Link></li>
+                <li><Link to="/certificates" className="block hover:text-blue-400">Certificates</Link></li>
+                <li><Link to="/blogs" className="block hover:text-blue-400">Blogs</Link></li>
+              </ul>
+            )}
+          </li>
+          <li>
+            <Link to="/storythur" className="block hover:text-blue-400">Creator</Link>
+          </li>
+          <li>
+            <button
+              onClick={() => toggleDropdown("islamic")}
+              className="flex items-center hover:text-blue-400 w-full"
             >
-              Cavelatte
-            </Link>
-          </nav>
+              <i className={`${openDropdown === "islamic" ? "ri-arrow-down-s-line mr-2" : "ri-arrow-right-s-line mr-1"}`}></i>
+              Islamic
+            </button>
+            {openDropdown === "islamic" && (
+              <ul className="mt-2 ml-4 space-y-2 border-l-2 border-gray-600 pl-4">
+                <li><Link to="/#" className="block hover:text-blue-400">#</Link></li>
+                <li><Link to="/#" className="block hover:text-blue-400">#</Link></li>
+                <li><Link to="/#" className="block hover:text-blue-400">#</Link></li>
+              </ul>
+            )}
+          </li>
+        </ul>
+
+        {/* Footer */}
+        <div className="absolute bottom-12 left-6 right-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Follow for more</h3>
+        </div>
+
+        {/* Social Icons */}
+        <div className="absolute bottom-5 left-0 w-full flex justify-center gap-4">
+          <Link to="https://youtube.com/fatkhurrhnn" target="_blank" rel="noopener noreferrer">
+            <i className="ri-youtube-fill text-xl text-gray-800 hover:text-red-600 transition-all"></i>
+          </Link>
+          <Link to="https://linkedin.com/fatkhurrhn" target="_blank" rel="noopener noreferrer">
+            <i className="ri-linkedin-box-fill text-xl text-gray-800 hover:text-blue-600 transition-all"></i>
+          </Link>
+          <Link to="https://tiktok.com/fatkhurrhnn" target="_blank" rel="noopener noreferrer">
+            <i className="ri-tiktok-fill text-xl text-gray-800 hover:text-black transition-all"></i>
+          </Link>
+          <Link to="https://instagram.com/fatkhurrhn" target="_blank" rel="noopener noreferrer">
+            <i className="ri-instagram-fill text-xl text-gray-800 hover:text-pink-500 transition-all"></i>
+          </Link>
         </div>
       </div>
 
-      {/* Konten halaman */}
+      {/* Content Wrapper */}
       <main className="pb-[64px] pt-[64px]">{children}</main>
     </>
   );
