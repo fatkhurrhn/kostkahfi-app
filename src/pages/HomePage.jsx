@@ -10,6 +10,7 @@ import BlogSection from '../components/home/BlogSection';
 import TestimonialSection from '../components/home/TestimonialSection';
 import MapsSection from '../components/home/MapsSection';
 import CTASection from '../components/home/CTASection';
+import GallerySection from '../components/home/GallerySection';
 
 export default function HomePage() {
   return (
@@ -22,6 +23,7 @@ export default function HomePage() {
       <CavelatteSection />
       <BlogSection />
       <TestimonialSection />
+      <GallerySection/>
       <MapsSection />
       <CTASection />
       

@@ -28,8 +28,8 @@ export default function HeroSection() {
 
                 {/* Deskripsi singkat */}
                 <p className="text-lg sm:text-xl md:text-1xl mb-6 sm:mb-8 text-white/80 mx-auto max-w-md sm:max-w-xl md:max-w-2xl leading-relaxed">
-                    Kost premium dengan konsep modern di jantung Depok. Kami menawarkan kamar 
-                    nyaman dengan fasilitas lengkap untuk mahasiswa dan profesional muda 
+                    Kost premium dengan konsep modern di jantung Depok. Kami menawarkan kamar
+                    nyaman dengan fasilitas lengkap untuk mahasiswa dan profesional muda
                     yang mengutamakan kenyamanan dan kebersihan.
                 </p>
 
@@ -59,7 +59,7 @@ export default function HeroSection() {
             </div>
 
             {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+            <div className="pointer-events-none absolute bottom-8 left-[49%] -translate-x-1/2 z-30 animate-bounce">
                 <i className="ri-arrow-down-line text-3xl text-white/80"></i>
             </div>
         </section>

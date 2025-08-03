@@ -86,7 +86,7 @@ export default function TestimonialSection() {
 
 function TestimonialCard({ item, isActive }) {
     return (
-        <div className={`w-[450px] flex-shrink-0 bg-white p-5 rounded-xl shadow-sm transition-all duration-300 transform ${isActive ? 'ring-2 ring-[#eb6807] scale-[1.02]' : 'hover:shadow-md'}`}>
+        <div className={`w-[300px] flex-shrink-0 bg-white p-5 rounded-xl shadow-sm transition-all duration-300 transform ${isActive ? 'ring-2 ring-[#eb6807] scale-[1.02]' : 'hover:shadow-md'}`}>
             <div className="flex items-center mb-4">
                 <img
                     src={item.image}
