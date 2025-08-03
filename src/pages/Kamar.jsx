@@ -91,7 +91,7 @@ export default function Kamar() {
 
         {/* Room Cards */}
         {!loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {filtered.map(room => (
               <div
                 key={room.id}

@@ -15,6 +15,7 @@ import DetailBlog from './pages/DetailBlog';
 import ManageComments from './pages/dashboard/admin/ManageComments';
 import ManageUsers from './pages/dashboard/admin/ManageUsers';
 import NotFound from './pages/NotFound';
+import Template from './pages/Template';
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<DetailBlog />} />
         <Route path="/not-found" element={<NotFound />} />
+        <Route path="/tes" element={<Template />} />
 
         {/* Catch-all untuk halaman 404 */}
         <Route path="*" element={<Navigate to="/not-found" replace />} />
