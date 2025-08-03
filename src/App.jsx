@@ -1,17 +1,17 @@
 
-import { BrowserRouter, Routes, Route, Navigate  } from 'react-router-dom';
-import HomePage from './pages/homepage/HomePage';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import DashboardAdmin from './pages/dashboard/DashboardAdmin';
 import DashboardUsers from './pages/dashboard/DashboardUsers';
 import ManageKamar from './pages/dashboard/admin/ManageKamar';
-import Kamar from './pages/homepage/Kamar';
+import Kamar from './pages/Kamar';
 import ManagePembayaranUser from './pages/dashboard/users/ManagePembayaran';
 import ManagePembayaran from './pages/dashboard/admin/ManagePembayaran';
-import Blog from './pages/homepage/Blog';
+import Blog from './pages/Blog';
 import ManageBlog from './pages/dashboard/admin/ManageBlog';
-import DetailBlog from './pages/homepage/DetailBlog';
+import DetailBlog from './pages/DetailBlog';
 import ManageComments from './pages/dashboard/admin/ManageComments';
 import ManageUsers from './pages/dashboard/admin/ManageUsers';
 import NotFound from './pages/NotFound';

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { app } from '../../../firebase'; // path ke firebase.js Anda
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import { app } from '../../firebase'; // path ke firebase.js Anda
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function Kamar() {
   const [rooms, setRooms] = useState([]);
@@ -107,9 +107,9 @@ export default function Kamar() {
                   <i
                     className={`ri-4x
                     ${room.status === 'kosong'
-                      ? 'ri-home-gear-line text-green-500'
-                      : 'ri-user-shared-2-line text-rose-500'
-                    }`}
+                        ? 'ri-home-gear-line text-green-500'
+                        : 'ri-user-shared-2-line text-rose-500'
+                      }`}
                   />
                 </div>
 
@@ -122,9 +122,9 @@ export default function Kamar() {
                 <span
                   className={`text-xs font-semibold px-3 py-1 rounded-full mx-auto
                   ${room.status === 'kosong'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-rose-100 text-rose-700'
-                  }`}
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-rose-100 text-rose-700'
+                    }`}
                 >
                   {room.status === 'kosong' ? 'Kosong' : 'Terisi'}
                 </span>

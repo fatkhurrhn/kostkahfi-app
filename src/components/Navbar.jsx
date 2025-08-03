@@ -11,7 +11,7 @@ const NavCreator = ({ children }) => {
   };
 
   const navItems = [
-    { path: '/', icon: 'ri-code-s-slash-line', activeIcon: 'ri-code-s-slash-fill', label: 'Fasilitas'},
+    { path: '/', icon: 'ri-code-s-slash-line', activeIcon: 'ri-code-s-slash-fill', label: 'Fasilitas' },
     { path: '/', icon: 'ri-folders-line', activeIcon: 'ri-folders-fill', label: 'Gallery' },
     { path: '/blog', icon: 'ri-news-line', activeIcon: 'ri-news-fill', label: 'Blogs', isNew: true },
     { path: '/', icon: 'ri-apps-line', activeIcon: 'ri-apps-fill', label: 'Others', isNew: true },
@@ -42,9 +42,8 @@ const NavCreator = ({ children }) => {
                 <div key={item.label} className="relative">
                   <Link
                     to={item.path}
-                    className={`text-black hover:text-gray-600 transition-colors font-medium ${
-                      location.pathname === item.path ? 'text-gray-600 font-semibold' : ''
-                    }`}
+                    className={`text-black hover:text-gray-600 transition-colors font-medium ${location.pathname === item.path ? 'text-gray-600 font-semibold' : ''
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -63,11 +62,19 @@ const NavCreator = ({ children }) => {
         </div>
       </nav>
 
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
+
       {/* Sidebar (Mobile) */}
       <div
-    className={`fixed top-0 left-0 h-full w-2/4 bg-white text-gray-800 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out z-[60] px-6`}
->
+        className={`fixed top-0 left-0 h-full w-2/4 bg-white text-gray-800 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } transition-transform duration-300 ease-in-out z-[60] px-6`}
+      >
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">Fatkhurrhn</h3>
           <button onClick={() => setIsSidebarOpen(false)} className="text-2xl">
@@ -137,7 +144,7 @@ const NavCreator = ({ children }) => {
       </div>
 
       {/* Content Wrapper */}
-      <main className="pb-[64px] pt-[64px]">{children}</main>
+      <main className="pb-[64px]">{children}</main>
     </>
   );
 };

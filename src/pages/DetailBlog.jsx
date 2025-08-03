@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import { Link, useParams } from 'react-router-dom';
 import {
     collection,
@@ -15,7 +15,7 @@ import {
     updateDoc,
     doc
 } from 'firebase/firestore';
-import { db } from '../../../firebase';
+import { db } from '../../firebase';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const Avatar = ({ src, alt }) => (
@@ -333,10 +333,10 @@ export default function DetailBlog() {
                                                         </a>
                                                     </h3>
                                                     <div className="text-xs text-gray-500">{rb.views} views • {blog.createdAt?.toDate().toLocaleDateString('id-ID', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}{' '}</div>
+                                                        day: 'numeric',
+                                                        month: 'long',
+                                                        year: 'numeric',
+                                                    })}{' '}</div>
                                                 </div>
                                             </div>
                                         ))}
