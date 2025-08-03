@@ -74,7 +74,7 @@ export default function Blog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <section className="max-w-7xl mx-auto px-4">
+            <section className="max-w-7xl mx-auto px-4 pt-[50px]">
                 <div className="flex justify-between items-center mb-3">
                     <h1 className="text-2xl font-bold">
                         {tagFilter ? `Blogs tagged with "${tagFilter}"` : 'Latest Blogs'}

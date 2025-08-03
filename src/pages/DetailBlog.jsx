@@ -146,7 +146,7 @@ export default function DetailBlog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <section className="max-w-7xl mx-auto px-4">
+            <section className="max-w-7xl mx-auto px-4 pt-[50px]">
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* Konten utama */}
                     <div className="lg:w-2/3">

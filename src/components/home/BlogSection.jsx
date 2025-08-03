@@ -63,7 +63,7 @@ export default function BlogSection() {
         </div>
 
         {blogPosts.length > 0 ? (
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-3">
             {blogPosts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}
@@ -88,12 +88,14 @@ function BlogCard({ post }) {
 
   return (
     <div className="group">
-      <div className="relative rounded-xl overflow-hidden aspect-video mb-4">
+      <div className="relative rounded-[9px] overflow-hidden aspect-video mb-4">
+        <Link to={`/blog/${post.slug}`} >
         <img
           src={post.thumbnail}
           alt={post.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover"
         />
+        </Link>
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 via-transparent to-transparent"></div>
         
         {/* Date and Views container */}
@@ -114,9 +116,11 @@ function BlogCard({ post }) {
         </div>
       </div>
       
+      <Link to={`/blog/${post.slug}`} >
       <h3 className="text-xl font-bold mb-2 group-hover:text-[#eb6807] transition-colors line-clamp-1">
         {post.title}
       </h3>
+      </Link>
       
       <p className="text-gray-600 mb-4 line-clamp-2">{cleanExcerpt}...</p>
       
