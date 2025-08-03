@@ -12,7 +12,7 @@ import {
   deleteDoc,
   serverTimestamp
 } from 'firebase/firestore';
-import { app } from '../../../../firebase';
+import { app } from '../../../firebase';
 import {
   Table,
   Tabs,
@@ -343,7 +343,7 @@ export default function ManagePembayaranAdmin() {
           <div>
             <div className="font-medium text-gray-800">{user.nama}</div>
             <div className="text-xs text-gray-500">
-{user.role} | Masuk: {new Date(user.tglMasuk).toLocaleDateString('id-ID')}
+              {user.role} | Masuk: {new Date(user.tglMasuk).toLocaleDateString('id-ID')}
             </div>
           </div>
         ) : userId;
@@ -407,18 +407,18 @@ export default function ManagePembayaranAdmin() {
       onFilter: (value, record) => record.status === value
     },
     {
-  title: 'Nominal',
-  key: 'nominal',
-  render: (_, record) => {
-    const user = users.find(u => u.uid === record.userId);
-    const rolePrice = ROLE_PRICE[user?.role] || ROLE_PRICE.reguler;
-    return (
-      <span className="text-gray-800">
-        Rp{rolePrice.toLocaleString('id-ID')}
-      </span>
-    );
-  }
-},
+      title: 'Nominal',
+      key: 'nominal',
+      render: (_, record) => {
+        const user = users.find(u => u.uid === record.userId);
+        const rolePrice = ROLE_PRICE[user?.role] || ROLE_PRICE.reguler;
+        return (
+          <span className="text-gray-800">
+            Rp{rolePrice.toLocaleString('id-ID')}
+          </span>
+        );
+      }
+    },
     {
       title: 'Tanggal Pembayaran',
       dataIndex: 'formattedDate',

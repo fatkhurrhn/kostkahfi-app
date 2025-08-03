@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
-import { app } from "../../../firebase";
+import { app } from "../../firebase";
 
 const pageTitles = {
   "/dashboard-users": "Dashboard Users",

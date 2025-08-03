@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { app } from '../../firebase'; // path ke firebase.js Anda
+import { app } from '../firebase'; // path ke firebase.js Anda
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 

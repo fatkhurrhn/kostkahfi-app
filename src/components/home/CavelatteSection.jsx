@@ -8,7 +8,7 @@ export default function CavelatteSection() {
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="order-2 md:order-1">
                         <h2 className="text-3xl font-bold mb-6">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-green-100">Cavelatte</span> -
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#eb6807] to-white">Cavelatte</span> -
                             Coworking Space Eksklusif
                         </h2>
                         <p className="text-gray-300 mb-6">
@@ -16,19 +16,19 @@ export default function CavelatteSection() {
                         </p>
                         <div className="space-y-4 mb-8">
                             <div className="flex items-center">
-                                <i className="ri-checkbox-circle-fill text-green-400 mr-3 text-xl"></i>
+                                <i className="ri-checkbox-circle-fill text-[#eb6807] mr-3 text-xl"></i>
                                 <span>Free akses untuk penghuni</span>
                             </div>
                             <div className="flex items-center">
-                                <i className="ri-checkbox-circle-fill text-green-400 mr-3 text-xl"></i>
+                                <i className="ri-checkbox-circle-fill text-[#eb6807] mr-3 text-xl"></i>
                                 <span>High speed internet</span>
                             </div>
                             <div className="flex items-center">
-                                <i className="ri-checkbox-circle-fill text-green-400 mr-3 text-xl"></i>
+                                <i className="ri-checkbox-circle-fill text-[#eb6807] mr-3 text-xl"></i>
                                 <span>Kopi dan snack premium</span>
                             </div>
                             <div className="flex items-center">
-                                <i className="ri-checkbox-circle-fill text-green-400 mr-3 text-xl"></i>
+                                <i className="ri-checkbox-circle-fill text-[#eb6807] mr-3 text-xl"></i>
                                 <span>Event mingguan</span>
                             </div>
                         </div>

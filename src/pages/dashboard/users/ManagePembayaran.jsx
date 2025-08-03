@@ -13,7 +13,7 @@ import {
     serverTimestamp,
     orderBy,
 } from 'firebase/firestore';
-import { app } from '../../../../firebase';
+import { app } from '../../../firebase';
 import Layout from '../../../components/users/Layout';
 
 // --- CONSTANTS --------------------------------------------------------------
@@ -234,14 +234,14 @@ const RiwayatTab = React.memo(({ records, onKonfirmasiClick, userType }) => {
                         className="p-4 border rounded-md shadow-sm bg-white hover:bg-gray-50 transition"
                     >
                         <div className="text-sm font-medium text-gray-800 mb-2">
-                           Bulan {r.namaBulan} {r.tahun}
+                            Bulan {r.namaBulan} {r.tahun}
                         </div>
                         <span
                             className={`px-3 py-1 text-xs font-semibold rounded-[8px] ${r.status === 'lunas'
-                                    ? 'bg-green-100 text-green-700'
-                                    : r.status === 'pending'
-                                        ? 'bg-yellow-100 text-yellow-700'
-                                        : 'bg-gray-100 text-gray-700'
+                                ? 'bg-green-100 text-green-700'
+                                : r.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-700'
+                                    : 'bg-gray-100 text-gray-700'
                                 }`}
                         >
                             {r.status === 'lunas'
@@ -342,8 +342,8 @@ const KonfirmasiModal = ({
                                             className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedMonths.some(
                                                 (m) => m.tahun === r.tahun && m.bulan === r.bulan
                                             )
-                                                    ? 'border-gray-500 bg-gray-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-gray-500 bg-gray-50'
+                                                : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                             onClick={() =>
                                                 setSelectedMonths((prev) =>
@@ -430,8 +430,8 @@ const KonfirmasiModal = ({
                                         !selectedMonths.length || (hargaPerBulan > 0 && !bukti.trim())
                                     }
                                     className={`flex-1 py-2 rounded-lg font-medium text-white ${!selectedMonths.length || (hargaPerBulan > 0 && !bukti.trim())
-                                            ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-gray-600 hover:bg-gray-700'
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-gray-600 hover:bg-gray-700'
                                         }`}
                                 >
                                     {hargaPerBulan === 0

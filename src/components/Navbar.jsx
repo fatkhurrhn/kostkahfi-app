@@ -21,7 +21,7 @@ const NavCreator = ({ children }) => {
     <>
       {/* Top Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
-        <div className="container mx-auto max-w-7xl px-3 py-2">
+        <div className="container mx-auto max-w-7xl px-3 py-1">
           <div className="flex items-center justify-between">
             {/* Desktop Logo */}
             <Link to="/" className="hidden md:flex items-center space-x-2">
@@ -53,10 +53,10 @@ const NavCreator = ({ children }) => {
 
             {/* Cavelatte Button */}
             <Link
-              to="/cavelatte"
+              to="/contact"
               className="text-gray-800 font-medium rounded-lg text-sm px-4 py-2 bg-white border border-gray-200 hover:bg-gray-100"
             >
-              Cavelatte
+              Hubungi
             </Link>
           </div>
         </div>
@@ -143,7 +143,7 @@ const NavCreator = ({ children }) => {
       </div>
 
       {/* Content Wrapper */}
-      <main className="pb-[64px]">{children}</main>
+      <main className="pb-1">{children}</main>
     </>
   );
 };

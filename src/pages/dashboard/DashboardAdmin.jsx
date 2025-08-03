@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/admin/Layout';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase';
+import { db } from '../../firebase';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
@@ -100,7 +100,7 @@ export default function DashboardAdmin() {
                 // Hitung pertumbuhan pengguna
                 const userGrowthData = calculateUserGrowth(usersSnapshot.docs);
                 setUserGrowth(userGrowthData);
-                
+
                 console.log('Monthly revenue data:', monthlyRevenueData);
                 console.log('User growth data:', userGrowthData);
 

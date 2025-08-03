@@ -15,7 +15,7 @@ import {
     updateDoc,
     doc
 } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db } from '../firebase';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const Avatar = ({ src, alt }) => (

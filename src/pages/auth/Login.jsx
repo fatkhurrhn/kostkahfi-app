@@ -1,7 +1,7 @@
 // src/pages/auth/Login.jsx
 import React, { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from '../../../firebase';
+import { app } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
@@ -29,25 +29,25 @@ export default function Login() {
     try {
       const auth = getAuth(app);
       const db = getFirestore(app);
-      
+
       // Sign in user
       const userCredential = await signInWithEmailAndPassword(
         auth,
         formData.email,
         formData.password
       );
-      
+
       // Get user role from Firestore
       const q = query(
         collection(db, 'users'),
         where('uid', '==', userCredential.user.uid)
       );
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
         const userRole = userData.role;
-        
+
         // Redirect based on role
         if (userRole === 'admin') {
           navigate('/dashboard-admin');
@@ -71,7 +71,7 @@ export default function Login() {
           <i className="ri-login-box-line text-4xl text-gray-700 mb-2"></i>
           <h1 className="text-2xl font-bold text-gray-800">Login</h1>
         </div>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}

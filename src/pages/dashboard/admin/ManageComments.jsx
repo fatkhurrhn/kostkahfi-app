@@ -8,7 +8,7 @@ import {
     query,
     orderBy
 } from 'firebase/firestore';
-import { db } from '../../../../firebase';
+import { db } from '../../../firebase';
 import { Link } from 'react-router-dom';
 import Layout from '../../../components/admin/Layout';
 

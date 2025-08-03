@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
-import { app } from "../../../firebase"; // Make sure you have this import
+import { app } from "../../firebase"; // Make sure you have this import
 
 const pageTitles = {
   "/dashboard-admin": "Dashboard",

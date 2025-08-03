@@ -9,7 +9,7 @@ import {
     collection, addDoc, doc, updateDoc, deleteDoc,
     serverTimestamp, query, orderBy, onSnapshot
 } from 'firebase/firestore';
-import { db } from '../../../../firebase';
+import { db } from '../../../firebase';
 import 'remixicon/fonts/remixicon.css';
 import Layout from '../../../components/admin/Layout';
 

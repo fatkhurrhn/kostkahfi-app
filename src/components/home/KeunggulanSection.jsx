@@ -2,15 +2,10 @@
 import React from 'react';
 
 const features = [
-    { icon: 'ri-shield-check-line', title: 'Keamanan', desc: '24 Jam', color: 'bg-blue-100 text-blue-600' },
-    { icon: 'ri-wifi-line', title: 'Internet', desc: 'High Speed', color: 'bg-purple-100 text-purple-600' },
     { icon: 'ri-plant-line', title: 'Lingkungan', desc: 'Hijau & Asri', color: 'bg-green-100 text-green-600' },
     { icon: 'ri-restaurant-line', title: 'Dapur', desc: 'Bersama', color: 'bg-yellow-100 text-yellow-600' },
-    { icon: 'ri-community-line', title: 'Komunitas', desc: 'Aktif', color: 'bg-red-100 text-red-600' },
     { icon: 'ri-cup-line', title: 'Cavelatte', desc: 'Coworking Space', color: 'bg-indigo-100 text-indigo-600' },
-    { icon: 'ri-washing-machine-line', title: 'Laundry', desc: 'Service', color: 'bg-pink-100 text-pink-600' },
     { icon: 'ri-map-pin-line', title: 'Lokasi', desc: 'Strategis', color: 'bg-cyan-100 text-cyan-600' }
-    // Data lainnya...
 ];
 
 export default function KeunggulanSection() {
@@ -18,9 +13,11 @@ export default function KeunggulanSection() {
         <section className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold mb-4">Kenapa Kost Alkahfi?</h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Kami memberikan pengalaman tinggal terbaik dengan berbagai keunggulan eksklusif.
+                    <h2 className="text-3xl sm:text-4xl lg:text-4xl font-bold text-gray-900 mb-4">
+                        Keunggulan <span className="text-[#eb6807]">Kost Alkahfi</span>
+                    </h2>
+                     <p className="text-md sm:text-md text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        Temukan pengalaman tinggal premium dengan fasilitas lengkap yang dirancang khusus untuk kenyamanan dan produktivitas kamuu.
                     </p>
                 </div>
 

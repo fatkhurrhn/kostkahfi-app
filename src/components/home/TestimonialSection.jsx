@@ -1,4 +1,3 @@
-// src/components/homepage/TestimonialSection.jsx
 import React, { useState, useEffect } from 'react';
 
 const testimonials = [
@@ -45,18 +44,19 @@ export default function TestimonialSection() {
     }, []);
 
     return (
-        <section className="py-16 bg-gray-100">
+        <section className="py-12 bg-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold mb-4">Apa Kata Penghuni?</h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-bold mb-4 text-gray-800">Apa Kata Penghuni?</h2>
+                    <p className="text-gray-600 max-w-2xl mx-auto text-lg">
                         Testimoni jujur dari penghuni Kost Alkahfi.
                     </p>
                 </div>
 
                 <div className="relative">
+                    {/* Scrollable container with hidden scrollbar */}
                     <div className="overflow-x-auto pb-6 scrollbar-hide">
-                        <div className="flex space-x-6 w-max">
+                        <div className="flex space-x-6 w-max mx-auto">
                             {testimonials.map((item, index) => (
                                 <TestimonialCard
                                     key={index}
@@ -67,12 +67,14 @@ export default function TestimonialSection() {
                         </div>
                     </div>
 
+                    {/* Custom indicators */}
                     <div className="flex justify-center mt-8 space-x-2">
                         {testimonials.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => setActiveTestimonial(index)}
-                                className={`w-3 h-3 rounded-full ${activeTestimonial === index ? 'bg-green-500' : 'bg-gray-300'}`}
+                                className={`w-2.5 h-2.5 rounded-full transition-all ${activeTestimonial === index ? 'bg-[#eb6807] w-4' : 'bg-gray-300'}`}
+                                aria-label={`Go to testimonial ${index + 1}`}
                             ></button>
                         ))}
                     </div>
@@ -84,19 +86,19 @@ export default function TestimonialSection() {
 
 function TestimonialCard({ item, isActive }) {
     return (
-        <div className={`w-80 flex-shrink-0 bg-white p-6 rounded-xl shadow-sm transition-all duration-300 ${isActive ? 'ring-2 ring-green-500' : ''}`}>
+        <div className={`w-[450px] flex-shrink-0 bg-white p-5 rounded-xl shadow-sm transition-all duration-300 transform ${isActive ? 'ring-2 ring-[#eb6807] scale-[1.02]' : 'hover:shadow-md'}`}>
             <div className="flex items-center mb-4">
                 <img
                     src={item.image}
                     alt={item.name}
-                    className="w-12 h-12 rounded-full object-cover mr-4"
+                    className="w-12 h-12 rounded-full object-cover mr-4 border-2 border-white shadow-sm"
                 />
                 <div>
-                    <h3 className="font-semibold">{item.name}</h3>
+                    <h3 className="font-semibold text-gray-800">{item.name}</h3>
                     <p className="text-sm text-gray-500">{item.role}</p>
                 </div>
             </div>
-            <p className="text-gray-600 mb-4">"{item.quote}"</p>
+            <p className="text-gray-600 mb-4 italic text-justify">"{item.quote}"</p>
             <div className="flex text-yellow-400">
                 {[1, 2, 3, 4, 5].map((star) => (
                     <i key={star} className="ri-star-fill"></i>
