@@ -65,10 +65,9 @@ const NavCreator = ({ children }) => {
 
       {/* Sidebar (Mobile) */}
       <div
-        className={`fixed top-0 left-0 h-full w-2/4 bg-white text-gray-800 transform ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out z-30 px-6`}
-      >
+    className={`fixed top-0 left-0 h-full w-2/4 bg-white text-gray-800 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-300 ease-in-out z-[60] px-6`}
+>
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">Fatkhurrhn</h3>
           <button onClick={() => setIsSidebarOpen(false)} className="text-2xl">
