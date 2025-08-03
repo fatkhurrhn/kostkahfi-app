@@ -2,14 +2,14 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import HeroSection from '../components/homepage/HeroSection';
-import KeunggulanSection from '../components/homepage/KeunggulanSection';
-import KamarSection from '../components/homepage/KamarSection';
-import CavelatteSection from '../components/homepage/CavelatteSection';
-import BlogSection from '../components/homepage/BlogSection';
-import TestimonialSection from '../components/homepage/TestimonialSection';
-import MapsSection from '../components/homepage/MapsSection';
-import CTASection from '../components/homepage/CTASection';
+import HeroSection from '../components/home/HeroSection';
+import KeunggulanSection from '../components/home/KeunggulanSection';
+import KamarSection from '../components/home/KamarSection';
+import CavelatteSection from '../components/home/CavelatteSection';
+import BlogSection from '../components/home/BlogSection';
+import TestimonialSection from '../components/home/TestimonialSection';
+import MapsSection from '../components/home/MapsSection';
+import CTASection from '../components/home/CTASection';
 
 export default function HomePage() {
   return (
