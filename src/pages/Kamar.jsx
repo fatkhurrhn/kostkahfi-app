@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { app } from '../firebase'; // path ke firebase.js Anda
+import { app } from '../firebase';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function Kamar() {
   const [rooms, setRooms] = useState([]);
-  const [filter, setFilter] = useState('all'); // all | kosong | terisi
+  const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,94 +48,94 @@ export default function Kamar() {
     filter === 'all' ? true : r.status === filter
   );
 
-  /* ---------- UI ---------- */
   return (
-    <div className="bg-gray-100 min-h-screen text-gray-800">
+    <div className="bg-gray-50 min-h-screen text-gray-800">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 py-10">
-        <h1 className="text-5xl font-extrabold text-center mb-2">
-          Info Kamar
-        </h1>
-        <p className="text-center text-gray-600 mb-8">
-          Ketersediaan kamar kost secara real-time
-        </p>
+      <main className="max-w-6xl mx-auto px-4 pt-[56px] pb-16">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-3 text-gray-800">
+            <span className="text-[#eb6807]">Daftar</span> Kamar
+          </h1>
+          <div className="w-20 h-1 bg-[#eb6807] mx-auto mb-4"></div>
+          <p className="text-gray-600 max-w-lg mx-auto">
+            Informasi ketersediaan kamar kost secara real-time
+          </p>
+        </div>
 
         {/* Filter */}
-        <div className="flex justify-center space-x-2 mb-8">
+        <div className="flex justify-center space-x-5 mb-12">
           {['all', 'kosong', 'terisi'].map(btn => (
             <button
               key={btn}
               onClick={() => setFilter(btn)}
-              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all
+              className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors
                 ${filter === btn
-                  ? 'bg-gray-800 text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:shadow-md'
+                  ? 'bg-[#eb6807] text-white shadow-md'
+                  : 'bg-white text-gray-700 border border-gray-200'
                 }`}
             >
-              {btn === 'all' ? 'Semua' : btn === 'kosong' ? 'Kosong' : 'Terisi'}
+              {btn === 'all' ? 'Semua Kamar' : btn === 'kosong' ? 'Kamar Kosong' : 'Kamar Terisi'}
             </button>
           ))}
         </div>
 
         {/* Loading Skeleton */}
         {loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-gray-300 rounded-xl h-48 animate-pulse"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-sm p-6 h-48 animate-pulse"></div>
             ))}
           </div>
         )}
 
         {/* Room Cards */}
         {!loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {filtered.map(room => (
               <div
                 key={room.id}
-                className={`relative bg-white rounded-2xl shadow-md hover:shadow-xl
-                  transform hover:-translate-y-2 transition-all duration-300
-                  p-6 flex flex-col justify-between
-                  ${room.status === 'kosong' ? 'border-green-200' : 'border-rose-200'}
-                  border-l-4`}
+                className={`bg-white rounded-lg shadow-sm overflow-hidden border-t-4 ${
+                  room.status === 'kosong' ? 'border-green-400' : 'border-rose-400'
+                }`}
               >
-                {/* Icon besar */}
-                <div className="text-center mb-3">
-                  <i
-                    className={`ri-4x
-                    ${room.status === 'kosong'
-                        ? 'ri-home-gear-line text-green-500'
-                        : 'ri-user-shared-2-line text-rose-500'
-                      }`}
-                  />
+                <div className="p-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                        room.status === 'kosong' 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-rose-100 text-rose-700'
+                      }`}>
+                        {room.status === 'kosong' ? 'Tersedia' : 'Terisi'}
+                      </span>
+                    </div>
+                    <div className="text-[17px] font-bold text-gray-800">#{room.no}</div>
+                  </div>
+
+                  <div className="flex items-center justify-center my-4">
+                    <div className={`text-5xl ${
+                      room.status === 'kosong' 
+                        ? 'text-green-400' 
+                        : 'text-rose-400'
+                    }`}>
+                      {room.status === 'kosong' ? (
+                        <i className="ri-door-open-line" />
+                      ) : (
+                        <i className="ri-door-closed-line" />
+                      )}
+                    </div>
+                  </div>
+
+                  {room.occupant && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-sm text-gray-600 flex items-center">
+                        <i className="ri-user-line mr-2 text-gray-400" />
+                        <span className="font-medium">{room.occupant}</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
-
-                {/* Nomor */}
-                <h2 className="text-3xl font-bold text-center mb-1">
-                  {room.no}
-                </h2>
-
-                {/* Status chip */}
-                <span
-                  className={`text-xs font-semibold px-3 py-1 rounded-full mx-auto
-                  ${room.status === 'kosong'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-rose-100 text-rose-700'
-                    }`}
-                >
-                  {room.status === 'kosong' ? 'Kosong' : 'Terisi'}
-                </span>
-
-                {/* Penghuni */}
-                {room.occupant && (
-                  <p className="text-sm text-gray-500 mt-2 text-center truncate">
-                    <i className="ri-user-line mr-1" />
-                    {room.occupant}
-                  </p>
-                )}
               </div>
             ))}
           </div>

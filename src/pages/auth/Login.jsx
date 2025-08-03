@@ -68,9 +68,11 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
         <div className="text-center mb-8">
+          <Link to="/">
           <div className="mx-auto w-20 h-20 bg-[#eb6807]/10 rounded-full flex items-center justify-center mb-4">
             <i className="ri-login-box-line text-3xl text-[#eb6807]"></i>
           </div>
+          </Link>
           <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>

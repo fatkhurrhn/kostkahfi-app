@@ -223,144 +223,146 @@ export default function DashboardUsers() {
                     </div>
                 )}
 
-                {/* Card Profile */}
-                <div className="bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl p-6 mb-8 border border-gray-100">
-                    <div className="flex items-center mb-6">
-                        <div className="bg-[#eb6807]/10 p-3 rounded-full mr-4">
-                            <i className="ri-account-circle-line text-3xl text-[#eb6807]"></i>
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Card Profile */}
+                    <div className="bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl p-6 border border-gray-100 h-full">
+                        <div className="flex items-center mb-6">
+                            <div className="bg-[#eb6807]/10 p-3 rounded-full mr-4">
+                                <i className="ri-account-circle-line text-3xl text-[#eb6807]"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800">Profil Saya</h2>
+                                <p className="text-gray-500">Informasi akun dan kamar Anda</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-800">Profil Saya</h2>
-                            <p className="text-gray-500">Informasi akun dan kamar Anda</p>
-                        </div>
+
+                        {loading ? (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <LoadingPlaceholder />
+                                    <LoadingPlaceholder />
+                                    <LoadingPlaceholder />
+                                    <LoadingPlaceholder />
+                                </div>
+                                <div className="space-y-4">
+                                    <LoadingPlaceholder />
+                                    <LoadingPlaceholder />
+                                    <LoadingPlaceholder />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid md:grid-cols-2 gap-x-10 gap-y-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-sm text-gray-500">Nama Lengkap</p>
+                                        <p className="font-medium text-gray-800">{user?.nama || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Jenis Kelamin</p>
+                                        <p className="font-medium text-gray-800">
+                                            {user?.jenKel ? user.jenKel.charAt(0).toUpperCase() + user.jenKel.slice(1) : '-'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Email</p>
+                                        <p className="font-medium text-gray-800">{user?.email || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Nomor Telepon</p>
+                                        <p className="font-medium text-gray-800">{user?.noTlp || '-'}</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-sm text-gray-500">Tanggal Masuk</p>
+                                        <p className="font-medium text-gray-800">
+                                            {user?.tglMasuk
+                                                ? user.tglMasuk.toDate().toLocaleDateString('id-ID', {
+                                                    day: '2-digit',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                })
+                                                : '-'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Role</p>
+                                        <p className="font-medium text-gray-800">
+                                            {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '-'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Kamar</p>
+                                        {userKamar ? (
+                                            <span className="inline-block bg-[#eb6807]/10 text-[#eb6807] px-3 py-1 rounded-full font-medium">
+                                                Kamar {userKamar.no_kamar}
+                                            </span>
+                                        ) : (
+                                            <p className="font-medium text-gray-800">-</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {loading ? (
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                <LoadingPlaceholder />
-                                <LoadingPlaceholder />
-                                <LoadingPlaceholder />
-                                <LoadingPlaceholder />
+                    {/* Card Kamar */}
+                    <div className="bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl p-6 border border-gray-100 h-full">
+                        <div className="flex items-center mb-6">
+                            <div className="bg-[#eb6807]/10 p-3 rounded-full mr-4">
+                                <i className="ri-home-4-line text-3xl text-[#eb6807]"></i>
                             </div>
-                            <div className="space-y-4">
-                                <LoadingPlaceholder />
-                                <LoadingPlaceholder />
-                                <LoadingPlaceholder />
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-800">
+                                    {userKamar ? 'Manajemen Kamar' : 'Pilih Kamar'}
+                                </h2>
+                                <p className="text-gray-500">
+                                    {userKamar ? 'Anda dapat mengganti kamar' : 'Silakan pilih kamar yang tersedia'}
+                                </p>
                             </div>
                         </div>
-                    ) : (
-                        <div className="grid md:grid-cols-2 gap-x-10 gap-y-6">
-                            <div className="space-y-4">
-                                <div>
-                                    <p className="text-sm text-gray-500">Nama Lengkap</p>
-                                    <p className="font-medium text-gray-800">{user?.nama || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Jenis Kelamin</p>
-                                    <p className="font-medium text-gray-800">
-                                        {user?.jenKel ? user.jenKel.charAt(0).toUpperCase() + user.jenKel.slice(1) : '-'}
+
+                        <div className="bg-gray-50 rounded-xl p-5">
+                            <div className="flex flex-col sm:flex-row items-center justify-between">
+                                <div className="mb-4 sm:mb-0">
+                                    <p className="text-gray-500">Status Kamar</p>
+                                    <p className="text-lg font-semibold text-gray-800">
+                                        {userKamar ? `Kamar ${userKamar.no_kamar}` : 'Belum memiliki kamar'}
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        {userKamar ? 'Status: Terisi' : 'Status: -'}
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Email</p>
-                                    <p className="font-medium text-gray-800">{user?.email || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Nomor Telepon</p>
-                                    <p className="font-medium text-gray-800">{user?.noTlp || '-'}</p>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <p className="text-sm text-gray-500">Tanggal Masuk</p>
-                                    <p className="font-medium text-gray-800">
-                                        {user?.tglMasuk
-                                            ? user.tglMasuk.toDate().toLocaleDateString('id-ID', {
-                                                day: '2-digit',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })
-                                            : '-'}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Role</p>
-                                    <p className="font-medium text-gray-800">
-                                        {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '-'}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Kamar</p>
-                                    {userKamar ? (
-                                        <span className="inline-block bg-[#eb6807]/10 text-[#eb6807] px-3 py-1 rounded-full font-medium">
-                                            Kamar {userKamar.no_kamar}
-                                        </span>
+                                <button
+                                    onClick={() => setModalOpen(true)}
+                                    disabled={kamarLoading}
+                                    className="bg-[#eb6807] hover:bg-[#d45e06] text-white px-6 py-2.5 rounded-lg font-medium transition flex items-center"
+                                >
+                                    {kamarLoading ? (
+                                        <>
+                                            <i className="ri-loader-4-line animate-spin mr-2"></i>
+                                            Memproses...
+                                        </>
                                     ) : (
-                                        <p className="font-medium text-gray-800">-</p>
+                                        <>
+                                            <i className={userKamar ? 'ri-exchange-line mr-2' : 'ri-check-line mr-2'}></i>
+                                            {userKamar ? 'Ganti Kamar' : 'Pilih Kamar'}
+                                        </>
                                     )}
-                                </div>
+                                </button>
                             </div>
                         </div>
-                    )}
-                </div>
 
-                {/* Card Kamar */}
-                <div className="bg-gradient-to-r from-white to-gray-50 shadow-lg rounded-2xl p-6 border border-gray-100">
-                    <div className="flex items-center mb-6">
-                        <div className="bg-[#eb6807]/10 p-3 rounded-full mr-4">
-                            <i className="ri-home-4-line text-3xl text-[#eb6807]"></i>
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-800">
-                                {userKamar ? 'Manajemen Kamar' : 'Pilih Kamar'}
-                            </h2>
-                            <p className="text-gray-500">
-                                {userKamar ? 'Anda dapat mengganti kamar' : 'Silakan pilih kamar yang tersedia'}
-                            </p>
-                        </div>
+                        <KamarModal
+                            isOpen={modalOpen}
+                            onClose={() => setModalOpen(false)}
+                            kamars={availableKamars}
+                            onSelect={(kamar) =>
+                                userKamar ? handleChangeKamar(kamar) : handleSelectKamar(kamar)
+                            }
+                            loading={kamarLoading}
+                        />
                     </div>
-
-                    <div className="bg-gray-50 rounded-xl p-5">
-                        <div className="flex flex-col sm:flex-row items-center justify-between">
-                            <div className="mb-4 sm:mb-0">
-                                <p className="text-gray-500">Status Kamar</p>
-                                <p className="text-lg font-semibold text-gray-800">
-                                    {userKamar ? `Kamar ${userKamar.no_kamar}` : 'Belum memiliki kamar'}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    {userKamar ? 'Status: Terisi' : 'Status: -'}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setModalOpen(true)}
-                                disabled={kamarLoading}
-                                className="bg-[#eb6807] hover:bg-[#d45e06] text-white px-6 py-2.5 rounded-lg font-medium transition flex items-center"
-                            >
-                                {kamarLoading ? (
-                                    <>
-                                        <i className="ri-loader-4-line animate-spin mr-2"></i>
-                                        Memproses...
-                                    </>
-                                ) : (
-                                    <>
-                                        <i className={userKamar ? 'ri-exchange-line mr-2' : 'ri-check-line mr-2'}></i>
-                                        {userKamar ? 'Ganti Kamar' : 'Pilih Kamar'}
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-
-                    <KamarModal
-                        isOpen={modalOpen}
-                        onClose={() => setModalOpen(false)}
-                        kamars={availableKamars}
-                        onSelect={(kamar) =>
-                            userKamar ? handleChangeKamar(kamar) : handleSelectKamar(kamar)
-                        }
-                        loading={kamarLoading}
-                    />
                 </div>
             </div>
         </Layout>
