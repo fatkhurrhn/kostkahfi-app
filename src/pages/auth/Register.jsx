@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
 import { app } from '../../firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -213,9 +213,9 @@ export default function Register() {
 
         <div className="mt-4 text-center text-gray-600">
           Sudah punya akun?{' '}
-          <a href="/login" className="text-gray-800 hover:underline">
+          <Link to="/login" className="text-gray-800 hover:underline">
             Login disini
-          </a>
+          </Link>
         </div>
       </div>
     </div>
