@@ -52,7 +52,7 @@ export default function Kamar() {
     <div className="bg-gray-50 min-h-screen text-gray-800">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 pt-[56px] pb-16">
+      <main className="max-w-6xl mx-auto px-4 py-6 pb-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-3 text-gray-800">
             <span className="text-[#eb6807]">Daftar</span> Kamar

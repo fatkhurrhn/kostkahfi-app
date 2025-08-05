@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const Navbar = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const toggleDropdown = (section) => {
     setOpenDropdown(openDropdown === section ? null : section);
@@ -11,16 +26,16 @@ const Navbar = ({ children }) => {
 
   const navItems = [
     { path: "/about", label: "Tentang Kami" },
-    {
-      label: "Kamar & Fasilitas",
+    { 
+      label: "Kamar & Fasilitas", 
       subItems: [
         { path: "/kamar", label: "Daftar Kamar" },
         { path: "/fasilitas", label: "Fasilitas" },
         { path: "/gallery", label: "Gallery" }
       ]
     },
-    {
-      label: "Program",
+    { 
+      label: "Program", 
       subItems: [
         { path: "/program/mahasantri", label: "Mahasantri" },
         { path: "/program/biman", label: "Biman" }
@@ -43,11 +58,11 @@ const Navbar = ({ children }) => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-6" ref={dropdownRef}>
               {navItems.map((item) => (
                 item.subItems ? (
-                  <div key={item.label} className="relative group">
-                    <button
+                  <div key={item.label} className="relative">
+                    <button 
                       className="flex items-center space-x-1 text-gray-700 hover:text-[#eb6807] transition-colors"
                       onClick={() => toggleDropdown(item.label)}
                     >
@@ -55,12 +70,13 @@ const Navbar = ({ children }) => {
                       <i className={`ri-arrow-${openDropdown === item.label ? 'up' : 'down'}-s-line`}></i>
                     </button>
                     {openDropdown === item.label && (
-                      <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                      <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
                         {item.subItems.map((subItem) => (
                           <Link
                             key={subItem.path}
                             to={subItem.path}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#eb6807]"
+                            onClick={() => setOpenDropdown(null)}
                           >
                             {subItem.label}
                           </Link>
@@ -100,8 +116,9 @@ const Navbar = ({ children }) => {
       </nav>
 
       {/* Mobile Menu */}
-      <div
+      <div 
         className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[60] transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}
+        ref={dropdownRef}
       >
         <div className="p-4 border-b border-gray-200">
           <Link to="/" className="text-xl font-bold text-[#eb6807]">
@@ -128,6 +145,10 @@ const Navbar = ({ children }) => {
                           key={subItem.path}
                           to={subItem.path}
                           className="block p-2 text-sm text-gray-600 hover:text-[#eb6807] hover:bg-gray-50 rounded"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setOpenDropdown(null);
+                          }}
                         >
                           {subItem.label}
                         </Link>
@@ -152,6 +173,7 @@ const Navbar = ({ children }) => {
           <Link
             to="/login"
             className="block w-full text-center bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
           >
             Login
           </Link>
@@ -160,14 +182,17 @@ const Navbar = ({ children }) => {
 
       {/* Overlay */}
       {isMobileMenuOpen && (
-        <div
+        <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            setOpenDropdown(null);
+          }}
         />
       )}
 
       {/* Main Content */}
-      <main className="pt-16 pb-4">{children}</main>
+      <main className="">{children}</main>
     </>
   );
 };

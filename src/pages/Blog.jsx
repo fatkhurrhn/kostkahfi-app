@@ -74,14 +74,18 @@ export default function Blog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <section className="max-w-7xl mx-auto px-4 pt-[50px]">
-                <div className="flex justify-between items-center mb-3">
-                    <h1 className="text-2xl font-bold">
-                        {tagFilter ? `Blogs tagged with "${tagFilter}"` : 'Latest Blogs'}
+            <section className="max-w-7xl mx-auto px-4 py-6">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl font-bold mb-3 text-gray-800">
+                        <span className="text-[#eb6807]">Blog</span> KostAlkahfi
                     </h1>
+                    <div className="w-20 h-1 bg-[#eb6807] mx-auto mb-4"></div>
+                    <p className="text-gray-600 max-w-lg mx-auto">
+                        {tagFilter ? `Blogs tagged with "${tagFilter}"` : 'Informasi seputar kost alkahfi terupdated secara real-time'}
+                    </p>
                     {tagFilter && (
-                        <Link to="/blog" className="text-gray-600 hover:text-gray-800">
-                            <i className="ri-close-line mr-1"></i> Clear filter
+                        <Link to="/blog" className="text-red-600">
+                            [hapus filter]
                         </Link>
                     )}
                 </div>

@@ -146,17 +146,17 @@ export default function DetailBlog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <section className="max-w-7xl mx-auto px-4 pt-[50px]">
+            <section className="max-w-7xl mx-auto px-4 pt-0">
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* Konten utama */}
                     <div className="lg:w-2/3">
                         {loading ? (
-                            <div className="bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
+                            <div className="p-6 rounded-lg shadow-md text-center text-gray-500">
                                 Memuat data...
                             </div>
                         ) : blog ? (
                             <>
-                                <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                                <div className="p-1 rounded-lg mb-8">
                                     <div className="text-sm text-gray-500 mb-4">
                                         <Link to="/blog" className="font-medium text-gray-800">
                                             Blog
@@ -200,8 +200,10 @@ export default function DetailBlog() {
                                     />
                                 </div>
 
+                                <div className="h-[1px] my-10 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200 max-w-lg mx-auto"></div>
+
                                 {/* Komentar */}
-                                <div className="bg-white p-6 rounded-lg shadow-md">
+                                <div className="p-1 rounded-lg">
                                     <h2 className="text-2xl font-bold mb-4 flex items-center">
                                         <i className="ri-chat-3-line mr-2" />
                                         Comments ({comments.length})
@@ -210,7 +212,6 @@ export default function DetailBlog() {
                                     {user ? (
                                         <form onSubmit={handleCommentSubmit} className="mb-6">
                                             <div className="flex items-start gap-3">
-                                                <Avatar src={user.photoURL} alt={user.displayName} />
                                                 <div className="flex-grow">
                                                     <textarea
                                                         value={commentText}
@@ -248,8 +249,8 @@ export default function DetailBlog() {
                                                 <div key={comment.id} className="flex gap-3">
                                                     <Avatar src={comment.userPhoto} alt={comment.userName} />
                                                     <div className="flex-grow">
-                                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                                            <div className="flex items-center justify-between mb-2">
+                                                        <div className="bg-gray-100 p-2 rounded-lg">
+                                                            <div className="flex items-center justify-between mb-1">
                                                                 <h4 className="font-bold">{comment.userName}</h4>
                                                                 <span className="text-xs text-gray-500">
                                                                     {comment.createdAt?.toDate?.()?.toLocaleString()}
@@ -272,7 +273,7 @@ export default function DetailBlog() {
                                 {/* Latest Blogs Horizontal Scroll */}
                                 <div className="mt-8">
                                     <h2 className="text-2xl font-bold mb-4">Latest Blogs</h2>
-                                    <div className="overflow-x-auto pb-4">
+                                    <div className="overflow-x-auto pb-4 scrollbar-hide">
                                         <div className="flex space-x-4">
                                             {latestBlogs.map(latestBlog => (
                                                 <div key={latestBlog.id} className="flex-shrink-0 w-64">
@@ -308,9 +309,9 @@ export default function DetailBlog() {
 
                     {/* Sidebar */}
                     <div className="lg:w-1/3">
-                        <div className="space-y-6 sticky top-4">
+                        <div className="space-y-6 sticky top-[50px]">
                             {/* Popular Blogs */}
-                            <div className="bg-white p-6 rounded-lg shadow-md">
+                            <div className="p-6 rounded-lg">
                                 <h2 className="text-xl font-bold mb-4 flex items-center">
                                     <i className="ri-fire-line mr-2 text-red-500" />
                                     Popular Blogs
@@ -347,7 +348,7 @@ export default function DetailBlog() {
                             </div>
 
                             {/* Tags */}
-                            <div className="bg-white p-6 rounded-lg shadow-md">
+                            <div className="bg-white p-6 rounded-lg">
                                 <h2 className="text-xl font-bold mb-4 flex items-center">
                                     <i className="ri-price-tag-3-line mr-2 text-blue-500" />
                                     Tags
