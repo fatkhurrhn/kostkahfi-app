@@ -25,7 +25,7 @@ const NavCreator = ({ children }) => {
           <div className="flex items-center justify-between">
             {/* Desktop Logo */}
             <Link to="/" className="hidden md:flex items-center space-x-2">
-              <span className="text-xl font-bold text-gray-800">kostKahfi</span>
+              <span className="text-xl font-bold text-[#eb6807]">kostAlKahfi</span>
             </Link>
 
             {/* Mobile Menu Icon */}
@@ -38,23 +38,26 @@ const NavCreator = ({ children }) => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {navItems.map((item) => (
-                <div key={item.label} className="relative">
-                  <Link
-                    to={item.path}
-                    className={`text-black hover:text-gray-600 transition-colors font-medium ${location.pathname === item.path ? 'text-gray-600 font-semibold' : ''
-                      }`}
-                  >
-                    {item.label}
-                  </Link>
+              <Link to="/about" className="nav-link">Tentang Kami</Link>
+              <div className="dropdown">
+                <button className="nav-link flex items-center">
+                  Kamar & Fasilitas <i className="ri-arrow-down-s-line ml-1"></i>
+                </button>
+                <div className="dropdown-content">
+                  <Link to="/kamar" className="dropdown-item">Daftar Kamar</Link>
+                  <Link to="/fasilitas" className="dropdown-item">Fasilitas</Link>
+                  <Link to="/gallery" className="dropdown-item">Gallery</Link>
                 </div>
-              ))}
+              </div>
+              <Link to="/cavelatte" className="nav-link">Cavelatte</Link>
+              <Link to="/blog" className="nav-link">Blog</Link>
+              <Link to="/contact" className="nav-link">Kontak</Link>
             </div>
 
-            {/* Cavelatte Button */}
+            {/* lokasi Button */}
             <Link
               to="https://maps.app.goo.gl/iVsCbC5sxibLzd376" target='_blank'
-              className="text-gray-800 font-medium rounded-lg text-sm px-4 py-2 bg-white border border-gray-200 hover:bg-gray-100"
+              className="text-white font-medium rounded-lg text-sm px-5 py-2 bg-[#eb6807] border border-gray-200 hover:bg-gray-100"
             >
               Lokasi
             </Link>
