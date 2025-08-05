@@ -1,154 +1,200 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
-const NavCreator = ({ children }) => {
-  const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const Navbar = ({ children }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const toggleDropdown = (section) => {
     setOpenDropdown(openDropdown === section ? null : section);
   };
 
   const navItems = [
-    { path: '/', icon: 'ri-code-s-slash-line', activeIcon: 'ri-code-s-slash-fill', label: 'Fasilitas' },
-    { path: '/', icon: 'ri-folders-line', activeIcon: 'ri-folders-fill', label: 'Gallery' },
-    { path: '/blog', icon: 'ri-news-line', activeIcon: 'ri-news-fill', label: 'Blogs', isNew: true },
-    { path: '/', icon: 'ri-apps-line', activeIcon: 'ri-apps-fill', label: 'Others', isNew: true },
+    { path: "/about", label: "Tentang Kami" },
+    { 
+      label: "Kamar & Fasilitas", 
+      subItems: [
+        { path: "/kamar", label: "Daftar Kamar" },
+        { path: "/fasilitas", label: "Fasilitas" },
+        { path: "/gallery", label: "Gallery" }
+      ]
+    },
+    { 
+      label: "Program", 
+      subItems: [
+        { path: "/program/mahasantri", label: "Mahasantri" },
+        { path: "/program/biman", label: "Biman" }
+      ]
+    },
+    { path: "/cavelatte", label: "Cavelatte" },
+    { path: "/blog", label: "Blog" },
+    { path: "/contact", label: "Kontak" }
   ];
 
   return (
     <>
       {/* Top Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
-        <div className="container mx-auto max-w-7xl px-3 py-1">
+        <div className="container mx-auto max-w-7xl px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Desktop Logo */}
-            <Link to="/" className="hidden md:flex items-center space-x-2">
-              <span className="text-xl font-bold text-[#eb6807]">kostAlKahfi</span>
+            {/* Logo */}
+            <Link to="/" className="text-xl font-bold text-[#eb6807]">
+              kostAlKahfi
             </Link>
-
-            {/* Mobile Menu Icon */}
-            <button
-              className="md:hidden text-gray-800 p-2 rounded-lg hover:bg-gray-100"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <i className="ri-menu-2-line text-xl"></i>
-            </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              <Link to="/about" className="nav-link">Tentang Kami</Link>
-              <div className="dropdown">
-                <button className="nav-link flex items-center">
-                  Kamar & Fasilitas <i className="ri-arrow-down-s-line ml-1"></i>
-                </button>
-                <div className="dropdown-content">
-                  <Link to="/kamar" className="dropdown-item">Daftar Kamar</Link>
-                  <Link to="/fasilitas" className="dropdown-item">Fasilitas</Link>
-                  <Link to="/gallery" className="dropdown-item">Gallery</Link>
-                </div>
-              </div>
-              <Link to="/cavelatte" className="nav-link">Cavelatte</Link>
-              <Link to="/blog" className="nav-link">Blog</Link>
-              <Link to="/contact" className="nav-link">Kontak</Link>
+            <div className="hidden md:flex items-center space-x-6" ref={dropdownRef}>
+              {navItems.map((item) => (
+                item.subItems ? (
+                  <div key={item.label} className="relative">
+                    <button 
+                      className="flex items-center space-x-1 text-gray-700 hover:text-[#eb6807] transition-colors"
+                      onClick={() => toggleDropdown(item.label)}
+                    >
+                      <span>{item.label}</span>
+                      <i className={`ri-arrow-${openDropdown === item.label ? 'up' : 'down'}-s-line`}></i>
+                    </button>
+                    {openDropdown === item.label && (
+                      <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.path}
+                            to={subItem.path}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#eb6807]"
+                            onClick={() => setOpenDropdown(null)}
+                          >
+                            {subItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="text-gray-700 hover:text-[#eb6807] transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              ))}
             </div>
 
-            {/* lokasi Button */}
-            <Link
-              to="https://maps.app.goo.gl/iVsCbC5sxibLzd376" target='_blank'
-              className="text-white font-medium rounded-lg text-sm px-5 py-2 bg-[#eb6807] border border-gray-200 hover:bg-gray-100"
-            >
-              Lokasi
-            </Link>
+            {/* Mobile Menu Button */}
+            <div className="flex items-center space-x-4">
+              <Link
+                to="/login"
+                className="hidden md:block bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
+              >
+                Login
+              </Link>
+              <button
+                className="md:hidden text-gray-700 p-2"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <i className={`ri-${isMobileMenuOpen ? 'close' : 'menu'}-line text-xl`}></i>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-[60]"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
-
-      {/* Sidebar (Mobile) */}
-      <div
-        className={`fixed top-0 left-0 h-full w-2/4 bg-white text-gray-800 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 ease-in-out z-[70] px-6`}
-      >        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Kost Kahfi</h3>
-          <button onClick={() => setIsSidebarOpen(false)} className="text-2xl">
-            <i className="ri-close-line"></i>
-          </button>
+      {/* Mobile Menu */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[60] transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}
+        ref={dropdownRef}
+      >
+        <div className="p-4 border-b border-gray-200">
+          <Link to="/" className="text-xl font-bold text-[#eb6807]">
+            kostAlKahfi
+          </Link>
         </div>
 
-        {/* Sidebar Menu */}
-        <ul className="pt-8 ml-[-7px] mt-6 space-y-2">
-          <li>
-            <Link to="/" className="block hover:text-blue-400">Home</Link>
-          </li>
-          <li>
-            <button onClick={() => toggleDropdown("frontend")} className="flex items-center hover:text-blue-400 w-full">
-              <i className={`${openDropdown === "frontend" ? "ri-arrow-down-s-line mr-2" : "ri-arrow-right-s-line mr-1"}`}></i>
-              Frontdev
-            </button>
-            {openDropdown === "frontend" && (
-              <ul className="mt-2 ml-4 space-y-2 border-l-2 border-gray-600 pl-4">
-                <li><Link to="/projects" className="block hover:text-blue-400">Projects</Link></li>
-                <li><Link to="/certificates" className="block hover:text-blue-400">Certificates</Link></li>
-                <li><Link to="/blogs" className="block hover:text-blue-400">Blogs</Link></li>
-              </ul>
-            )}
-          </li>
-          <li>
-            <Link to="/storythur" className="block hover:text-blue-400">Creator</Link>
-          </li>
-          <li>
-            <button
-              onClick={() => toggleDropdown("islamic")}
-              className="flex items-center hover:text-blue-400 w-full"
-            >
-              <i className={`${openDropdown === "islamic" ? "ri-arrow-down-s-line mr-2" : "ri-arrow-right-s-line mr-1"}`}></i>
-              Islamic
-            </button>
-            {openDropdown === "islamic" && (
-              <ul className="mt-2 ml-4 space-y-2 border-l-2 border-gray-600 pl-4">
-                <li><Link to="/#" className="block hover:text-blue-400">#</Link></li>
-                <li><Link to="/#" className="block hover:text-blue-400">#</Link></li>
-                <li><Link to="/#" className="block hover:text-blue-400">#</Link></li>
-              </ul>
-            )}
-          </li>
-        </ul>
-
-        {/* Footer */}
-        <div className="absolute bottom-12 left-6 right-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Follow for more</h3>
+        <div className="p-4">
+          {navItems.map((item) => (
+            <div key={item.label} className="mb-2">
+              {item.subItems ? (
+                <>
+                  <button
+                    className="flex items-center justify-between w-full p-2 text-left text-gray-700 hover:text-[#eb6807]"
+                    onClick={() => toggleDropdown(item.label)}
+                  >
+                    <span>{item.label}</span>
+                    <i className={`ri-arrow-${openDropdown === item.label ? 'up' : 'down'}-s-line`}></i>
+                  </button>
+                  {openDropdown === item.label && (
+                    <div className="ml-4 mt-1 space-y-1">
+                      {item.subItems.map((subItem) => (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          className="block p-2 text-sm text-gray-600 hover:text-[#eb6807] hover:bg-gray-50 rounded"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  to={item.path}
+                  className="block p-2 text-gray-700 hover:text-[#eb6807] hover:bg-gray-50 rounded"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Social Icons */}
-        <div className="absolute bottom-5 left-0 w-full flex justify-center gap-4">
-          <Link to="https://youtube.com/fatkhurrhnn" target="_blank" rel="noopener noreferrer">
-            <i className="ri-youtube-fill text-xl text-gray-800 hover:text-red-600 transition-all"></i>
-          </Link>
-          <Link to="https://linkedin.com/fatkhurrhn" target="_blank" rel="noopener noreferrer">
-            <i className="ri-linkedin-box-fill text-xl text-gray-800 hover:text-blue-600 transition-all"></i>
-          </Link>
-          <Link to="https://tiktok.com/fatkhurrhnn" target="_blank" rel="noopener noreferrer">
-            <i className="ri-tiktok-fill text-xl text-gray-800 hover:text-black transition-all"></i>
-          </Link>
-          <Link to="https://instagram.com/fatkhurrhn" target="_blank" rel="noopener noreferrer">
-            <i className="ri-instagram-fill text-xl text-gray-800 hover:text-pink-500 transition-all"></i>
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+          <Link
+            to="/login"
+            className="block w-full text-center bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Login
           </Link>
         </div>
       </div>
 
-      {/* Content Wrapper */}
-      <main className="pb-1">{children}</main>
+      {/* Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            setOpenDropdown(null);
+          }}
+        />
+      )}
+
+      {/* Main Content */}
+      <main className="">{children}</main>
     </>
   );
 };
 
-export default NavCreator;
+export default Navbar;

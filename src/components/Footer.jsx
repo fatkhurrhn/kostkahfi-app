@@ -10,16 +10,16 @@ export default function Footer() {
         </p>
         {/* Container untuk icon */}
         <div className="flex space-x-3 sm:space-x-4 ml-auto text-gray-800 items-center justify-center sm:justify-start">
-        <Link
-            to="https://github.com/fatkhurrhn"
+          <Link
+            to="https://maps.app.goo.gl/iVsCbC5sxibLzd376"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xl"
           >
-            <i className="ri-github-fill"></i>
-          </Link>
+            <i class="ri-map-pin-fill"></i>
+            </Link>
           <Link
-            to="https://tiktok.com/@fatkhurrhnn"
+            to="https://tiktok.com/@kostalkahfi"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xl"
@@ -27,7 +27,7 @@ export default function Footer() {
             <i className="ri-tiktok-fill"></i>
           </Link>
           <Link
-            to="https://instagram.com/story.thur"
+            to="https://instagram.com/kostalkahfi"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xl"
