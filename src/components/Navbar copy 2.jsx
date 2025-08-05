@@ -1,49 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Navbar = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const dropdownRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const [showLang, setShowLang] = useState(false);
 
   const toggleDropdown = (section) => {
     setOpenDropdown(openDropdown === section ? null : section);
   };
 
   const navItems = [
-    { path: "/about", label: "Tentang Kami" },
-    { 
-      label: "Kamar & Fasilitas", 
+    { path: "/about-us", label: "About Us" },
+    {
+      label: "Rooms & Facilities",
       subItems: [
-        { path: "/kamar", label: "Daftar Kamar" },
-        { path: "/fasilitas", label: "Fasilitas" },
+        { path: "/rooms-list", label: "Rooms List" },
+        { path: "/facilities", label: "Facilities" },
         { path: "/gallery", label: "Gallery" }
       ]
     },
-    { 
-      label: "Program", 
+    {
+      label: "Programs",
       subItems: [
         { path: "/program/mahasantri", label: "Mahasantri" },
         { path: "/program/biman", label: "Biman" }
       ]
     },
     { path: "/cavelatte", label: "Cavelatte" },
-    { path: "/blog", label: "Blog" },
-    { path: "/contact", label: "Kontak" }
+    { path: "/blogs", label: "Blogs" },
+    { path: "/contact", label: "Contact" }
   ];
 
   return (
@@ -58,11 +44,11 @@ const Navbar = ({ children }) => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6" ref={dropdownRef}>
+            <div className="hidden md:flex items-center space-x-6">
               {navItems.map((item) => (
                 item.subItems ? (
-                  <div key={item.label} className="relative">
-                    <button 
+                  <div key={item.label} className="relative group">
+                    <button
                       className="flex items-center space-x-1 text-gray-700 hover:text-[#eb6807] transition-colors"
                       onClick={() => toggleDropdown(item.label)}
                     >
@@ -70,13 +56,12 @@ const Navbar = ({ children }) => {
                       <i className={`ri-arrow-${openDropdown === item.label ? 'up' : 'down'}-s-line`}></i>
                     </button>
                     {openDropdown === item.label && (
-                      <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                      <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
                         {item.subItems.map((subItem) => (
                           <Link
                             key={subItem.path}
                             to={subItem.path}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#eb6807]"
-                            onClick={() => setOpenDropdown(null)}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           >
                             {subItem.label}
                           </Link>
@@ -98,12 +83,35 @@ const Navbar = ({ children }) => {
 
             {/* Mobile Menu Button */}
             <div className="flex items-center space-x-4">
+              {/* Language Selector */}
+            <div className="relative ml-4">
+              <button
+                onClick={() => setShowLang(!showLang)}
+                className="border border-gray-300 text-sm px-4 py-2 rounded-lg bg-white hover:bg-gray-100 transition"
+              >
+                ID
+              </button>
+              {showLang && (
+                <div className="absolute right-0 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      // set language to EN (custom logic)
+                      setShowLang(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    EN
+                  </button>
+                </div>
+              )}
+            </div>
               <Link
-                to="/login"
+                to="/sign-in"
                 className="hidden md:block bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
               >
-                Login
+                Sign In
               </Link>
+
               <button
                 className="md:hidden text-gray-700 p-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -116,9 +124,8 @@ const Navbar = ({ children }) => {
       </nav>
 
       {/* Mobile Menu */}
-      <div 
+      <div
         className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[60] transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}
-        ref={dropdownRef}
       >
         <div className="p-4 border-b border-gray-200">
           <Link to="/" className="text-xl font-bold text-[#eb6807]">
@@ -145,10 +152,6 @@ const Navbar = ({ children }) => {
                           key={subItem.path}
                           to={subItem.path}
                           className="block p-2 text-sm text-gray-600 hover:text-[#eb6807] hover:bg-gray-50 rounded"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            setOpenDropdown(null);
-                          }}
                         >
                           {subItem.label}
                         </Link>
@@ -169,30 +172,30 @@ const Navbar = ({ children }) => {
           ))}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <Link
-            to="/login"
-            className="block w-full text-center bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Login
-          </Link>
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
+          <div className="flex items-center justify-between">
+            {/* sign in Button mobile */}
+            <Link
+              to="/sign-in"
+              className="text-center bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors w-full md:w-auto"
+            >
+              Sign In
+            </Link>
+           
+          </div>
         </div>
       </div>
 
       {/* Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"
-          onClick={() => {
-            setIsMobileMenuOpen(false);
-            setOpenDropdown(null);
-          }}
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* Main Content */}
-      <main className="">{children}</main>
+      <main className="pt-16 pb-4">{children}</main>
     </>
   );
 };
