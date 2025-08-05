@@ -65,7 +65,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 pb-7">
         {/* Main Footer Content */}
         <div className="grid grid-cols- md:grid-cols-5 gap-8 mb-8">
           {/* Brand Info */}
@@ -119,7 +119,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-200 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-gray-200 pt-5 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm">
             © {currentYear} kostAlKahfi. All rights reserved.
           </p>
