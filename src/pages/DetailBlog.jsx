@@ -167,25 +167,37 @@ export default function DetailBlog() {
                                         </span>
                                     </div>
                                     <h1 className="text-3xl font-bold mb-4">{blog.title}</h1>
-                                    <div className="flex items-center text-sm text-gray-500 mb-6">
-                                        <i className="ri-user-line mr-1" />
-                                        <span className="mr-4">{blog.author}</span>
-                                        <i className="ri-time-line mr-1" />
-                                        <span>
-                                            {blog.createdAt?.toDate().toLocaleDateString('id-ID', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}{' '}
-                                            •{' '}
-                                            {blog.createdAt
-                                                ?.toDate()
-                                                .toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })}{' '}
-                                            WIB
-                                        </span>
-                                        <span className="mx-4">•</span>
-                                        <i className="ri-eye-line mr-1" />
-                                        <span>{blog.views} views</span>
+                                    <div className="flex justify-between items-center text-sm text-gray-500 mb-6">
+                                        {/* Kiri: Author, Tanggal, Jam */}
+                                        <div className="flex items-center flex-wrap">
+                                            <i className="ri-user-line mr-1" />
+                                            <span className="mr-4">{blog.author}</span>
+                                            <i className="ri-time-line mr-1" />
+                                            <span className="blog-date">
+                                                {blog.createdAt?.toDate().toLocaleDateString('id-ID', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                })}
+                                                <span className="desktop-time">
+                                                    {' • '}
+                                                    {blog.createdAt
+                                                        ?.toDate()
+                                                        .toLocaleTimeString('id-ID', {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            hour12: false,
+                                                        })}{' '}
+                                                    WIB
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                        {/* Kanan: Views */}
+                                        <div className="flex items-center">
+                                            <i className="ri-eye-line mr-1" />
+                                            <span>{blog.views} views</span>
+                                        </div>
                                     </div>
 
                                     <img
@@ -205,7 +217,7 @@ export default function DetailBlog() {
                                 {/* Komentar */}
                                 <div className="p-1 rounded-lg">
                                     <h2 className="text-2xl font-bold mb-4 flex items-center">
-                                        <i className="ri-chat-3-line mr-2" />
+                                        <i className="ri-chat-3-line mr-2 text-[#eb6807]" />
                                         Comments ({comments.length})
                                     </h2>
 
@@ -313,7 +325,7 @@ export default function DetailBlog() {
                             {/* Popular Blogs */}
                             <div className="p-1 rounded-lg">
                                 <h2 className="text-xl font-bold mb-0 flex items-center">
-                                    <i className="ri-fire-line mr-2 text-red-500" />
+                                    <i className="ri-fire-line mr-2 text-[#eb6807]" />
                                     Popular Blogs
                                 </h2>
                                 <div className="h-[0.5px] my-2 bg-gray-200 max-w-lg mx-auto"></div>
@@ -351,7 +363,7 @@ export default function DetailBlog() {
                             {/* Tags */}
                             <div className="p-1 rounded-lg hidden md:block">
                                 <h2 className="text-xl font-bold mb-0 flex items-center">
-                                    <i className="ri-price-tag-3-line mr-2 text-blue-500" />
+                                    <i className="ri-price-tag-3-line mr-2 text-[#eb6807]" />
                                     Tags
                                 </h2>
                                 <div className="h-[0.5px] my-2 bg-gray-200 max-w-lg mx-auto"></div>
@@ -375,7 +387,7 @@ export default function DetailBlog() {
                             {/* Video */}
                             <div className="p-1 pb-4 rounded-lg hidden md:block">
                                 <h2 className="text-xl font-bold mb-0 flex items-center">
-                                    <i className="ri-price-tag-3-line mr-2 text-blue-500" />
+                                    <i className="ri-video-line mr-2 text-[#eb6807]" />
                                     Video
                                 </h2>
                                 <div className="h-[0.5px] my-2 bg-gray-200 max-w-lg mx-auto"></div>
