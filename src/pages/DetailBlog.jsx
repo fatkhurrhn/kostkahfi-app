@@ -309,13 +309,14 @@ export default function DetailBlog() {
 
                     {/* Sidebar */}
                     <div className="lg:w-1/3">
-                        <div className="space-y-6 sticky top-[50px]">
+                        <div className="space-y-4 sticky top-[65px]">
                             {/* Popular Blogs */}
-                            <div className="p-6 rounded-lg">
-                                <h2 className="text-xl font-bold mb-4 flex items-center">
+                            <div className="p-1 rounded-lg">
+                                <h2 className="text-xl font-bold mb-0 flex items-center">
                                     <i className="ri-fire-line mr-2 text-red-500" />
                                     Popular Blogs
                                 </h2>
+                                <div className="h-[0.5px] my-2 bg-gray-200 max-w-lg mx-auto"></div>
                                 {loading ? (
                                     <div className="text-left text-gray-500">Memuat data...</div>
                                 ) : relatedBlogs.length ? (
@@ -348,7 +349,7 @@ export default function DetailBlog() {
                             </div>
 
                             {/* Tags */}
-                            <div className="bg-white p-6 rounded-lg">
+                            <div className="p-1 rounded-lg">
                                 <h2 className="text-xl font-bold mb-4 flex items-center">
                                     <i className="ri-price-tag-3-line mr-2 text-blue-500" />
                                     Tags
