@@ -52,14 +52,14 @@ export default function Kamar() {
     <div className="bg-gray-50 min-h-screen text-gray-800">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 py-6 pb-16">
-        <div className="text-center mb-12">
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3 text-gray-800">
-            <span className="text-[#eb6807]">Daftar</span> Kamar
+            <span className="text-[#eb6807]">Room</span> Availability
           </h1>
           <div className="w-20 h-1 bg-[#eb6807] mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-lg mx-auto">
-            Informasi ketersediaan kamar kost secara real-time
+            Real-time information on available rooms at KostAlkahfi
           </p>
         </div>
 
@@ -95,18 +95,16 @@ export default function Kamar() {
             {filtered.map(room => (
               <div
                 key={room.id}
-                className={`bg-white rounded-lg shadow-sm overflow-hidden border-t-4 ${
-                  room.status === 'kosong' ? 'border-green-400' : 'border-rose-400'
-                }`}
+                className={`bg-white rounded-lg shadow-sm overflow-hidden border-t-4 ${room.status === 'kosong' ? 'border-green-400' : 'border-rose-400'
+                  }`}
               >
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                        room.status === 'kosong' 
-                          ? 'bg-green-100 text-green-700' 
+                      <span className={`text-xs font-semibold px-2 py-1 rounded ${room.status === 'kosong'
+                          ? 'bg-green-100 text-green-700'
                           : 'bg-rose-100 text-rose-700'
-                      }`}>
+                        }`}>
                         {room.status === 'kosong' ? 'Tersedia' : 'Terisi'}
                       </span>
                     </div>
@@ -114,11 +112,10 @@ export default function Kamar() {
                   </div>
 
                   <div className="flex items-center justify-center my-4">
-                    <div className={`text-5xl ${
-                      room.status === 'kosong' 
-                        ? 'text-green-400' 
+                    <div className={`text-5xl ${room.status === 'kosong'
+                        ? 'text-green-400'
                         : 'text-rose-400'
-                    }`}>
+                      }`}>
                       {room.status === 'kosong' ? (
                         <i className="ri-door-open-line" />
                       ) : (

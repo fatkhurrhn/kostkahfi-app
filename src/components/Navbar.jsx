@@ -4,31 +4,32 @@ import { Link } from 'react-router-dom';
 const Navbar = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [showLang, setShowLang] = useState(false);
 
   const toggleDropdown = (section) => {
     setOpenDropdown(openDropdown === section ? null : section);
   };
 
   const navItems = [
-    { path: "/about", label: "Tentang Kami" },
+    { path: "/about-us", label: "About Us" },
     {
-      label: "Kamar & Fasilitas",
+      label: "Rooms & Facilities",
       subItems: [
-        { path: "/kamar", label: "Daftar Kamar" },
-        { path: "/fasilitas", label: "Fasilitas" },
+        { path: "/rooms-list", label: "Rooms List" },
+        { path: "/facilities", label: "Facilities" },
         { path: "/gallery", label: "Gallery" }
       ]
     },
     {
-      label: "Program",
+      label: "Programs",
       subItems: [
         { path: "/program/mahasantri", label: "Mahasantri" },
         { path: "/program/biman", label: "Biman" }
       ]
     },
     { path: "/cavelatte", label: "Cavelatte" },
-    { path: "/blog", label: "Blog" },
-    { path: "/contact", label: "Kontak" }
+    { path: "/blogs", label: "Blogs" },
+    { path: "/contact", label: "Contact" }
   ];
 
   return (
@@ -82,12 +83,35 @@ const Navbar = ({ children }) => {
 
             {/* Mobile Menu Button */}
             <div className="flex items-center space-x-4">
+              {/* Language Selector */}
+            <div className="relative ml-4">
+              <button
+                onClick={() => setShowLang(!showLang)}
+                className="border border-gray-300 text-sm px-4 py-2 rounded-lg bg-white hover:bg-gray-100 transition"
+              >
+                ID
+              </button>
+              {showLang && (
+                <div className="absolute right-0 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      // set language to EN (custom logic)
+                      setShowLang(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    EN
+                  </button>
+                </div>
+              )}
+            </div>
               <Link
-                to="/login"
+                to="/sign-in"
                 className="hidden md:block bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
               >
-                Login
+                Sign In
               </Link>
+
               <button
                 className="md:hidden text-gray-700 p-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -148,13 +172,17 @@ const Navbar = ({ children }) => {
           ))}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <Link
-            to="/login"
-            className="block w-full text-center bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors"
-          >
-            Login
-          </Link>
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
+          <div className="flex items-center justify-between">
+            {/* sign in Button mobile */}
+            <Link
+              to="/sign-in"
+              className="text-center bg-[#eb6807] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#d45e06] transition-colors w-full md:w-auto"
+            >
+              Sign In
+            </Link>
+           
+          </div>
         </div>
       </div>
 
