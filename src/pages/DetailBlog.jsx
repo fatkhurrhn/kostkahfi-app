@@ -146,7 +146,7 @@ export default function DetailBlog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <section className="max-w-7xl mx-auto px-4 pt-0">
+            <section className="max-w-7xl mx-auto px-4 pt-[80px]">
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* Konten utama */}
                     <div className="lg:w-2/3">
@@ -274,16 +274,14 @@ export default function DetailBlog() {
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="text-center py-6 text-gray-500">
-                                                <i className="ri-chat-1-line text-4xl mb-2" />
-                                                <p>No comments yet. Be the first to comment!</p>
-                                            </div>
+                                            <>
+                                            </>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Latest Blogs Horizontal Scroll */}
-                                <div className="mt-8">
+                                <div className="mt-5">
                                     <h2 className="text-2xl font-bold mb-4">Latest Blogs</h2>
                                     <div className="overflow-x-auto pb-4 scrollbar-hide">
                                         <div className="flex space-x-4">

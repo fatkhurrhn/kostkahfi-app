@@ -62,7 +62,7 @@ export default function Blog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <section className="max-w-7xl mx-auto px-4 py-6">
+            <section className="max-w-7xl mx-auto px-4 pt-[110px]">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold mb-3 text-gray-800">
                         <span className="text-[#eb6807]">KostAlkahfi</span> Blog
@@ -74,7 +74,7 @@ export default function Blog() {
                             : 'Stay up-to-date with the latest information and updates about KostAlkahfi'}
                     </p>
                     {tagFilter && (
-                        <Link to="/blog" className="text-red-600">
+                        <Link to="/blogs" className="text-red-600">
                             [clear filter]
                         </Link>
                     )}
@@ -107,7 +107,7 @@ export default function Blog() {
                                         <span>{blog.views} views</span>
                                     </div>
                                     <h2 className="text-xl font-bold mb-2 line-clamp-2">
-                                        <Link to={`/blog/${blog.slug}`} className="hover:text-gray-600">
+                                        <Link to={`/blogs/${blog.slug}`} className="hover:text-gray-600">
                                             {blog.title}
                                         </Link>
                                     </h2>
@@ -118,7 +118,7 @@ export default function Blog() {
                                         {blog.tags?.slice(0, 3).map((tag, index) => (
                                             <Link
                                                 key={index}
-                                                to={`/blog?tag=${tag}`}
+                                                to={`/blogs?tag=${tag}`}
                                                 className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs px-1 py-1 rounded"
                                             >
                                                 #{tag}

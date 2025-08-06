@@ -195,7 +195,7 @@ const Navbar = ({ children }) => {
       )}
 
       {/* Main Content */}
-      <main className="pt-16 pb-4">{children}</main>
+      <main className="">{children}</main>
     </>
   );
 };

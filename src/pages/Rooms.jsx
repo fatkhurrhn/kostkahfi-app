@@ -52,7 +52,7 @@ export default function Kamar() {
     <div className="bg-gray-50 min-h-screen text-gray-800">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 pt-[110px]">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3 text-gray-800">
             <span className="text-[#eb6807]">Room</span> Availability
