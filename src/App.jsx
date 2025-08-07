@@ -19,6 +19,7 @@ import Template from './pages/Template';
 import Contact from './pages/Contact';
 import Cavelatte from './pages/Cavelatte';
 import AboutUs from './pages/AboutUs';
+import VerifyOTP from './pages/auth/VerifyOTP';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/sign-in" element={<Login />} />
         <Route path="/sign-up" element={<Register />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
         <Route path="/dashboard-admin" element={<DashboardAdmin />} />
         <Route path="/dashboard-users" element={<DashboardUsers />} />
 

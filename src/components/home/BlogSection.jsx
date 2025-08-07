@@ -89,7 +89,7 @@ function BlogCard({ post }) {
   return (
     <div className="group">
       <div className="relative rounded-[9px] overflow-hidden aspect-video mb-4">
-        <Link to={`/blog/${post.slug}`} >
+        <Link to={`/blogs/${post.slug}`} >
         <img
           src={post.thumbnail}
           alt={post.title}
@@ -116,7 +116,7 @@ function BlogCard({ post }) {
         </div>
       </div>
       
-      <Link to={`/blog/${post.slug}`} >
+      <Link to={`/blogs/${post.slug}`} >
       <h3 className="text-xl font-bold mb-2 group-hover:text-[#eb6807] transition-colors line-clamp-1">
         {post.title}
       </h3>
@@ -125,7 +125,7 @@ function BlogCard({ post }) {
       <p className="text-gray-600 mb-4 line-clamp-2">{cleanExcerpt}...</p>
       
       <Link 
-        to={`/blog/${post.slug}`} 
+        to={`/blogs/${post.slug}`} 
         className="inline-flex items-center text-sm text-[#eb6807] hover:text-[#eb6807] font-medium"
       >
         Baca Selengkapnya <i className="ri-arrow-right-line ml-2"></i>
