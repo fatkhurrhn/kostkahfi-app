@@ -20,6 +20,8 @@ import Contact from './pages/Contact';
 import Cavelatte from './pages/Cavelatte';
 import AboutUs from './pages/AboutUs';
 import VerifyOTP from './pages/auth/VerifyOTP';
+import ManageGallery from './pages/dashboard/admin/ManageGallery';
+import Gallery from './pages/Gallery';
 
 export default function App() {
   return (
@@ -38,6 +40,7 @@ export default function App() {
         <Route path="/dashboard-admin/manage-blog" element={<ManageBlog />} />
         <Route path="/dashboard-admin/manage-komentar" element={<ManageComments />} />
         <Route path="/dashboard-admin/manage-users" element={<ManageUsers />} />
+        <Route path="/dashboard-admin/manage-gallery" element={<ManageGallery />} />
 
         <Route path="/rooms-list" element={<Kamar />} />
         <Route path="/blogs" element={<Blog />} />
@@ -47,6 +50,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/cavelatte" element={<Cavelatte />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/gallery" element={<Gallery />} />
 
         {/* Catch-all untuk halaman 404 */}
         <Route path="*" element={<Navigate to="/not-found" replace />} />

@@ -52,6 +52,7 @@ const ChatBot = () => {
     if (autoResponse) return autoResponse.text;
 
     try {
+      // const response = await fetch('https://gemini-server-production-1918.up.railway.app/chat', {
       const response = await fetch('https://gemini-server-production-1918.up.railway.app/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

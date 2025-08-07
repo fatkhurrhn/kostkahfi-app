@@ -48,18 +48,35 @@ export default function Kamar() {
     filter === 'all' ? true : r.status === filter
   );
 
+  // Group rooms by building and floor
+  const groupedRooms = filtered.reduce((acc, room) => {
+    const building = room.no.substring(0, 1); // First digit = building
+    const floor = room.no.substring(1, 2);    // Second digit = floor
+    
+    if (!acc[building]) {
+      acc[building] = {};
+    }
+    
+    if (!acc[building][floor]) {
+      acc[building][floor] = [];
+    }
+    
+    acc[building][floor].push(room);
+    return acc;
+  }, {});
+
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 pt-[110px]">
+      <main className="max-w-6xl mx-auto px-4 pt-[110px] pb-12">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3 text-gray-800">
-            <span className="text-[#eb6807]">Room</span> Availability
+            <span className="text-[#eb6807]">Ketersediaan</span> Kamar
           </h1>
           <div className="w-20 h-1 bg-[#eb6807] mx-auto mb-4"></div>
           <p className="text-gray-600 max-w-lg mx-auto">
-            Real-time information on available rooms at KostAlkahfi
+            Informasi real-time ketersediaan kamar di Kost Al Kahfi
           </p>
         </div>
 
@@ -89,52 +106,69 @@ export default function Kamar() {
           </div>
         )}
 
-        {/* Room Cards */}
-        {!loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {filtered.map(room => (
-              <div
-                key={room.id}
-                className={`bg-white rounded-lg shadow-sm overflow-hidden border-t-4 ${room.status === 'kosong' ? 'border-green-400' : 'border-rose-400'
-                  }`}
-              >
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <span className={`text-xs font-semibold px-2 py-1 rounded ${room.status === 'kosong'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-rose-100 text-rose-700'
-                        }`}>
-                        {room.status === 'kosong' ? 'Tersedia' : 'Terisi'}
-                      </span>
-                    </div>
-                    <div className="text-[17px] font-bold text-gray-800">#{room.no}</div>
-                  </div>
+        {/* Grouped Room Cards */}
+        {!loading && Object.keys(groupedRooms).length > 0 ? (
+          Object.entries(groupedRooms).map(([building, floors]) => (
+            <div key={`building-${building}`} className="mb-12">
+              
+              {Object.entries(floors).map(([floor, floorRooms]) => (
+                <div key={`building-${building}-floor-${floor}`} className="mb-8">
+                  <h3 className="text-lg font-semibold mb-4 text-gray-700">
+                    Gedung {building} Lantai {floor}
+                  </h3>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {floorRooms.map(room => (
+                      <div
+                        key={room.id}
+                        className={`bg-white rounded-lg shadow-sm overflow-hidden border-t-4 ${room.status === 'kosong' ? 'border-green-400' : 'border-rose-400'
+                          }`}
+                      >
+                        <div className="p-4">
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <span className={`text-xs font-semibold px-2 py-1 rounded ${room.status === 'kosong'
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-rose-100 text-rose-700'
+                                }`}>
+                                {room.status === 'kosong' ? 'Tersedia' : 'Terisi'}
+                              </span>
+                            </div>
+                            <div className="text-[17px] font-bold text-gray-800">#{room.no}</div>
+                          </div>
 
-                  <div className="flex items-center justify-center my-4">
-                    <div className={`text-5xl ${room.status === 'kosong'
-                        ? 'text-green-400'
-                        : 'text-rose-400'
-                      }`}>
-                      {room.status === 'kosong' ? (
-                        <i className="ri-door-open-line" />
-                      ) : (
-                        <i className="ri-door-closed-line" />
-                      )}
-                    </div>
-                  </div>
+                          <div className="flex items-center justify-center my-4">
+                            <div className={`text-5xl ${room.status === 'kosong'
+                                ? 'text-green-400'
+                                : 'text-rose-400'
+                              }`}>
+                              {room.status === 'kosong' ? (
+                                <i className="ri-door-open-line" />
+                              ) : (
+                                <i className="ri-door-closed-line" />
+                              )}
+                            </div>
+                          </div>
 
-                  {room.occupant && (
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <p className="text-sm text-gray-600 flex items-center">
-                        <i className="ri-user-line mr-2 text-gray-400" />
-                        <span className="font-medium">{room.occupant}</span>
-                      </p>
-                    </div>
-                  )}
+                          {room.occupant && (
+                            <div className="mt-4 pt-4 border-t border-gray-100">
+                              <p className="text-sm text-gray-600 flex items-center">
+                                <i className="ri-user-line mr-2 text-gray-400" />
+                                <span className="font-medium">{room.occupant}</span>
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          ))
+        ) : !loading && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">Tidak ada kamar yang tersedia</p>
           </div>
         )}
       </main>
