@@ -21,7 +21,6 @@
     "@tiptap/react": "^3.0.9",
     "@tiptap/starter-kit": "^3.0.9",
     "antd": "^5.26.7",
-    " ios": "^1.11.0",
     "bootstrap": "^5.3.5",
     "chart.js": "^4.5.0",
     "firebase": "^11.6.1",
