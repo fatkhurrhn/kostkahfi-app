@@ -30,19 +30,22 @@ export default function AboutUs() {
                         <h2 className="text-3xl font-bold mb-6 text-gray-800">
                             Cerita Kami
                         </h2>
-                        <div className="space-y-4 text-gray-600">
+                        <div className="space-y-4 text-gray-600 text-justify">
                             <p>
-                                Berdiri sejak 2015, Kost Al Kahfi hadir untuk memenuhi kebutuhan akomodasi nyaman dengan harga terjangkau bagi mahasiswa dan pekerja di sekitar Depok.
+                                Berdiri sejak 2015, Kost Al Kahfi hadir sebagai solusi akomodasi nyaman, aman, dan terjangkau bagi mahasiswa maupun pekerja di kawasan Depok dan sekitarnya. Kami memahami bahwa tempat tinggal bukan hanya sekadar tempat beristirahat, melainkan juga ruang untuk tumbuh, belajar, dan berproses.
                             </p>
                             <p>
-                                Kami percaya tempat tinggal yang nyaman akan mendukung produktivitas dan kebahagiaan penghuninya. Itulah mengapa kami terus berinovasi dalam layanan dan fasilitas.
+                                Dengan lingkungan yang bersih, fasilitas yang terus diperbarui, serta suasana yang kondusif, kami berkomitmen memberikan pengalaman hunian yang mendukung produktivitas sekaligus menghadirkan kenyamanan layaknya di rumah sendiri.
+                            </p>
+                            <p>
+                                Dukungan keamanan 24 jam, akses mudah ke transportasi umum, serta kedekatan dengan kampus dan pusat perbelanjaan menjadi nilai tambah yang membuat Kost Al Kahfi menjadi pilihan ideal.
                             </p>
                         </div>
                     </div>
                     <div className="bg-gray-200 rounded-xl h-80 w-full overflow-hidden">
                         {/* Placeholder for image */}
                         <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                            <span className="text-gray-500">Foto Bangunan Kost</span>
+                            <img src="https://res.cloudinary.com/dbssvz2pe/image/upload/v1754549473/assets-gallery/qp20cbsbmoditxz41433rqnfp.png" alt="" />
                         </div>
                     </div>
                 </div>
@@ -329,8 +332,8 @@ export default function AboutUs() {
                         {[
                             "https://i.pinimg.com/1200x/95/55/c6/9555c67c29362dc7951a426337a8e773.jpg",
                             "https://i.pinimg.com/736x/68/25/0e/68250e5a011744a8dc97dcd541e84020.jpg",
-                            "https://i.pinimg.com/736x/68/25/0e/68250e5a011744a8dc97dcd541e84020.jpg",
-                            "https://i.pinimg.com/736x/68/25/0e/68250e5a011744a8dc97dcd541e84020.jpg",
+                            "https://i.pinimg.com/1200x/6f/e5/6a/6fe56a2dc513680a5b5f743f0b7db19f.jpg",
+                            "https://i.pinimg.com/736x/40/91/07/4091077b10a58899f01ed37be5731d41.jpg",
                         ].map((src, index) => (
                             <div
                                 key={index}
