@@ -12,6 +12,7 @@ const pageTitles = {
   "/dashboard-admin/manage-pembayaran": "Manage Pembayaran",
   "/dashboard-admin/manage-blog": "Manage Blog",
   "/dashboard-admin/manage-komentar": "Manage Komentar",
+  "/dashboard-admin/manage-gallery": "Manage Gallery",
 };
 
 export default function Layout({ children }) {

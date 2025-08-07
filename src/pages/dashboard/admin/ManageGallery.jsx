@@ -252,7 +252,7 @@ export default function ManageGallery() {
                         Belum ada foto. Tambahkan yang pertama!
                     </p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3">
                         {items.map((item) => {
                             const date = new Date(item.createdAt).toLocaleDateString('id-ID', {
                                 day: 'numeric',
