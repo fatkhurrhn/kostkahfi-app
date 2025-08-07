@@ -1,11 +1,15 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import ScrollToTop from '../components/ScrollToTop'
+import ChatBot from '../components/chatbot/ChatBot'
 
 export default function Template() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
+            <ChatBot/>
+            <ScrollToTop/>
             <section className="max-w-7xl mx-auto px-4 pt-[110px]">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold mb-3 text-gray-800">

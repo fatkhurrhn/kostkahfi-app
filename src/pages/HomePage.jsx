@@ -12,12 +12,14 @@ import MapsSection from '../components/home/MapsSection';
 import CTASection from '../components/home/CTASection';
 import GallerySection from '../components/home/GallerySection';
 import ChatBot from '../components/chatbot/ChatBot';
+import ScrollToTop from '../components/ScrollToTop';
 
 export default function HomePage() {
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
       <Navbar />
       <ChatBot />
+      <ScrollToTop/>
 
       <HeroSection />
       <KeunggulanSection />

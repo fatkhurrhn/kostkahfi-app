@@ -9,12 +9,14 @@ import TeamSection from '../components/about-us/TeamSection';
 import AchievementBanner from '../components/about-us/AchievementBanner';
 import GalleryPreview from '../components/about-us/GalleryPreview';
 import AboutCTA from '../components/about-us/AboutCTA';
+import ScrollToTop from '../components/ScrollToTop';
 
 export default function AboutUs() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800">
             <Navbar />
             <ChatBot />
+            <ScrollToTop/>
             
             <main className="max-w-7xl mx-auto px-4 pb-16">
                 <AboutHero />

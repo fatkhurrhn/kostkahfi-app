@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ChatBot from "../components/chatbot/ChatBot";
+import ScrollToTop from "../components/ScrollToTop";
 
 const API_URL = "http://localhost:8888/api/gallery";
 
@@ -37,6 +38,7 @@ export default function Gallery() {
         <div className="max-w-7xl mx-auto px-4 pt-[110px]">
             <Navbar />
             <ChatBot />
+            <ScrollToTop/>
             <div className="text-center mb-10">
                 <h1 className="text-4xl font-bold mb-3 text-gray-800">
                     <span className="text-[#eb6807]">Galeri</span> Kami

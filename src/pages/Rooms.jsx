@@ -3,6 +3,8 @@ import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { app } from '../firebase';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ScrollToTop from '../components/ScrollToTop'
+import ChatBot from '../components/chatbot/ChatBot'
 
 export default function Kamar() {
   const [rooms, setRooms] = useState([]);
@@ -52,15 +54,15 @@ export default function Kamar() {
   const groupedRooms = filtered.reduce((acc, room) => {
     const building = room.no.substring(0, 1); // First digit = building
     const floor = room.no.substring(1, 2);    // Second digit = floor
-    
+
     if (!acc[building]) {
       acc[building] = {};
     }
-    
+
     if (!acc[building][floor]) {
       acc[building][floor] = [];
     }
-    
+
     acc[building][floor].push(room);
     return acc;
   }, {});
@@ -68,7 +70,8 @@ export default function Kamar() {
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800">
       <Navbar />
-
+      <ChatBot />
+      <ScrollToTop />
       <main className="max-w-6xl mx-auto px-4 pt-[110px] pb-12">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3 text-gray-800">
@@ -110,13 +113,13 @@ export default function Kamar() {
         {!loading && Object.keys(groupedRooms).length > 0 ? (
           Object.entries(groupedRooms).map(([building, floors]) => (
             <div key={`building-${building}`} className="mb-12">
-              
+
               {Object.entries(floors).map(([floor, floorRooms]) => (
                 <div key={`building-${building}-floor-${floor}`} className="mb-8">
                   <h3 className="text-lg font-semibold mb-4 text-gray-700">
                     Gedung {building} Lantai {floor}
                   </h3>
-                  
+
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {floorRooms.map(room => (
                       <div
@@ -128,8 +131,8 @@ export default function Kamar() {
                           <div className="flex items-start justify-between mb-4">
                             <div>
                               <span className={`text-xs font-semibold px-2 py-1 rounded ${room.status === 'kosong'
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-rose-100 text-rose-700'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-rose-100 text-rose-700'
                                 }`}>
                                 {room.status === 'kosong' ? 'Tersedia' : 'Terisi'}
                               </span>
@@ -139,8 +142,8 @@ export default function Kamar() {
 
                           <div className="flex items-center justify-center my-4">
                             <div className={`text-5xl ${room.status === 'kosong'
-                                ? 'text-green-400'
-                                : 'text-rose-400'
+                              ? 'text-green-400'
+                              : 'text-rose-400'
                               }`}>
                               {room.status === 'kosong' ? (
                                 <i className="ri-door-open-line" />

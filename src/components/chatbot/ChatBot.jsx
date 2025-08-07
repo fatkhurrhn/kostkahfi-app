@@ -203,7 +203,7 @@ const ChatBot = () => {
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Tanya tentang kamar, harga, dll..."
-                className="flex-1 border border-orange-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent"
+                className="flex-1 border border-orange-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-orange-100 focus:border-transparent"
               />
               <button
                 onClick={handleSend}
