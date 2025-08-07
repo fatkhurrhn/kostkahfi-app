@@ -95,7 +95,7 @@ export default function Gallery() {
             </div>
 
             {filteredItems.length === 0 && (
-                <p className="text-center text-gray-500 py-8">Belum ada foto di kategori ini.</p>
+                <p className="text-center font-medium text-gray-500 py-8">[Server bermasalah atau belum di RUN]</p>
             )}
 
             {/* Modal Detail */}

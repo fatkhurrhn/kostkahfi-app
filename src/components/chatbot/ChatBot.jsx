@@ -52,8 +52,7 @@ const ChatBot = () => {
     if (autoResponse) return autoResponse.text;
 
     try {
-      // const response = await fetch('https://gemini-server-production-1918.up.railway.app/chat', {
-      const response = await fetch('https://gemini-server-production-1918.up.railway.app/chat', {
+      const response = await fetch('http://localhost:9999/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -76,7 +75,6 @@ const ChatBot = () => {
       return data.reply || "Aduh aku kurang paham nih 😅<br>" +
         "Coba tanya ke om kost langsung aja yuk:<br>" +
         "📞 <a href='tel:082285512813' class='text-orange-600'>0822-8551-2813</a>";
-
     } catch (error) {
       console.error('Network error:', error);
       return "Wah koneksiku lagi bermasalah nih~ 😢<br>" +
@@ -108,22 +106,25 @@ const ChatBot = () => {
   return (
     <>
       {/* Floating Button */}
-      {!isOpen ? (
+      {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-4 w-12 h-12 bg-orange-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-orange-700 transition z-50"
+          className="fixed bottom-6 right-4 w-14 h-14 bg-orange-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-orange-700 active:scale-95 transition z-50"
           aria-label="Open Chat"
         >
-          <i class="ri-robot-2-line"></i>
+          <i className="ri-robot-2-line text-xl"></i>
         </button>
-      ) : null}
+      )}
 
       {/* Chat Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end p-4 pointer-events-none">
+        <div className="fixed inset-0 z-50 flex items-center justify-end pointer-events-none">
+          {/* Mobile: Full Screen | Desktop: Panel Kecil */}
           <div
-            className="bg-white rounded-t-xl shadow-2xl w-full max-w-md h-[600px] flex flex-col pointer-events-auto border border-orange-200 overflow-hidden"
-            style={{ maxHeight: '90vh' }}
+            className={`bg-white w-full ${isOpen ? 'animate-slide-up' : ''
+              } md:max-w-md md:h-[600px] md:max-h-[90vh] md:rounded-t-xl md:shadow-2xl md:overflow-hidden md:border md:border-orange-200 flex flex-col pointer-events-auto ${isOpen ? 'h-full' : 'h-0'
+              }`}
+            style={{ maxHeight: '100vh' }}
           >
             {/* Header */}
             <div className="bg-orange-600 text-white p-4 flex justify-between items-center">
@@ -133,7 +134,8 @@ const ChatBot = () => {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-white p-1"
+                className="text-white p-1 h-10 w-10 hover:bg-white/20 rounded-full transition"
+                aria-label="Close chat"
               >
                 ✕
               </button>
@@ -178,7 +180,7 @@ const ChatBot = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Replies - Horizontal Scroll */}
+            {/* Quick Replies - Scroll Horizontal */}
             <div className="px-3 py-2 bg-orange-50 border-t border-orange-100 overflow-x-auto whitespace-nowrap scrollbar-hide">
               <div className="flex gap-2 pb-1">
                 {quickReplies.map((reply, index) => (
@@ -211,7 +213,7 @@ const ChatBot = () => {
                     : 'bg-orange-300 cursor-not-allowed'
                   } text-white transition-colors`}
               >
-                <i class="ri-telegram-2-line"></i>
+                <i className="ri-telegram-2-line"></i>
               </button>
             </div>
           </div>
