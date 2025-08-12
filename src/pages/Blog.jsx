@@ -64,22 +64,22 @@ export default function Blog() {
     return (
         <div className="bg-gray-50 min-h-screen text-gray-800 transition-colors duration-300">
             <Navbar />
-            <ChatBot/>
-            <ScrollToTop/>
+            <ChatBot />
+            <ScrollToTop />
             <section className="max-w-7xl mx-auto px-4 pt-[110px]">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold mb-3 text-gray-800">
-                        <span className="text-[#eb6807]">KostAlkahfi</span> Blog
+                        <span className="text-[#eb6807]">Blog</span> Kost Kahfi
                     </h1>
                     <div className="w-20 h-1 bg-[#eb6807] mx-auto mb-4"></div>
                     <p className="text-gray-600 max-w-lg mx-auto">
                         {tagFilter
-                            ? `Blogs tagged with "${tagFilter}"`
-                            : 'Stay up-to-date with the latest information and updates about KostAlkahfi'}
+                            ? `Blog dengan tag "${tagFilter}"`
+                            : 'Tetap terhubung dengan informasi dan kabar terbaru seputar KostAlkahfi'}
                     </p>
                     {tagFilter && (
                         <Link to="/blogs" className="text-red-600">
-                            [clear filter]
+                            [hapus filter]
                         </Link>
                     )}
                 </div>

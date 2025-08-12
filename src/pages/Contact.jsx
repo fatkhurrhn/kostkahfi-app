@@ -13,11 +13,11 @@ export default function Contact() {
             <section className="max-w-7xl mx-auto px-4 pt-[110px]">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl font-bold mb-3 text-gray-800">
-                        <span className="text-[#eb6807]">Contact</span> Us
+                        <span className="text-[#eb6807]">Hubungi</span> Kami
                     </h1>
                     <div className="w-20 h-1 bg-[#eb6807] mx-auto mb-4"></div>
                     <p className="text-gray-600 max-w-lg mx-auto">
-                        Have questions, feedback, or interested in collaborating with us? We're here to help. Feel free to reach out to us anytime.
+                        Punya pertanyaan, masukan, atau tertarik untuk bekerja sama dengan kami? Kami siap membantu.
                     </p>
                 </div>
 

@@ -72,7 +72,7 @@ export default function Kamar() {
       <Navbar />
       <ChatBot />
       <ScrollToTop />
-      <main className="max-w-6xl mx-auto px-4 pt-[110px] pb-12">
+      <main className="max-w-7xl mx-auto px-4 pt-[110px] pb-12">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3 text-gray-800">
             <span className="text-[#eb6807]">Ketersediaan</span> Kamar
