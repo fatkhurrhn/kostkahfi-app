@@ -1,3 +1,4 @@
+// src/pages/Rooms.jsx
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { app } from '../firebase';

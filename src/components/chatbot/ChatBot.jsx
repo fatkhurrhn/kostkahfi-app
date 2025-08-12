@@ -118,7 +118,7 @@ const ChatBot = () => {
 
       {/* Chat Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end pointer-events-none">
+        <div className="fixed inset-0 z-50 flex items-center justify-end pointer-events-none right-4">
           {/* Mobile: Full Screen | Desktop: Panel Kecil */}
           <div
             className={`bg-white w-full ${isOpen ? 'animate-slide-up' : ''
