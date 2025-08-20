@@ -25,7 +25,7 @@ export default function Layout({ children }) {
     try {
       const auth = getAuth(app);
       await signOut(auth);
-      navigate('/login');
+      navigate('/sign-in');
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -37,7 +37,7 @@ export default function Layout({ children }) {
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!currentUser) {
-        navigate('/login');
+        navigate('/sign-in');
         return;
       }
 
@@ -52,7 +52,7 @@ export default function Layout({ children }) {
           const userData = querySnapshot.docs[0].data();
           setUser(userData);
         } else {
-          navigate('/login');
+          navigate('/sign-in');
         }
       } catch (error) {
         console.error("Error fetching data:", error);

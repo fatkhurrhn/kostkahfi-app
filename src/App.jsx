@@ -23,6 +23,7 @@ import VerifyOTP from './pages/auth/VerifyOTP';
 import ManageGallery from './pages/dashboard/admin/ManageGallery';
 import Gallery from './pages/Gallery';
 import Pengaduan from './pages/dashboard/users/Pengaduan';
+import ManagePengaduan from './pages/dashboard/admin/ManagePengaduan';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
 
         <Route path="/dashboard-admin/manage-kamar" element={<ManageKamar />} />
         <Route path="/dashboard-admin/manage-pembayaran" element={<ManagePembayaran />} />
+        <Route path="/dashboard-admin/manage-pengaduan" element={<ManagePengaduan />} />
         <Route path="/dashboard-admin/manage-blog" element={<ManageBlog />} />
         <Route path="/dashboard-admin/manage-komentar" element={<ManageComments />} />
         <Route path="/dashboard-admin/manage-users" element={<ManageUsers />} />

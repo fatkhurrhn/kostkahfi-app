@@ -10,6 +10,7 @@ const pageTitles = {
   "/dashboard-admin/manage-users": "Manage Users",
   "/dashboard-admin/manage-kamar": "Manage Kamar",
   "/dashboard-admin/manage-pembayaran": "Manage Pembayaran",
+  "/dashboard-admin/manage-pengaduan": "Manage Pengaduan",
   "/dashboard-admin/manage-blog": "Manage Blog",
   "/dashboard-admin/manage-komentar": "Manage Komentar",
   "/dashboard-admin/manage-gallery": "Manage Gallery",

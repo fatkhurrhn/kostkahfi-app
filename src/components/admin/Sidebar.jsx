@@ -6,6 +6,7 @@ const menuItems = [
   { label: "Manage Users", path: "/dashboard-admin/manage-users" },
   { label: "Manage Kamar", path: "/dashboard-admin/manage-kamar" },
   { label: "Manage Pembayaran", path: "/dashboard-admin/manage-pembayaran" },
+  { label: "Manage Pengaduan", path: "/dashboard-admin/manage-pengaduan" },
   { label: "Manage Blog", path: "/dashboard-admin/manage-blog" },
   { label: "Manage Komentar", path: "/dashboard-admin/manage-komentar" },
   { label: "Manage Gallery", path: "/dashboard-admin/manage-gallery" },
