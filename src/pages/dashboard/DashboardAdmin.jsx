@@ -360,16 +360,27 @@ export default function DashboardAdmin() {
         responsive: true,
         plugins: {
           legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,  // icon bulat kecil
-              boxWidth: 12,         // biar rapi sejajar
-              padding: 20           // jarak antar item
-            }
-          }
-        }
+            display: false, // ⛔ matikan legend bawaan
+          },
+        },
       }}
     />
+  </div>
+
+  {/* Custom Legend */}
+  <div className="flex justify-center gap-6 mt-6">
+    {contentStatsData.labels.map((label, idx) => (
+      <div key={idx} className="flex items-center gap-2">
+        <span
+          className="w-3 h-3 rounded-full"
+          style={{
+            backgroundColor:
+              contentStatsData.datasets[0].backgroundColor[idx],
+          }}
+        />
+        <span className="text-sm text-gray-600">{label}</span>
+      </div>
+    ))}
   </div>
 </div>
 
