@@ -7,7 +7,7 @@ import DashboardAdmin from './pages/dashboard/DashboardAdmin';
 import DashboardUsers from './pages/dashboard/DashboardUsers';
 import ManageKamar from './pages/dashboard/admin/ManageKamar';
 import Kamar from './pages/Rooms';
-import ManagePembayaranUser from './pages/dashboard/users/ManagePembayaran';
+import PembayaranUser from './pages/dashboard/users/Pembayaran';
 import ManagePembayaran from './pages/dashboard/admin/ManagePembayaran';
 import Blog from './pages/Blog';
 import ManageBlog from './pages/dashboard/admin/ManageBlog';
@@ -22,6 +22,7 @@ import AboutUs from './pages/AboutUs';
 import VerifyOTP from './pages/auth/VerifyOTP';
 import ManageGallery from './pages/dashboard/admin/ManageGallery';
 import Gallery from './pages/Gallery';
+import Pengaduan from './pages/dashboard/users/Pengaduan';
 
 export default function App() {
   return (
@@ -34,8 +35,10 @@ export default function App() {
         <Route path="/dashboard-admin" element={<DashboardAdmin />} />
         <Route path="/dashboard-users" element={<DashboardUsers />} />
 
+        <Route path="/dashboard-users/pembayaran" element={<PembayaranUser />} />
+        <Route path="/dashboard-users/pengaduan" element={<Pengaduan />} />
+
         <Route path="/dashboard-admin/manage-kamar" element={<ManageKamar />} />
-        <Route path="/dashboard-users/manage-pembayaran" element={<ManagePembayaranUser />} />
         <Route path="/dashboard-admin/manage-pembayaran" element={<ManagePembayaran />} />
         <Route path="/dashboard-admin/manage-blog" element={<ManageBlog />} />
         <Route path="/dashboard-admin/manage-komentar" element={<ManageComments />} />

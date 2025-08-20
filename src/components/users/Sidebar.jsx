@@ -3,7 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 
 const menuItems = [
   { label: "Dashboard", path: "/dashboard-users" },
-  { label: "Manage Pembayaran", path: "/dashboard-users/manage-pembayaran" },
+  { label: "Pembayaran", path: "/dashboard-users/pembayaran" },
+  { label: "Pengaduan", path: "/dashboard-users/pengaduan" },
 ];
 
 export default function Sidebar({ onClose }) {

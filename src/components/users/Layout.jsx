@@ -8,7 +8,8 @@ import { app } from "../../firebase";
 
 const pageTitles = {
   "/dashboard-users": "Dashboard Users",
-  "/dashboard-users/manage-pembayaran": "Manage Pembayaran",
+  "/dashboard-users/pembayaran": "Pembayaran",
+  "/dashboard-users/pengaduan": "Pengaduan",
 };
 
 export default function Layout({ children }) {
