@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ChatBot from "../components/chatbot/ChatBot";
@@ -10,6 +11,8 @@ export default function Gallery() {
     const [items, setItems] = useState([]);
     const [filter, setFilter] = useState("Semua");
     const [selectedItem, setSelectedItem] = useState(null);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -19,6 +22,20 @@ export default function Gallery() {
         };
         fetchItems();
     }, []);
+
+    // Handle URL hash changes
+    useEffect(() => {
+        if (items.length > 0) {
+            const hash = location.hash.substring(1); // Remove the # from hash
+            const allCategories = ["Semua", ...new Set(items.map(i => i.category))];
+            
+            if (hash && allCategories.includes(hash)) {
+                setFilter(hash);
+            } else {
+                setFilter("Semua");
+            }
+        }
+    }, [location.hash, items]);
 
     const allCategories = ["Semua", ...new Set(items.map(i => i.category))];
 
@@ -32,6 +49,16 @@ export default function Gallery() {
             month: 'long',
             year: 'numeric'
         });
+    };
+
+    const handleFilterClick = (category) => {
+        setFilter(category);
+        // Update URL hash without page reload
+        if (category === "Semua") {
+            navigate("/gallery", { replace: true });
+        } else {
+            navigate(`/gallery#${category}`, { replace: true });
+        }
     };
 
     return (
@@ -55,7 +82,7 @@ export default function Gallery() {
                     {allCategories.map(cat => (
                         <button
                             key={cat}
-                            onClick={() => setFilter(cat)}
+                            onClick={() => handleFilterClick(cat)}
                             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition ${filter === cat
                                 ? "bg-[#eb6807] text-white"
                                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -67,6 +94,7 @@ export default function Gallery() {
                 </div>
             </div>
 
+            {/* Rest of your component remains the same */}
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pb-10">
                 {filteredItems.map((item) => (

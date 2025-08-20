@@ -201,14 +201,17 @@ export default function DashboardAdmin() {
         ]
     };
 
+    // Statistik Konten
     const contentStatsData = {
-        labels: ['Artikel', 'Komentar'],
+        labels: ['Artikel', 'Komentar', 'Users', 'Payments'],
         datasets: [
             {
-                data: [stats.blogPosts, stats.comments],
+                data: [stats.blogPosts, stats.comments, stats.users, stats.payments],
                 backgroundColor: [
-                    'rgba(99, 102, 241, 0.7)',
-                    'rgba(236, 72, 153, 0.7)'
+                    'rgba(99, 102, 241, 0.7)',   // biru
+                    'rgba(236, 72, 153, 0.7)',   // pink
+                    'rgba(34, 197, 94, 0.7)',    // hijau
+                    'rgba(234, 179, 8, 0.7)',    // kuning
                 ],
                 borderWidth: 1
             }
@@ -346,24 +349,30 @@ export default function DashboardAdmin() {
                 {/* Additional Charts Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-8">
                     <div className="bg-white p-6 rounded-lg shadow">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold text-gray-800">Statistik Konten</h2>
-                            <i className="ri-pie-chart-line text-gray-500"></i>
-                        </div>
-                        <div className="h-64">
-                            <Pie
-                                data={contentStatsData}
-                                options={{
-                                    responsive: true,
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                        },
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-lg font-semibold text-gray-800">Statistik Konten</h2>
+    <i className="ri-pie-chart-line text-gray-500"></i>
+  </div>
+  <div className="h-64">
+    <Pie
+      data={contentStatsData}
+      options={{
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,  // icon bulat kecil
+              boxWidth: 12,         // biar rapi sejajar
+              padding: 20           // jarak antar item
+            }
+          }
+        }
+      }}
+    />
+  </div>
+</div>
+
 
                     <div className="bg-white p-6 rounded-lg shadow">
                         <div className="flex justify-between items-center mb-4">

@@ -6,6 +6,7 @@ const API_URL = "http://localhost:8888/api/gallery";
 // Rekomendasi kategori untuk kostan (hanya satu yang bisa dipilih)
 const CATEGORIES = [
     "--Pilih Kategori--",   // 👈 ubah jadi ini
+    "HUT RI 1445",
     "Kamar",
     "Fasilitas Umum",
     "Kamar Mandi",
