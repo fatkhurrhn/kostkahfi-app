@@ -9,9 +9,7 @@ import {
   onSnapshot, 
   doc, 
   deleteDoc,
-  updateDoc,
-  serverTimestamp,
-  arrayUnion
+  serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { getAuth } from 'firebase/auth';
@@ -24,8 +22,6 @@ export default function Pengaduan() {
   const [selectedPengaduan, setSelectedPengaduan] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [newMessage, setNewMessage] = useState('');
-  const [sendingMessage, setSendingMessage] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -38,7 +34,6 @@ export default function Pengaduan() {
 
   useEffect(() => {
     if (user) {
-      console.log("User ID:", user.uid); // Debug
       const q = query(
         collection(db, 'pengaduan'),
         where('userId', '==', user.uid),
@@ -52,12 +47,13 @@ export default function Pengaduan() {
           pengaduanData.push({ 
             id: doc.id, 
             ...data,
+            // Pastikan timestamp dikonversi dengan benar
             createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
             updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date()
           });
         });
-        console.log("Data pengaduan diterima:", pengaduanData); // Debug
         setPengaduanList(pengaduanData);
+        console.log("Data pengaduan:", pengaduanData); // Debug log
       }, (error) => {
         console.error("Error fetching pengaduan:", error);
       });
@@ -76,14 +72,6 @@ export default function Pengaduan() {
     setLoading(true);
     
     try {
-      // Buat pesan pertama sebagai deskripsi pengaduan
-      const initialMessage = {
-        sender: 'user',
-        senderName: user.displayName || user.email,
-        message: formData.description,
-        timestamp: serverTimestamp()
-      };
-      
       await addDoc(collection(db, 'pengaduan'), {
         userId: user.uid,
         userName: user.displayName || user.email,
@@ -96,7 +84,7 @@ export default function Pengaduan() {
         priority: 'sedang',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        messages: [initialMessage]
+        adminResponse: ''
       });
       
       setFormData({ title: '', description: '', category: 'perbaikan', imageUrl: '' });
@@ -104,7 +92,7 @@ export default function Pengaduan() {
       setShowSuccessModal(true);
     } catch (error) {
       console.error('Error adding document: ', error);
-      alert('Terjadi kesalahan saat mengirim pengaduan. Pastikan Anda terhubung ke internet.');
+      alert('Terjadi kesalahan saat mengirim pengaduan');
     }
     
     setLoading(false);
@@ -121,35 +109,8 @@ export default function Pengaduan() {
     }
   };
 
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedPengaduan) return;
-    
-    setSendingMessage(true);
-    try {
-      const messageData = {
-        sender: 'user',
-        senderName: user.displayName || user.email,
-        message: newMessage,
-        timestamp: serverTimestamp()
-      };
-      
-      const pengaduanRef = doc(db, 'pengaduan', selectedPengaduan.id);
-      await updateDoc(pengaduanRef, {
-        messages: arrayUnion(messageData),
-        updatedAt: serverTimestamp()
-      });
-      
-      setNewMessage('');
-    } catch (error) {
-      console.error('Error sending message:', error);
-      alert('Terjadi kesalahan saat mengirim pesan');
-    }
-    setSendingMessage(false);
-  };
-
   const openDetailModal = (pengaduan) => {
     setSelectedPengaduan(pengaduan);
-    setNewMessage('');
     setShowDetailModal(true);
   };
 
@@ -179,14 +140,6 @@ export default function Pengaduan() {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const formatTime = (date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleTimeString('id-ID', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -311,75 +264,55 @@ export default function Pengaduan() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesan Terakhir</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {pengaduanList.map((pengaduan) => {
-                    const lastMessage = pengaduan.messages && pengaduan.messages.length > 0 
-                      ? pengaduan.messages[pengaduan.messages.length - 1] 
-                      : null;
-                    
-                    return (
-                      <tr key={pengaduan.id} className="hover:bg-gray-50 transition duration-150">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {pengaduan.createdAt ? new Date(pengaduan.createdAt).toLocaleDateString('id-ID') : '-'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-medium text-gray-900">{pengaduan.title}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 capitalize">{pengaduan.category}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(pengaduan.status)}`}>
-                            {pengaduan.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-600">
-                            {lastMessage ? (
-                              <>
-                                <span className="font-medium">{lastMessage.senderName}: </span>
-                                {lastMessage.message.length > 50 
-                                  ? `${lastMessage.message.substring(0, 50)}...` 
-                                  : lastMessage.message
-                                }
-                              </>
-                            ) : 'Tidak ada pesan'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  {pengaduanList.map((pengaduan) => (
+                    <tr key={pengaduan.id} className="hover:bg-gray-50 transition duration-150">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {pengaduan.createdAt ? new Date(pengaduan.createdAt).toLocaleDateString('id-ID') : '-'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900">{pengaduan.title}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900 capitalize">{pengaduan.category}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(pengaduan.status)}`}>
+                          {pengaduan.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button 
+                          onClick={() => openDetailModal(pengaduan)}
+                          className="text-[#eb6807] hover:text-orange-700 mr-3 transition duration-200"
+                          title="Lihat Detail"
+                        >
+                          <i className="ri-eye-line"></i>
+                        </button>
+                        {pengaduan.status === 'pending' && (
                           <button 
-                            onClick={() => openDetailModal(pengaduan)}
-                            className="text-[#eb6807] hover:text-orange-700 mr-3 transition duration-200"
-                            title="Lihat Detail"
+                            onClick={() => handleDelete(pengaduan.id)}
+                            className="text-red-500 hover:text-red-700 transition duration-200"
+                            title="Hapus Pengaduan"
                           >
-                            <i className="ri-eye-line"></i>
+                            <i className="ri-delete-bin-line"></i>
                           </button>
-                          {pengaduan.status === 'pending' && (
-                            <button 
-                              onClick={() => handleDelete(pengaduan.id)}
-                              className="text-red-500 hover:text-red-700 transition duration-200"
-                              title="Hapus Pengaduan"
-                            >
-                              <i className="ri-delete-bin-line"></i>
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
         </div>
 
-        {/* Modal Detail Pengaduan dengan Fitur Chat */}
+        {/* Modal Detail Pengaduan */}
         {showDetailModal && selectedPengaduan && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -414,6 +347,11 @@ export default function Pengaduan() {
                   <p className="capitalize text-gray-800">{selectedPengaduan.category}</p>
                 </div>
                 
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-700 mb-2">Deskripsi:</h4>
+                  <p className="text-gray-800 bg-gray-50 p-3 rounded-lg">{selectedPengaduan.description}</p>
+                </div>
+                
                 {selectedPengaduan.imageUrl && (
                   <div className="mb-4">
                     <h4 className="font-medium text-gray-700 mb-2">Gambar:</h4>
@@ -428,57 +366,14 @@ export default function Pengaduan() {
                   </div>
                 )}
                 
-                {/* Area Chat */}
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-700 mb-2">Percakapan:</h4>
-                  <div className="border border-gray-200 rounded-lg p-4 max-h-80 overflow-y-auto">
-                    {selectedPengaduan.messages && selectedPengaduan.messages.length > 0 ? (
-                      selectedPengaduan.messages.map((msg, index) => (
-                        <div 
-                          key={index} 
-                          className={`mb-3 ${msg.sender === 'user' ? 'text-right' : ''}`}
-                        >
-                          <div className={`inline-block p-3 rounded-lg max-w-xs ${msg.sender === 'user' ? 'bg-[#eb6807] text-white' : 'bg-gray-200 text-gray-800'}`}>
-                            <p className="text-sm">{msg.message}</p>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {msg.senderName} • {msg.timestamp ? formatTime(msg.timestamp.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp)) : ''}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center">Belum ada percakapan</p>
-                    )}
+                {selectedPengaduan.adminResponse && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-700 mb-2">Tanggapan Admin:</h4>
+                    <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
+                      <p className="text-gray-800">{selectedPengaduan.adminResponse}</p>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Input Pesan Baru */}
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">Balas Pesan:</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#eb6807]"
-                      placeholder="Ketik pesan balasan..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') sendMessage();
-                      }}
-                    />
-                    <button
-                      onClick={sendMessage}
-                      disabled={sendingMessage || !newMessage.trim()}
-                      className="bg-[#eb6807] hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50"
-                    >
-                      {sendingMessage ? (
-                        <i className="ri-loader-4-line animate-spin"></i>
-                      ) : (
-                        <i className="ri-send-plane-line"></i>
-                      )}
-                    </button>
-                  </div>
-                </div>
+                )}
                 
                 <div className="flex justify-end mt-6">
                   <button

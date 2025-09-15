@@ -24,6 +24,7 @@ import ManageGallery from './pages/dashboard/admin/ManageGallery';
 import Gallery from './pages/Gallery';
 import Pengaduan from './pages/dashboard/users/Pengaduan';
 import ManagePengaduan from './pages/dashboard/admin/ManagePengaduan';
+import ComingSoon from './pages/ComingSoon';
 
 export default function App() {
   return (
@@ -50,15 +51,15 @@ export default function App() {
         <Route path="/rooms-list" element={<Kamar />} />
         <Route path="/blogs" element={<Blog />} />
         <Route path="/blogs/:slug" element={<DetailBlog />} />
-        <Route path="/not-found" element={<NotFound />} />
         <Route path="/tes" element={<Template />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cavelatte" element={<Cavelatte />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/gallery" element={<Gallery />} />
 
-        {/* Catch-all untuk halaman 404 */}
-        <Route path="*" element={<Navigate to="/not-found" replace />} />
+        {/* Catch-all untuk halaman yang tidak ada */}
+        <Route path="/comingsoon" element={<ComingSoon />} />
+        <Route path="*" element={<Navigate to="/comingsoon" replace />} />
       </Routes>
     </BrowserRouter>
   );
