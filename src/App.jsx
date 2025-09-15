@@ -14,7 +14,6 @@ import ManageBlog from './pages/dashboard/admin/ManageBlog';
 import DetailBlog from './pages/DetailBlog';
 import ManageComments from './pages/dashboard/admin/ManageComments';
 import ManageUsers from './pages/dashboard/admin/ManageUsers';
-import NotFound from './pages/NotFound';
 import Template from './pages/Template';
 import Contact from './pages/Contact';
 import Cavelatte from './pages/Cavelatte';
